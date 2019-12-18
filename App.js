@@ -8,7 +8,8 @@ import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
 import { mapping, light as lightTheme } from '@eva-design/eva';
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import AppNavigator from './navigation/MainTabNavigator';
-
+import Drawer from './navigation/Drawer';
+import Header from './components/Header';
 
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
@@ -26,6 +27,7 @@ export default function App(props) {
       <React.Fragment>
         <IconRegistry icons={EvaIconsPack} />
         <ApplicationProvider mapping={mapping} theme={lightTheme}>
+          <Header />
           <AppNavigator />
         </ApplicationProvider>
       </React.Fragment>

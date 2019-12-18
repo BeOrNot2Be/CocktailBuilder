@@ -1,12 +1,46 @@
 import React from 'react';
-import { Layout, Text } from '@ui-kitten/components';
+import { StyleSheet } from 'react-native';
+import AddedIngredientsList from '../components/AddedIngredients';
+import SearchedIngredientsList from '../components/SearchedIngredients';
 
-const IngredientScreen = () => {
+import {
+  Tab,
+  Divider,
+  TabView,
+  Icon
+} from '@ui-kitten/components';
+
+
+const AddedIcon = (style) => (
+    <Icon {...style} name='plus-square-outline' />
+  );
+
+const SearchIcon = (style) => (
+    <Icon {...style} name='search' />
+  );
+
+const IngredientScreen = ({ navigation }) => {
+
+    const [tabsIndex, setTabsIndex] = React.useState(0);
+
   return (
-    <Layout style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text category='h1'>Ingredients</Text>
-    </Layout>
+    <>
+    <Divider/>
+      <TabView
+      selectedIndex={tabsIndex}
+      onSelect={setTabsIndex}>
+          <Tab title='Added' icon={AddedIcon}>
+            <AddedIngredientsList/>
+          </Tab>
+          <Tab title='Search' icon={SearchIcon}>
+            <SearchedIngredientsList/>
+          </Tab>
+      </TabView>
+  </>
   )
 }
+
+const styles = StyleSheet.create({
+});
 
 export default IngredientScreen;
