@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { createAppContainer } from 'react-navigation';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { createStackNavigator } from 'react-navigation-stack';
 import {
@@ -62,4 +61,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default createAppContainer(TabNavigator);
+export default TabNavigator;

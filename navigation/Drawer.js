@@ -1,21 +1,40 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { createAppContainer } from 'react-navigation';
+import { SafeAreaView } from 'react-navigation';
 import { createDrawerNavigator } from 'react-navigation-drawer';
-
 import {
   Drawer,
+  Icon,
+  DrawerHeaderFooter,
 } from '@ui-kitten/components';
-import FavoriteScreen from '../screens/FavoriteScreen';
-import CocktailScreen from '../screens/CocktailScreen';
-import IngredientScreen from '../screens/IngredientScreen';
+import UserScreen from '../screens/UserScreen';
+import LogOutScreen from '../screens/LogOutScreen';
+import MainTabNavigator from './MainTabNavigator';
+import { createAppContainer } from 'react-navigation';
 
 
 const routs = [
-    { title: 'Ingredients' },
-    { title: 'Cocktails' },
-    { title: 'Favorites' },
+    { title: 'Home' },
+    { title: 'User' },
+    { title: 'LogOut' },
+
 ]
+
+const PersonIcon = (style) => (
+  <Icon {...style} name='person'/>
+);
+
+const Header = () => (
+  <DrawerHeaderFooter
+    title='John Doe'
+    description='Smth extra info'
+    icon={PersonIcon}
+  />
+);
+
+const Footer = () => (
+  <DrawerHeaderFooter description='powered by cocktailbuilder.com 2019'/>
+);
 
 const DrawerComponent  = ({ navigation }) => {
 
@@ -26,16 +45,33 @@ const DrawerComponent  = ({ navigation }) => {
       };
 
   return (
-    <Drawer data={routs} onSelect={onSelect} />
+    <SafeAreaView>
+      <Drawer 
+        data={routs}
+        onSelect={onSelect}
+        header={Header}
+        footer={Footer}
+      />
+    </SafeAreaView>
   );
 };
 
 const DrawerNavigator  = createDrawerNavigator({
-  Ingredients: IngredientScreen,
-  Cocktails: CocktailScreen,
-  Favorites: FavoriteScreen,
+  Home: {
+    screen: MainTabNavigator
+  },
+  LogOut: { 
+    screen: LogOutScreen
+  },
+  User: { 
+    screen: UserScreen
+  },
 }, {
   contentComponent: DrawerComponent,
+  drawerPosition: 'right',
+  drawerOpenRoute: 'Drawer',
+  drawerCloseRoute: 'DrawerClose',
+  drawerToggleRoute: 'DrawerToggle',
 });
 
 const styles = StyleSheet.create({

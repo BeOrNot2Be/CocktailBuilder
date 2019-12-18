@@ -7,6 +7,7 @@ import {
   Modal,
   Icon
 } from '@ui-kitten/components';
+import { DrawerActions } from "react-navigation-drawer";
 import RecipeModal from '../components/RecipeModal';
 
 const data = new Array(8).fill({
@@ -23,8 +24,16 @@ const HeartIcon = (style) => (
    />
 );
 
-const FavoriteScreen = (props) => {
-  console.warn(props)
+const MenuIcon = (style) => (
+  <Icon
+    {...style}
+    width={24}
+    height={24}
+    name='menu-outline'
+   />
+);
+
+const FavoriteScreen = ({navigation}) => {
   const onUnFollow = () => {};
 
   const [visible, setVisible] = React.useState(false);
@@ -75,6 +84,21 @@ const FavoriteScreen = (props) => {
     </>
   )
 }
+
+FavoriteScreen.navigationOptions = ({ navigation, navigationOptions }) => {
+  return {
+    title: 'Favorites',
+    headerRight: () => (
+      <Button
+        onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+        appearance='ghost'
+        status='basic'
+        icon={MenuIcon}      
+      />
+    ),
+  }
+};
+
 
 const styles = StyleSheet.create({
   backdrop: {
