@@ -1,112 +1,83 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-navigation';
+import Modal from 'react-native-modal';
 import { 
-  List,
-  ListItem,
-  Button,
-  Modal,
   Input,
   Layout,
-  Icon
+  Icon,
 } from '@ui-kitten/components';
 import RecipeModal from '../components/RecipeModal';
-import { DrawerActions } from "react-navigation-drawer";
+import ListItem from '../components/listItem';
+import Header from '../components/Header';
 
-const MenuIcon = (style) => (
-  <Icon
-    {...style}
-    width={24}
-    height={24}
-    name='menu-outline'
-   />
-);
+
 
 const SearchIcon = (style) => (
   <Icon {...style} name='search-outline' />
 );
 
-const data = new Array(8).fill({
+const data = new Array(3).fill({
   title: 'Title for Item',
   description: 'Some small desc for example and stuff(ui testing)'
 });
 
-const CocktailScreen = () => {
+const CocktailScreen = ({ navigation }) => {
+  let AnimationModalRef;
   const [inputValue, setInputValue] = React.useState('');
 
   const [visible, setVisible] = React.useState(false);
 
   const toggleModal = () => {
-    setVisible(!visible);
+    setVisible(false);
   };
 
-  const renderModalElement = () => (
-      <RecipeModal />
-  );
-
-  const openItem = (index) => {
+  const openModal = (index) => {
     //FETCH DATA && LOADING
     setVisible(true);
   };
-  
-
-  const renderItem = ({ item, index }) => (
-    <ListItem
-      title={`${item.title} ${index + 1}`}
-      description={`${item.description} ${index + 1}`}
-      onPress={() => openItem(index)}
-    />
-  );
-
 
   return (
-    <>
-      <Layout style={styles.container}>
-        <Input
-          placeholder='Search'
-          value={inputValue}
-          onChangeText={setInputValue}
-          icon={SearchIcon}
-        />
-      </Layout>
-      <List
-          data={data}
-          renderItem={renderItem}
-        />
-      <Modal
-        allowBackdrop={true}
-        backdropStyle={styles.backdrop}
-        onBackdropPress={toggleModal}
-        visible={visible}>
-        {renderModalElement()}
-      </Modal>
-    </>
+    <Layout level='1'>
+      <SafeAreaView>
+        <Header navigation={navigation}/>
+        <Layout level='1'>
+          <ScrollView style={styles.scrollContainer}>
+              <Layout style={styles.container}>
+                <Input
+                  placeholder='Search'
+                  value={inputValue}
+                  onChangeText={setInputValue}
+                  icon={SearchIcon}
+                />
+              </Layout>
+              {data.map(ListItem(false, false, false, openModal, toggleModal))}
+                <Modal
+                isVisible={visible}
+                onBackdropPress={toggleModal}
+                animationIn="fadeIn"
+                animationOut="fadeOut"
+                  >
+                  <RecipeModal />
+              </Modal>
+          </ScrollView>
+        </Layout>
+      </SafeAreaView>
+    </Layout>
   )
 }
 
-CocktailScreen.navigationOptions = ({ navigation, navigationOptions }) => {
-  return {
-    title: 'Cocktails',
-    headerRight: () => (
-      <Button
-        onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
-        appearance='ghost'
-        status='basic'
-        icon={MenuIcon}      
-      />
-    ),
-  }
-};
 
 const styles = StyleSheet.create({
-  backdrop: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
   container: {
     paddingRight: 16,
     paddingLeft: 16,
     paddingTop: 10,
     paddingBottom: 5,
   },
+  scrollContainer:{
+    height: '100%',
+  }
 });
 
 export default CocktailScreen;

@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import {
     Text,
+    Layout
   } from '@ui-kitten/components';
 
 class UserScreen extends React.Component {
@@ -11,7 +12,9 @@ class UserScreen extends React.Component {
   
     render() {
       return (
-        <Text>User SCREEN</Text>
+        <Layout level='1'>
+          <Text>User SCREEN</Text>
+        </Layout>
       );
     }
   }

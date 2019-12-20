@@ -2,15 +2,32 @@ import { AppLoading } from 'expo';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 import React, { useState } from 'react';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
-import { mapping, light as lightTheme } from '@eva-design/eva';
+import { 
+  ApplicationProvider,
+  IconRegistry,
+  Layout
+} from '@ui-kitten/components';
+import { mapping, dark, light } from '@eva-design/eva';
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import AppNavigator from './navigation/Drawer';
+import { default as lightTheme } from './themes/custom-theme.json';
+import { default as darkTheme } from './themes/night-theme.json';
+import { default as customMapping } from './themes/custom-mapping.json';
+import { ThemeContext } from './themes/theme-context';
+
+const themes = { light:{...light, ...lightTheme}, dark:{...dark, ...darkTheme} };
 
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
+
+  const [theme, setTheme] = React.useState('light');
+  const currentTheme = themes[theme];
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(nextTheme);
+  };
 
   if (!isLoadingComplete && !props.skipLoadingScreen) {
     return (
@@ -24,9 +41,15 @@ export default function App(props) {
     return (
       <React.Fragment>
         <IconRegistry icons={EvaIconsPack} />
-        <ApplicationProvider mapping={mapping} theme={lightTheme}>
-          <AppNavigator />
-        </ApplicationProvider>
+        <ThemeContext.Provider value={{ theme, toggleTheme }}>
+          <ApplicationProvider
+            mapping={mapping}
+            theme={currentTheme}
+            customMapping={customMapping}
+          >
+            <AppNavigator />
+          </ApplicationProvider>
+        </ThemeContext.Provider>
       </React.Fragment>
     );
   }
@@ -35,22 +58,16 @@ export default function App(props) {
 async function loadResourcesAsync() {
   await Promise.all([
     Asset.loadAsync([
-      require('./assets/images/robot-dev.png'),
-      require('./assets/images/robot-prod.png'),
+      //require('./assets/images/imgs.png'), and stuff
     ]),
     Font.loadAsync({
-      // This is the font that we are using for our tab bar
       ...Ionicons.font,
-      // We include SpaceMono because we use it in HomeScreen.js. Feel free to
-      // remove this if you are not using it in your app
-      'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
+      'roboto': require('./assets/fonts/Roboto-Regular.ttf'),
     }),
   ]);
 }
 
 function handleLoadingError(error) {
-  // In this case, you might want to report the error to your error reporting
-  // service, for example Sentry
   console.warn(error);
 }
 

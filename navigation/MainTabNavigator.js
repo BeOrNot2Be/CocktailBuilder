@@ -5,28 +5,17 @@ import { createStackNavigator } from 'react-navigation-stack';
 import {
   BottomNavigation,
   BottomNavigationTab,
-  Icon,
 } from '@ui-kitten/components';
 import FavoriteScreen from '../screens/FavoriteScreen';
 import CocktailScreen from '../screens/CocktailScreen';
-import IngredientScreen from '../screens/IngredientScreen';
+import IngredientTabNavigator from './IngredientTopBar';
+import {ListIcon, CocktailIcon as EmailIcon, HeartIcon } from '../components/Icons';
 
-const config = Platform.select({
-  web: { headerMode: 'screen' },
-  default: {},
-});
-
-const ListIcon = (style) => (
-  <Icon {...style} name='list-outline' />
-);
-// get 3rd party icon pack / or svg and get glass or cocktail stuff  
-const EmailIcon = (style) => (
-  <Icon {...style} name='email-outline' />
-);
-
-const HeartIcon = (style) => (
-  <Icon {...style} name='heart-outline' />
-);
+const config ={
+  headerMode: 'none',
+  defaultNavigationOptions: {
+  }
+}
 
 const TabBarComponent = ({ navigation }) => {
 
@@ -39,7 +28,9 @@ const TabBarComponent = ({ navigation }) => {
       <BottomNavigation
         style={styles.bottomNavigation}
         selectedIndex={navigation.state.index}
-        onSelect={onSelect}>
+        onSelect={onSelect}
+        appearance="noIndicator"
+        >
         <BottomNavigationTab title='Ingredients' icon={ListIcon}/>
         <BottomNavigationTab title='Cocktails' icon={EmailIcon}/>
         <BottomNavigationTab title='Favorites' icon={HeartIcon}/>
@@ -48,7 +39,7 @@ const TabBarComponent = ({ navigation }) => {
 };
 
 const TabNavigator = createBottomTabNavigator({
-  Ingredients: createStackNavigator( { Ingredients: IngredientScreen }, config),
+  Ingredients: IngredientTabNavigator,
   Cocktails: createStackNavigator({ Cocktails: CocktailScreen }, config),
   Favorites: createStackNavigator({ Favorites: FavoriteScreen }, config),
 }, {
@@ -57,7 +48,20 @@ const TabNavigator = createBottomTabNavigator({
 
 const styles = StyleSheet.create({
   bottomNavigation: {
-    marginVertical: 8,
+    borderTopLeftRadius:15, 
+    borderTopRightRadius:15,
+    position:'absolute',
+    bottom: 0,
+    padding:10,
+    zIndex: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.29,
+    shadowRadius: 4.65,
+    elevation: 7,
   },
 });
 
