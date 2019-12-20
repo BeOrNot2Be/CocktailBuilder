@@ -8,6 +8,8 @@ import {
 } from '@ui-kitten/components';
 import FavoriteScreen from '../screens/FavoriteScreen';
 import CocktailScreen from '../screens/CocktailScreen';
+import RecipeScreen from '../screens/RecipeScreen';
+import IngredientScreen from '../screens/IngredientScreen';
 import IngredientTabNavigator from './IngredientTopBar';
 import {ListIcon, CocktailIcon as EmailIcon, HeartIcon } from '../components/Icons';
 
@@ -39,9 +41,18 @@ const TabBarComponent = ({ navigation }) => {
 };
 
 const TabNavigator = createBottomTabNavigator({
-  Ingredients: IngredientTabNavigator,
-  Cocktails: createStackNavigator({ Cocktails: CocktailScreen }, config),
-  Favorites: createStackNavigator({ Favorites: FavoriteScreen }, config),
+  Ingredients: createStackNavigator({
+    Ingredients: IngredientTabNavigator,
+    Ingredient: IngredientScreen
+    }, config),
+  Cocktails: createStackNavigator({ 
+    Cocktails: CocktailScreen,
+    Recipe: RecipeScreen,
+  }, config),
+  Favorites: createStackNavigator({ 
+    Favorites: FavoriteScreen,
+    Recipe: RecipeScreen 
+  }, config),
 }, {
   tabBarComponent: TabBarComponent,
 });

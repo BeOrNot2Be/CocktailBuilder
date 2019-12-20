@@ -14,7 +14,18 @@ const data = new Array(3).fill({
 
 const AddedIngredients= ({ navigation }) => {
 
-  
+  const openIngredient = () => {
+    navigation.push('Ingredient')
+  };
+
+  const ItemAnimation = ref => ref.slideOutLeft(800)
+  const listConfig = {
+    ingredients: true,
+    added: true,
+    onPress:openIngredient,
+    onMainButtonPress:ItemAnimation
+  }
+
   return (
     <Layout level='2' style={styles.scrollContainer}>
       <ScrollView>
@@ -25,7 +36,7 @@ const AddedIngredients= ({ navigation }) => {
               </Text>
             </Layout>
           ): (
-            data.map(ListItem(true, true))
+            data.map(ListItem(listConfig))
           )}
       </ScrollView>
     </Layout>

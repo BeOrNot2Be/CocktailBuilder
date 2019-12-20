@@ -25,7 +25,11 @@ const Header = ({ navigation }) => {
         title={navigation.state.routeName} 
         alignment='center' 
         rightControls={DrawerToggle()}
-        leftControl={BackAction()}
+        leftControl={
+          ["Ingredients", "Cocktails", "Favorites"].indexOf(navigation.state.routeName) === -1 ?
+            BackAction() 
+            : null
+          }
         titleStyle={styles.title}
       />
   )

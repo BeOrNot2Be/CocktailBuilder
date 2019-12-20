@@ -5,17 +5,14 @@ import Modal from 'react-native-modal';
 import { 
   Input,
   Layout,
-  Icon,
+  Icon
 } from '@ui-kitten/components';
 import RecipeModal from '../components/RecipeModal';
 import ListItem from '../components/listItem';
 import Header from '../components/Header';
-
-
-
-const SearchIcon = (style) => (
-  <Icon {...style} name='search-outline' />
-);
+import {
+  SearchIcon, CrossIcon
+  } from '../components/Icons'; 
 
 const data = new Array(3).fill({
   title: 'Title for Item',
@@ -23,7 +20,6 @@ const data = new Array(3).fill({
 });
 
 const CocktailScreen = ({ navigation }) => {
-  let AnimationModalRef;
   const [inputValue, setInputValue] = React.useState('');
 
   const [visible, setVisible] = React.useState(false);
@@ -37,6 +33,24 @@ const CocktailScreen = ({ navigation }) => {
     setVisible(true);
   };
 
+  const openRecipe = () => {
+    navigation.push('Recipe')
+  };
+
+  const ItemAnimation = ref => ref.bounceOutRight(800)
+  const listConfig = {
+    ingredients: false,
+    added:false,
+    fav:false,
+    onLongPress:openModal,
+    onPress:openRecipe,
+    onMainButtonPress:ItemAnimation
+    }
+
+  const renderIcon = (style) => (
+      <Icon {...style} name={inputValue ? 'close-outline' : 'search-outline'}/>
+    );
+  
   return (
     <Layout level='1'>
       <SafeAreaView>
@@ -44,21 +58,22 @@ const CocktailScreen = ({ navigation }) => {
         <Layout level='1'>
           <ScrollView style={styles.scrollContainer}>
               <Layout style={styles.container}>
-                <Input
-                  placeholder='Search'
-                  value={inputValue}
-                  onChangeText={setInputValue}
-                  icon={SearchIcon}
-                />
+                  <Input
+                    placeholder='Search'
+                    value={inputValue}
+                    onChangeText={setInputValue}
+                    icon={ inputValue ? CrossIcon : SearchIcon }
+                    onIconPress={() => setInputValue('')}
+                  />
               </Layout>
-              {data.map(ListItem(false, false, false, openModal, toggleModal))}
-                <Modal
-                isVisible={visible}
-                onBackdropPress={toggleModal}
-                animationIn="fadeIn"
-                animationOut="fadeOut"
-                  >
-                  <RecipeModal />
+              {data.map(ListItem(listConfig))}
+              <Modal
+              isVisible={visible}
+              onBackdropPress={toggleModal}
+              animationIn="fadeIn"
+              animationOut="fadeOut"
+                >
+                <RecipeModal />
               </Modal>
           </ScrollView>
         </Layout>

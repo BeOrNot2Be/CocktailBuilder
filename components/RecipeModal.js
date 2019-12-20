@@ -63,28 +63,31 @@ const Header = () => (
     </View>
   );
 
-const RecipeModal = () => {
+const RecipeModal = ({style}) => {
 
     const openIngredient = (ing) => {
         console.warn(ing)
     }
 
     return (
-    <Card header={Header} footer={Footer} style={styles.card}>
-        <Layout>
-            {item.ingredients.map((e, i) => (
-                <Text category='s1' key={i}> 
-                    {e.am} <Text style={styles.link} status='primary' category='s1' onPress={() => openIngredient(e.ing)}>{e.ing}</Text>
+      <Layout style={{...styles.card, ...style}}>
+        <Card header={Header} footer={Footer} style={styles.card}>
+            <Layout>
+                {item.ingredients.map((e, i) => (
+                    <Text category='s1' key={i}> 
+                        {e.am} <Text style={styles.link} status='primary' category='s1' onPress={() => openIngredient(e.ing)}>{e.ing}</Text>
+                    </Text>
+                ))}
+            </Layout>
+            <Divider style={styles.divider}/>
+            <Layout>
+                <Text>
+                    {item.recipe}
                 </Text>
-            ))}
-        </Layout>
-        <Divider style={styles.divider}/>
-        <Layout>
-            <Text>
-                {item.recipe}
-            </Text>
-        </Layout>
-    </Card>)
+            </Layout>
+        </Card>
+      </Layout>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -93,6 +96,8 @@ const styles = StyleSheet.create({
       justifyContent: 'flex-end',
     },
     card: {
+      borderRadius: 10,
+      borderColor: 'transparent',
       justifyContent: 'center',
       alignItems: 'center',
       maxWidth: '100%',

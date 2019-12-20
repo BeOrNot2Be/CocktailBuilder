@@ -11,11 +11,6 @@ import SearchedIngredientsScreen from '../screens/SearchedIngredientScreen';
 import AddedIngredientScreen from '../screens/AddedIngredientScreen';
 import Header from '../components/Header';
 import { SearchIcon, AddedSquareIcon } from '../components/Icons';
-const config ={
-    headerMode: 'none',
-    defaultNavigationOptions: {
-    }
-  }
 
 const TabBarComponent = ({ navigation }) => {
 
@@ -37,9 +32,9 @@ const TabBarComponent = ({ navigation }) => {
   );
 };
 
-const TabNavigator = createMaterialTopTabNavigator({
-    SearchedIngredients: createStackNavigator( { Searched: SearchedIngredientsScreen }, config),
-    AddedIngredients: createStackNavigator( { Added: AddedIngredientScreen }, config),
+const TabNavigator = createMaterialTopTabNavigator({ 
+      Searched: SearchedIngredientsScreen,
+      Added: AddedIngredientScreen,
 }, {
   tabBarComponent: TabBarComponent,
 });

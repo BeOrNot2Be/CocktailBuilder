@@ -23,11 +23,27 @@ const FavoriteScreen = ({navigation}) => {
     setVisible(false);
   };
 
+  
+
+  const openRecipe = () => {
+    navigation.push('Recipe')
+  };
 
   const openModal = (index) => {
     //FETCH DATA && LOADING
     setVisible(true);
   };
+
+  const ItemAnimation = ref => ref.bounceOutLeft(800)
+
+  const listConfig = {
+    ingredients: false,
+    added:false,
+    fav:true,
+    onLongPress:openModal,
+    onPress:openRecipe,
+    onMainButtonPress:ItemAnimation
+    }
   
 
   return (
@@ -36,7 +52,7 @@ const FavoriteScreen = ({navigation}) => {
         <Header navigation={navigation}/>
         <Layout level='1' style={styles.scrollContainer}>
           <ScrollView>
-              {data.map(ListItem(false, false, true, openModal))}
+              {data.map(ListItem(listConfig))}
               <Modal
                 isVisible={visible}
                 onBackdropPress={toggleModal}

@@ -6,7 +6,7 @@ import {
 
 
 export const RemoveIcon = (style) => (
-    <Icon {...style} name='minus-circle-outline' />
+    <Icon {...style} name='close-circle-outline' />
   );
 
 export const QuestionIcon = (style) => (
@@ -74,3 +74,8 @@ export  const ListIcon = (style) => (
 export  const CocktailIcon = (style) => (
     <Icon {...style} name='email-outline' />
   );
+
+export  const CrossIcon = (style) => (
+    <Icon {...style} name='close-outline' />
+  );
+  

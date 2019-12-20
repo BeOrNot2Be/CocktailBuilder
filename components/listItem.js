@@ -12,69 +12,97 @@ import {
     HeartIcon,
     HeartOutlineIcon
 } from './Icons';
+import * as Animatable from 'react-native-animatable';
 
-const ListItemComponent = (ingredients = false, added=false, fav=false , onLongPress={}, onPressOut={}) => {
+const ListItemComponent = (constArgs) => {
+    const {
+      ingredients,
+      added,
+      fav,
+      onLongPress,
+      onMainButtonPress,
+      onPress,
+    } = {
+      ingredients:false,
+      added:false,
+      fav:false,
+      onLongPress:{},
+      onMainButtonPress:{},
+      onPress:{},
+      ...constArgs
+    };
+
     if (ingredients) {
-        return (item, index) => (
-            <Layout key={index} style={styles.lisItem}>
-              <Layout style={styles.container}>
-                  <Layout style={styles.layoutButton}>
-                  <Button
-                      style={styles.Button}
-                      appearance='ghost'
-                      status='basic'
-                      icon={QuestionIcon}
-                  />
+        return (item, index) => {
+          let handleViewRef;
+
+          return (
+            <Animatable.View key={index} ref={ ref => handleViewRef = ref}>
+              <Layout style={styles.lisItem}>
+                <TouchableOpacity 
+                    onPress={onPress}
+                  >
+                  <Layout style={styles.container}>
+                      <Layout style={styles.layoutTittle}>
+                      <Text>
+                          {`${item.title} ${index + 1}`}
+                      </Text>
+                      </Layout>
+                      <Layout style={styles.layoutButton}>
+                      {added?(
+                          <Button 
+                            appearance='ghost'
+                            status='danger'
+                            icon={RemoveIcon}
+                            onPress={() => onMainButtonPress(handleViewRef)}
+                        />
+                      ):(
+                          <Button
+                          status='info'
+                          icon={AddedIcon}
+                          onPress={() => onMainButtonPress(handleViewRef)}
+                      >Add</Button>  
+                      )}
+                      </Layout>
                   </Layout>
-                  <Layout style={styles.layoutTittle}>
-                  <Text>
-                      {`${item.title} ${index + 1}`}
-                  </Text>
-                  </Layout>
-                  <Layout style={styles.layoutButton}>
-                  {added?(
-                      <Button 
-                      style={styles.Button}
-                      appearance='ghost'
-                      status='danger'
-                      icon={RemoveIcon}
-                  />
-                  ):(
-                      <Button 
-                      icon={AddedIcon}
-                  />  
-                  )}
-                  </Layout>
+                </TouchableOpacity>
               </Layout>
-            </Layout>
-        );
+            </Animatable.View>
+        )};
     } else {
         return (item, index) => {
+
+          let handleViewRef;
+
           return(
-            <Layout key={index} style={styles.lisItem}>
-              <TouchableOpacity 
-                onLongPress={onLongPress}
-              >
-                <Layout style={styles.container}>
-                    <Layout style={styles.layoutTittle}>
-                      
-                        <Text>
-                          {item.title}
-                        </Text>
-                        <Text appearance='hint'>
-                          {item.description}
-                        </Text>
-                      </Layout>
-                    <Layout style={styles.layoutButton}>
-                    <Button
-                        appearance='ghost'
-                        status='danger'
-                        icon={fav? HeartIcon : HeartOutlineIcon}
-                    />
+
+            <Animatable.View key={index} ref={ ref => handleViewRef = ref}>
+              <Layout style={styles.lisItem}>
+                <TouchableOpacity 
+                  onLongPress={onLongPress}
+                  onPress={onPress}
+                >
+                    <Layout style={styles.container}>
+                        <Layout style={styles.layoutTittle}>
+                            <Text>
+                              {item.title}
+                            </Text>
+                            <Text appearance='hint'>
+                              {item.description}
+                            </Text>
+                          </Layout>
+                        <Layout style={styles.layoutButton}>
+                        <Button
+                            appearance='ghost'
+                            status='danger'
+                            icon={fav? HeartIcon : HeartOutlineIcon}
+                            onPress={() => onMainButtonPress(handleViewRef)}
+                        />
+                        </Layout>
                     </Layout>
-                </Layout>
                 </TouchableOpacity>
-            </Layout>
+              </Layout>
+            </Animatable.View>
         )};
     } 
 }
@@ -103,7 +131,7 @@ const styles = StyleSheet.create({
       },
     layoutButton: {
       paddingHorizontal: 0,
-      flex: 1,
+      flex: 2,
       justifyContent: 'flex-start',
     },
     layoutTittle: {
@@ -111,13 +139,6 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       flex: 4
     },
-    Button: {
-      paddingRight: 0,
-      paddingLeft: 0,
-      marginLeft: 0,
-      marginRight: 0,
-      margin: 0,
-    }
   });
 
 export default ListItemComponent;

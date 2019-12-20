@@ -18,7 +18,17 @@ const data = new Array(3).fill({
 
 
 
-const IngredientScreen = () => {
+const IngredientScreen = ({navigation}) => {
+  const openIngredient = () => {
+    navigation.push('Ingredient')
+  };
+
+  const ItemAnimation = ref => ref.slideOutRight(800)
+  const listConfig = {
+    ingredients: true,
+    onPress:openIngredient,
+    onMainButtonPress:ItemAnimation
+    }
 
   const [inputValue, setInputValue] = React.useState('');
 
@@ -33,7 +43,7 @@ const IngredientScreen = () => {
               icon={SearchIcon}
             />
           </Layout>
-          {data.map(ListItem(true))}
+          {data.map(ListItem(listConfig))}
       </ScrollView>
     </Layout>
   )
