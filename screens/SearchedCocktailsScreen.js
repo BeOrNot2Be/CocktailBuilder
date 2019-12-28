@@ -15,8 +15,9 @@ import {
 } from '../components/Icons'; 
 import { connect } from 'react-redux';
 import MainSourceFetch from '../api/web';
+import _ from 'lodash';
 
-const SearchedCocktailsScreen = ({ navigation, cocktails, search }) => {
+const SearchedCocktailsScreen = ({ navigation, cocktails, search,  favCocktails, toggle, user }) => {
   const [inputValue, setInputValue] = React.useState(navigation.getParam('inputSearch', ''));
   const [lastSearch, setLastSearch] = React.useState(navigation.getParam('inputSearch', ''));
 
@@ -35,7 +36,13 @@ const SearchedCocktailsScreen = ({ navigation, cocktails, search }) => {
     navigation.push('Recipe', {recipe: item})
   };
 
-  const ItemAnimation = ref => ref.bounceOutRight(800)
+  const ToggleFollow = (ref, item) => 
+  {
+    ref.shake(800)
+    if (!_.isEmpty(user)) {
+      toggle(item, user.token, favCocktails)
+    }
+  }
   
   const listConfig = {
     ingredients: false,
@@ -43,8 +50,10 @@ const SearchedCocktailsScreen = ({ navigation, cocktails, search }) => {
     fav:false,
     onLongPress:openModal,
     onPress:openRecipe,
-    onMainButtonPress:ItemAnimation
+    onMainButtonPress:ToggleFollow,
+    favsID: favCocktails.map(e => e.CocktailID)
     }
+  
 
   return (
     <Layout level='1'>
@@ -100,12 +109,22 @@ const mapStateToProps = (state) => {
   return (
     {
       cocktails: state.cocktails.searchedCocktails,
+      favCocktails: state.cocktails.favCocktails,
+      user: state.user
     }
   )
 };
 
 const mapDispatchToProps = dispatch => ({
   search : input => MainSourceFetch.getCocktailsByName(input, dispatch),
+  toggle : (item, token, favs) => {
+    const favIDs = favs.map(e => e.CocktailID);
+    if (_.includes(favIDs, item.CocktailID)) {
+      MainSourceFetch.saveRemovedFav(item, favs, token, dispatch)
+    } else {
+      MainSourceFetch.saveAddedFav(item, favs, token, dispatch)
+    }
+  }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchedCocktailsScreen);

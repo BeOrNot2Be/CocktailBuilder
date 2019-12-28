@@ -1,11 +1,15 @@
 import { 
   SEARCHED_RECIPES,
-  GET_COCKTAILS_BY_INGREDIENTS
+  GET_COCKTAILS_BY_INGREDIENTS,
+  ADD_FAV_COCKTAIL,
+  REMOVE_FAV_COCKTAIL,
+  FETCH_FAV_COCKTAIL,
 } from '../actions/Cocktails'
 
 const INITIAL_STATE = {
     searchedCocktails:[],
     cocktailsByIngredients:[],
+    favCocktails: []
   };
   
 const cocktailsReducer = (state = INITIAL_STATE, action) => {
@@ -15,6 +19,15 @@ const cocktailsReducer = (state = INITIAL_STATE, action) => {
 
     case GET_COCKTAILS_BY_INGREDIENTS:
       return {...state, cocktailsByIngredients:action.data}
+
+    case ADD_FAV_COCKTAIL:
+      return {...state, favCocktails: state.favCocktails.concat(action.data)}
+
+    case FETCH_FAV_COCKTAIL:
+      return {...state, favCocktails: action.data}
+
+    case REMOVE_FAV_COCKTAIL:
+      return {...state, favCocktails: state.favCocktails.filter(item => item.CocktailID !== action.data.CocktailID)}
       
     default:
       return state

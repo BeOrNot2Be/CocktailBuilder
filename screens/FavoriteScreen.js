@@ -2,20 +2,21 @@ import React from 'react';
 import { StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import {
-  Layout
+  Layout,
+  Button,
+  Text
 } from '@ui-kitten/components';
 import RecipeModal from '../components/RecipeModal';
 import ListItem from '../components/listItem';
 import Modal from 'react-native-modal';
 import Header from '../components/Header';
+import { connect } from 'react-redux';
+import MainSourceFetch from '../api/web';
+import _ from 'lodash';
 
-const data = new Array(0).fill({
-  title: 'Title for Item',
-  description: 'Some small desc for example and stuff(ui testing)'
-});
+let fetched = false;
 
-const FavoriteScreen = ({navigation}) => {
-  const onUnFollow = () => {};
+const FavoriteScreen = ({navigation, cocktails, user, removeFav, login, fetchFav}) => {
 
   const [visible, setVisible] = React.useState(false);
 
@@ -25,8 +26,8 @@ const FavoriteScreen = ({navigation}) => {
 
   
 
-  const openRecipe = () => {
-    navigation.push('Recipe')
+  const openRecipe = (item) => {
+    navigation.push('Recipe', {recipe: item})
   };
 
   const openModal = (index) => {
@@ -34,7 +35,12 @@ const FavoriteScreen = ({navigation}) => {
     setVisible(true);
   };
 
-  const ItemAnimation = ref => ref.bounceOutLeft(800)
+  const ItemAnimation = (ref, item) => {
+    ref.bounceOutLeft(800)
+    if (!_.isEmpty(user)) {
+      removeFav(item, user.token, cocktails)
+    }
+  }
 
   const listConfig = {
     ingredients: false,
@@ -42,9 +48,18 @@ const FavoriteScreen = ({navigation}) => {
     fav:true,
     onLongPress:openModal,
     onPress:openRecipe,
-    onMainButtonPress:ItemAnimation
+    onMainButtonPress:ItemAnimation,
+    favsID: cocktails.map(e => e.CocktailID)
     }
   
+  React.useEffect(() => {
+    if (!fetched){
+      if (!_.isEmpty(user)) {
+        fetchFav( user.token )
+        fetched = true
+      }
+    }
+  })
 
   return (
     <Layout level='1'>
@@ -52,14 +67,28 @@ const FavoriteScreen = ({navigation}) => {
         <Header navigation={navigation}/>
         <Layout level='1' style={styles.scrollContainer}>
           <ScrollView>
-              {data.map(ListItem(listConfig))}
-              <Modal
-                isVisible={visible}
-                onBackdropPress={toggleModal}
-                  >
-                  <RecipeModal />
-              </Modal>
-              <Layout level='1' style={{height: 250,}}/>
+            {
+              !_.isEmpty(user)? (
+                <>
+                  {cocktails.map(ListItem(listConfig))}
+                  <Modal
+                    isVisible={visible}
+                    onBackdropPress={toggleModal}
+                      >
+                      <RecipeModal />
+                  </Modal>
+                  <Layout level='1' style={{height: 250,}}/>
+                </>
+              ) : (
+                <Layout style={styles.CTAdiv}>
+                  <Text>To unlock useful functionality like favorites list you need to have an account</Text>
+                  <Button 
+                    status="danger"
+                    onPress={() => login()}
+                  >Login for FREE !</Button>
+                </Layout>
+              )
+            } 
           </ScrollView>
         </Layout>
       </SafeAreaView>
@@ -74,7 +103,30 @@ const styles = StyleSheet.create({
   },
   scrollContainer:{
     height: '100%',
+  },
+  CTAdiv: {
+    height: '100%',
+    justifyContent: 'center',
+    textAlign:'center',
+    alignItems: 'center',
   }
 });
 
-export default FavoriteScreen;
+const mapStateToProps = (state) => {
+  return (
+    {
+      cocktails: state.cocktails.favCocktails,
+      user: state.user
+    }
+  )
+};
+
+const mapDispatchToProps = dispatch => ({
+  removeFav : (removed, token, favs) => MainSourceFetch.saveRemovedFav(removed, favs, token, dispatch),
+  login: () => MainSourceFetch.getToken("timchick.ua@gmail.com", dispatch), // as an example
+  fetchFav : (token) => MainSourceFetch.getFavs( token, dispatch ),
+  //addFav : (added, token, favs) => MainSourceFetch.saveAddedFav(added, favs, token, dispatch),
+});
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(FavoriteScreen);

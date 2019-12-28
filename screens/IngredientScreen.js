@@ -11,12 +11,12 @@ import Modal from 'react-native-modal';
 import ListItem from '../components/listItem';
 import Header from '../components/Header';
 import RecipeModal from '../components/RecipeModal';
+import { connect } from 'react-redux';
 import MainSourceFetch from '../api/web';
+import _ from 'lodash';
 
 
-const ItemAnimation = ref => ref.bounceOutRight(800)//change
-
-const IngredientScreen = ({navigation}) => {
+const IngredientScreen = ({navigation, favCocktails, user, toggle}) => {
     const [cocktailsList, setCocktailsList] = React.useState([]);
     const [visible, setVisible] = React.useState(false);
     const [listLength, setListLength] = React.useState(10);
@@ -36,6 +36,14 @@ const IngredientScreen = ({navigation}) => {
       setVisible(true);
     };
 
+    const ToggleFollow = (ref, item) => 
+    {
+      ref.shake(800)
+      if (!_.isEmpty(user)) {
+        toggle(item, user.token, favCocktails)
+      }
+    }
+
     const openRecipe = (item) => {
         navigation.push('Recipe', {recipe: item})
       };
@@ -46,7 +54,8 @@ const IngredientScreen = ({navigation}) => {
         fav:false,
         onLongPress:openModal,
         onPress:openRecipe,
-        onMainButtonPress:ItemAnimation
+        onMainButtonPress:ToggleFollow,
+        favsID: favCocktails.map(e => e.CocktailID)
         }
 
   return (
@@ -119,4 +128,24 @@ const styles = StyleSheet.create({
   }
 });
 
-export default IngredientScreen;
+const mapStateToProps = (state) => {
+  return (
+    {
+      favCocktails: state.cocktails.favCocktails,
+      user: state.user
+    }
+  )
+};
+
+const mapDispatchToProps = dispatch => ({
+  toggle : (item, token, favs) => {
+    const favIDs = favs.map(e => e.CocktailID);
+    if (_.includes(favIDs, item.CocktailID)) {
+      MainSourceFetch.saveRemovedFav(item, favs, token, dispatch)
+    } else {
+      MainSourceFetch.saveAddedFav(item, favs, token, dispatch)
+    }
+  }
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(IngredientScreen);

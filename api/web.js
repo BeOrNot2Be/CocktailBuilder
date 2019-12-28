@@ -1,7 +1,14 @@
 import { 
     SEARCHED_RECIPES,
-    GET_COCKTAILS_BY_INGREDIENTS
+    GET_COCKTAILS_BY_INGREDIENTS,
+    REMOVE_FAV_COCKTAIL,
+    ADD_FAV_COCKTAIL,
+    FETCH_FAV_COCKTAIL
 } from '../actions/Cocktails';
+import { 
+    ADD_TOKEN,
+    
+} from '../actions/User';
 import _ from 'lodash';
 import { 
     SEARCHED_INGREDIENTS,
@@ -79,6 +86,103 @@ export default class MainSourceFetch {
         .then(responseJson => {
             if (!_.isEqual(previousRecipe, responseJson)) {
                 setRecipeData(responseJson)
+            }
+        })
+        .catch(error => {
+            console.error(error);
+          });
+    }
+
+    static getCocktailById(ID, dispatchFunc){
+        fetch(`https://www.cocktailbuilder.com/json/cocktailDetails?param=${ID}`)
+        .then(response => response.json())
+        .then(responseJson => {
+            responseJson.CocktailID = ID; 
+            responseJson.CocktailName = responseJson.Name;
+            dispatchFunc(responseJson);
+        })
+        .catch(error => {
+            console.error(error);
+          });
+    }
+
+    static getToken(email, dispatch){
+        fetch('https://www.cocktailbuilder.com/api/users/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+              },
+            body: JSON.stringify({email:email})
+        })
+        .then(response => response.json())
+        .then(responseJson => {
+            dispatch({
+                type: ADD_TOKEN,
+                data: responseJson.token
+            })
+        })
+        .catch(error => {
+            console.error(error);
+          });
+    }
+
+    static getFavs(token, dispatch){
+        fetch(`https://www.cocktailbuilder.com/api/users/${token}/favorites`)
+        .then(response => response.json())
+        .then(responseJson => {
+            const loadFavIntoState = (item) => dispatch({
+                type: ADD_FAV_COCKTAIL,
+                data: item 
+            })
+            for (cocktailIndex of responseJson) {
+                this.getCocktailById(cocktailIndex, loadFavIntoState);
+            }
+        })
+        .catch(error => {
+            console.error(error);
+          });
+    }
+
+    static saveRemovedFav(removed, favs, token, dispatch){
+        fetch(`https://www.cocktailbuilder.com/api/users/${token}/favorites`, 
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
+            body: favs.filter(item => item.CocktailID !== removed.CocktailID).map(fav => `cocktails[]=${fav.CocktailID}`).join('&')
+        })
+        .then(response => response.json())
+        .then(responseJson => {
+            if (responseJson.result === 'success') {
+                dispatch({
+                    type: REMOVE_FAV_COCKTAIL,
+                    data: removed
+                })
+            }
+        })
+        .catch(error => {
+            console.error(error);
+          });
+    }
+
+    static saveAddedFav(added, favs, token, dispatch){
+        fetch(`https://www.cocktailbuilder.com/api/users/${token}/favorites`, 
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
+            body: favs.concat(added).map(fav => `cocktails[]=${fav.CocktailID}`).join('&')
+        })
+        .then(response => response.json())
+        .then(responseJson => {
+            if (responseJson.result === 'success') {
+                const loadFavIntoState = (item) => dispatch({
+                    type: ADD_FAV_COCKTAIL,
+                    data: item 
+                })
+                this.getCocktailById(added.CocktailID, loadFavIntoState)
             }
         })
         .catch(error => {

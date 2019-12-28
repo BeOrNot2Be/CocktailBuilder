@@ -7,12 +7,12 @@ import {
   } from '@ui-kitten/components';
 import {
     RemoveIcon,
-    QuestionIcon,
     AddedIcon,
     HeartIcon,
     HeartOutlineIcon
 } from './Icons';
 import * as Animatable from 'react-native-animatable';
+import _ from 'lodash';
 
 const ListItemComponent = (constArgs) => {
     const {
@@ -22,6 +22,7 @@ const ListItemComponent = (constArgs) => {
       onLongPress,
       onMainButtonPress,
       onPress,
+      favsID,
     } = {
       ingredients:false,
       added:false,
@@ -29,6 +30,7 @@ const ListItemComponent = (constArgs) => {
       onLongPress:{},
       onMainButtonPress:{},
       onPress:{},
+      favsID: [],
       ...constArgs
     };
 
@@ -76,7 +78,6 @@ const ListItemComponent = (constArgs) => {
         return (item, index) => {
 
           let handleViewRef;
-
           return(
 
             <Animatable.View key={item.CocktailID} ref={ ref => handleViewRef = ref}>
@@ -91,15 +92,17 @@ const ListItemComponent = (constArgs) => {
                               {item.CocktailName}
                             </Text>
                             <Text appearance='hint' category='c2'>
-                              {item.MissingIngr == 0 ? "You can make it!" : `You need ${item.MissingIngr} ${item.MissingIngr !== 1? 'ingredients': 'ingredient'} more`}
+                              {fav? 
+                                `${item.Ingredients.length} ${item.Ingredients.length !== 1? 'ingredients': 'ingredient'}` : 
+                                (item.MissingIngr == 0 ? "You can make it!" : `You need ${item.MissingIngr} ${item.MissingIngr !== 1? 'ingredients': 'ingredient'} more`)}
                             </Text>
                           </Layout>
                         <Layout style={styles.layoutButton}>
                         <Button
                             appearance='ghost'
                             status='danger'
-                            icon={fav? HeartIcon : HeartOutlineIcon}
-                            onPress={() => onMainButtonPress(handleViewRef)}
+                            icon={_.includes(favsID, item.CocktailID)? HeartIcon : HeartOutlineIcon}
+                            onPress={() => onMainButtonPress(handleViewRef, item)}
                         />
                         </Layout>
                     </Layout>
