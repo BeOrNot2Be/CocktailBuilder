@@ -2,8 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { 
   TopNavigation,
-  TopNavigationAction,
-  Divider
+  TopNavigationAction
 } from '@ui-kitten/components';
 import { DrawerActions } from "react-navigation-drawer";
 import { BackIcon, MenuIcon } from './Icons';

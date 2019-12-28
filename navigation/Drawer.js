@@ -1,62 +1,98 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { createDrawerNavigator } from 'react-navigation-drawer';
 import {
-  Icon,
-  DrawerHeaderFooter,
+  Avatar,
   Toggle,
   Layout,
   Text,
   Divider,
+  List,
   Button
 } from '@ui-kitten/components';
 import UserScreen from '../screens/UserScreen';
 import LogOutScreen from '../screens/LogOutScreen';
 import MainTabNavigator from './MainTabNavigator';
+import { HomeIcon } from '../components/Icons';
 import { createAppContainer } from 'react-navigation';
 import { ThemeContext } from '../themes/theme-context';
 import { Dimensions } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 
-
-
 const DrawerComponent  = ({ navigation }) => {
 
   const theme = React.useContext(ThemeContext);
   const [checked, setChecked] = React.useState(false);
-  
+  const [route, setRoute] = React.useState(navigation.state.routes[0].routeName);
+
   const onCheckedChange = (isChecked) => {
     setChecked(isChecked);
     theme.toggleTheme();
   };
 
   const onSelect = (index) => {
-      const { [index]: selectedTabRoute } = navigation.state.routes;
-      navigation.navigate(selectedTabRoute.routeName);
-      navigation.closeDrawer();
-      };
+    const { [index]: selectedTabRoute } = navigation.state.routes;
+    navigation.navigate(selectedTabRoute.routeName);
+    setRoute(selectedTabRoute.routeName);
+    navigation.closeDrawer();
+  };
+
+  const data = [{ title: 'Home', icon:HomeIcon }];
+  
+  const renderItem = ({ item, index }) => {
+    return (
+      <Layout>
+        <TouchableOpacity 
+          onPress={() => onSelect(index)}
+        > 
+          <Layout style={styles.listItemContainer} >
+            <Layout style={styles.listItemIcon} level={route == item.title ? '3' : '2'}>
+              <Button 
+                icon={item.icon}
+                status={route == item.title ? 'primary' : 'basic'}
+                appearance='ghost'
+              />
+            </Layout>
+            <Layout style={styles.layoutTittle}  level={route == item.title ? '3' : '2'}>
+              <Text category={route == item.title ? 'label' : 'c2'}>
+                {item.title}
+              </Text>
+            </Layout>
+          </Layout>
+        </TouchableOpacity>
+        <Divider/>
+      </Layout>
+    )
+  }
 
   return (
         <Layout style={styles.drawerContainer}>
           <Layout style={styles.headerContainer} >
-            <LinearGradient
-              start={[0, 0.5]}
-              colors={['#0BAB64', '#3BB78F']}
-              style={styles.gradient} 
-            >
-              <Layout style={{...styles.boxHeader, flex:6} } >
-                <View style={styles.circle}/>
-              </Layout>
-              <Layout style={styles.boxHeader} >
-                <Text>
-                  Some Random Name Upercase
-                </Text>
-              </Layout>
-            </LinearGradient>
+            <TouchableOpacity onPress={() => onSelect(2)}>
+              <LinearGradient
+                start={[0, 0.5]}
+                colors={['#0BAB64', '#3BB78F']}
+                style={styles.gradient} 
+              >
+                <Layout style={styles.boxHeader} >
+                  <Layout style={styles.avatarContainer}>
+                    <Avatar style={styles.circle} shape='rounded' source={require('../assets/images/avatar.jpg')}/>
+                  </Layout>
+                  <Text category='h6'>
+                    Alex Weinstein
+                  </Text>
+                </Layout>
+              </LinearGradient>
+            </TouchableOpacity>
           </Layout>
           <Layout style={styles.middleContainer} level='2'>
+            <List 
+              data={data}
+              renderItem={renderItem}
+            />
           </Layout>
           <Layout style={styles.footerContainer}>
+            <Divider/>
             <Layout style={{...styles.boxFooter, alignItems: 'flex-end'}}>
               <Toggle
                 text='Theme'
@@ -66,11 +102,13 @@ const DrawerComponent  = ({ navigation }) => {
               />
             </Layout>
             <Divider/>
-            <Layout style={{...styles.boxFooter, alignItems: 'flex-start'}}>
-              <Button
-                appearance="ghost"
-                status="danger"
-              >Log Out</Button>
+            <Layout style={styles.boxFooter}>
+              <TouchableOpacity style={{width:'100%'}} onPress={() => onSelect(1)}>
+                <Text 
+                  style={styles.LogOutButton}
+                  status="danger"
+                >Log Out</Text>
+              </TouchableOpacity>
             </Layout>
             <Layout style={{flex:1}}>
               <Text style={styles.center} appearance='hint'>
@@ -108,7 +146,6 @@ const styles = StyleSheet.create({
   },
   headerContainer:{
     flex: 4,
-
   },
   middleContainer:{
     flex: 9,
@@ -140,15 +177,9 @@ const styles = StyleSheet.create({
     flex: 2,
     justifyContent: 'center',
     textAlign:'center',
-    alignItems: 'center',
   },
-  circle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50, 
-    backgroundColor: 'white',
-    borderWidth: 4,
-    borderColor: 'gray',
+  avatarContainer: {
+    backgroundColor: 'transparent',
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -158,9 +189,31 @@ const styles = StyleSheet.create({
     shadowRadius: 4.65,
     elevation: 7,
   },
+  circle: {
+    width: 100,
+    height: 100,
+  },
   gradient:{
     height: '100%',
-  }
+  },
+  LogOutButton: {
+    paddingHorizontal: 8,
+  },
+  layoutTittle: {
+    padding: 16,
+    flex: 4,
+    justifyContent: 'flex-start',
+  },
+  listItemContainer: {
+    paddingHorizontal: 0,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+  },
+  listItemIcon: {
+    flex: 1,
+    justifyContent: 'flex-start',
+  },
 });
 
 export default createAppContainer(DrawerNavigator);

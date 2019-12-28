@@ -5,25 +5,33 @@ import {
   Layout,
 } from '@ui-kitten/components';
 import ListItem from '../components/listItem';
- 
+import { connect } from 'react-redux';
+import MainSourceFetch from '../api/web';
+import { REMOVE_INGREDIENT_FROM_SEARCH_BY } from '../actions/Ingredients';
 
-const data = new Array(3).fill({
+const data = new Array(5).fill({
   title: 'Title for Item',
 });
 
 
-const AddedIngredients= ({ navigation }) => {
+const AddedIngredients= ({ navigation, addedIngredients, getCocktailsByIngredients ,removeIngredient }) => {
 
   const openIngredient = () => {
     navigation.push('Ingredient')
   };
 
-  const ItemAnimation = ref => ref.slideOutLeft(800)
+
+  const removeIngredientToList = (ref, item) => {
+    removeIngredient(item)
+    ref.slideOutLeft(800);
+    getCocktailsByIngredients(addedIngredients.filter(ing => ing.ID !== item.ID ))
+  }
+
   const listConfig = {
     ingredients: true,
     added: true,
     onPress:openIngredient,
-    onMainButtonPress:ItemAnimation
+    onMainButtonPress:removeIngredientToList
   }
 
   return (
@@ -36,7 +44,10 @@ const AddedIngredients= ({ navigation }) => {
               </Text>
             </Layout>
           ): (
-            data.map(ListItem(listConfig))
+            <>
+              {addedIngredients.map(ListItem(listConfig))}
+              <Layout level='2' style={{height: 80,}}/>
+            </>
           )}
       </ScrollView>
     </Layout>
@@ -51,4 +62,17 @@ const styles = StyleSheet.create({
   }
 });
 
-export default AddedIngredients;
+const mapStateToProps = (state) => {
+  return (
+    {
+      addedIngredients: state.ingredients.addedIngredients,
+    }
+  )
+};
+
+const mapDispatchToProps = dispatch => ({
+  getCocktailsByIngredients : addedIngredients => MainSourceFetch.getCocktailsByIngredients(addedIngredients, dispatch),
+  removeIngredient: (item) => dispatch({ type:REMOVE_INGREDIENT_FROM_SEARCH_BY, data: item })
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddedIngredients);

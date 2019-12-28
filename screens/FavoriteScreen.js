@@ -9,7 +9,7 @@ import ListItem from '../components/listItem';
 import Modal from 'react-native-modal';
 import Header from '../components/Header';
 
-const data = new Array(3).fill({
+const data = new Array(0).fill({
   title: 'Title for Item',
   description: 'Some small desc for example and stuff(ui testing)'
 });
@@ -56,11 +56,10 @@ const FavoriteScreen = ({navigation}) => {
               <Modal
                 isVisible={visible}
                 onBackdropPress={toggleModal}
-                animationIn="fadeIn"
-                animationOut="fadeOut"
                   >
                   <RecipeModal />
               </Modal>
+              <Layout level='1' style={{height: 250,}}/>
           </ScrollView>
         </Layout>
       </SafeAreaView>

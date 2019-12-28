@@ -16,9 +16,10 @@ import {
 import { connect } from 'react-redux';
 import MainSourceFetch from '../api/web';
 
-const CocktailScreen = ({ navigation, cocktails, search }) => {
-  const [inputValue, setInputValue] = React.useState('');
-  
+const SearchedCocktailsScreen = ({ navigation, cocktails, search }) => {
+  const [inputValue, setInputValue] = React.useState(navigation.getParam('inputSearch', ''));
+  const [lastSearch, setLastSearch] = React.useState(navigation.getParam('inputSearch', ''));
+
   const [visible, setVisible] = React.useState(false);
 
   const toggleModal = () => {
@@ -44,11 +45,6 @@ const CocktailScreen = ({ navigation, cocktails, search }) => {
     onPress:openRecipe,
     onMainButtonPress:ItemAnimation
     }
-  
-  const onSearch = (input) => {
-    navigation.push("SearchedCocktails", {inputSearch: input}),
-    search(input)
-  }
 
   return (
     <Layout level='1'>
@@ -63,11 +59,11 @@ const CocktailScreen = ({ navigation, cocktails, search }) => {
                     icon={ inputValue ? CrossIcon : SearchIcon }
                     onIconPress={() => setInputValue('')}
                     autoCorrect={false}
-                    onSubmitEditing={() => onSearch(inputValue)}
+                    onSubmitEditing={() => {search(inputValue), setLastSearch(inputValue)}}
                   />
               </Layout>
               {cocktails.length === 0 ? (
-              <Text>Add some ingredients</Text>
+              <Text>No results found for search:{lastSearch}</Text>
               ) : (
                 <>
                   {cocktails.map(ListItem(listConfig))}
@@ -103,7 +99,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
   return (
     {
-      cocktails: state.cocktails.cocktailsByIngredients,
+      cocktails: state.cocktails.searchedCocktails,
     }
   )
 };
@@ -112,4 +108,4 @@ const mapDispatchToProps = dispatch => ({
   search : input => MainSourceFetch.getCocktailsByName(input, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(CocktailScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(SearchedCocktailsScreen);

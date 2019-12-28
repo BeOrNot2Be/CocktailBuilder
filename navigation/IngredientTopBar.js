@@ -11,8 +11,9 @@ import SearchedIngredientsScreen from '../screens/SearchedIngredientScreen';
 import AddedIngredientScreen from '../screens/AddedIngredientScreen';
 import Header from '../components/Header';
 import { SearchIcon, AddedSquareIcon } from '../components/Icons';
+import { connect } from 'react-redux';
 
-const TabBarComponent = ({ navigation }) => {
+const TabBarComponent = ({ navigation, addedIngredientNumber }) => {
 
   const onSelect = (index) => {
     const selectedTabRoute = navigation.state.routes[index];
@@ -25,18 +26,26 @@ const TabBarComponent = ({ navigation }) => {
         <Header navigation={navigation}/>
         <TabBar selectedIndex={navigation.state.index} onSelect={onSelect}>
             <Tab title='Searched' icon={SearchIcon} />
-            <Tab title='Added' icon={AddedSquareIcon} />
+            <Tab title={`Added(${addedIngredientNumber})`} icon={AddedSquareIcon} />
         </TabBar>
         </SafeAreaView>
     </Layout>
   );
 };
 
+const mapStateToProps = (state) => {
+  return (
+    {
+      addedIngredientNumber: state.ingredients.addedIngredients.length,
+    }
+  )
+};
+
 const TabNavigator = createMaterialTopTabNavigator({ 
       Searched: SearchedIngredientsScreen,
       Added: AddedIngredientScreen,
 }, {
-  tabBarComponent: TabBarComponent,
+  tabBarComponent: connect(mapStateToProps)(TabBarComponent),
 });
 
 export default TabNavigator;

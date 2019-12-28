@@ -1,26 +1,32 @@
 import React from 'react';
-import { StyleSheet, ScrollView, SafeAreaView } from 'react-native';
-'react-native';
+import { StyleSheet, ScrollView, SafeAreaView, View } from 'react-native'; //check View to layout
 import {
   Layout,
   Divider,
-  Text
+  Text,
+  Card,
+  Button,
+  CardHeader,
+  Spinner
 } from '@ui-kitten/components';
 import Modal from 'react-native-modal';
 import ListItem from '../components/listItem';
 import Header from '../components/Header';
 import RecipeModal from '../components/RecipeModal';
+import {HeartIcon, ShareIcon} from '../components/Icons';
+import MainSourceFetch from '../api/web';
+import _ from 'lodash';
 
-const data = new Array(5).fill({
-    title: 'Title for Item',
-    description: 'Some small desc for example and stuff(ui testing)'
-  });
 
 const ItemAnimation = ref => ref.bounceOutRight(800)//change
 
 const RecipeScreen = ({navigation}) => {
 
     const [visible, setVisible] = React.useState(false);
+    const [recipeData, setRecipeData] = React.useState({});
+    const [cocktailsList, setCocktailsList] = React.useState([]);
+    const [listLength, setListLength] = React.useState(10);
+    const recipe = navigation.getParam('recipe', {Name: "vodka", ID: 3, Popularity:2642, NormalizedIngredientID: 1})// improve it
 
     const toggleModal = () => {
       setVisible(false);
@@ -31,9 +37,40 @@ const RecipeScreen = ({navigation}) => {
       setVisible(true);
     };
 
-    const openRecipe = () => {
-        navigation.push('Recipe')
+    const openRecipe = (item) => {
+        navigation.push('Recipe', {recipe: item})
       };
+
+    React.useEffect(() => {
+      MainSourceFetch.getCocktail(recipe, setRecipeData, recipeData);
+      if (!_.isEmpty(recipeData)){
+        MainSourceFetch.getCocktailsByIngredient(recipeData.Ingredients[0], setCocktailsList, cocktailsList);
+      }
+    })
+    
+    const CardsHeader = () => (
+      <CardHeader
+        title={recipe.CocktailName}
+        description='by CocktailBuilder'
+      />
+    );
+    
+    const CardsFooter = () => ( // add functionality
+      <View style={styles.footerContainer}>
+        <Button
+          style={styles.footerControl}
+          appearance='ghost'
+          icon={ShareIcon}
+          onPress={() => {console.warn(recipeData.Url)}}
+        />
+        <Button
+          style={styles.footerControl}
+          status='danger'
+          appearance='ghost'
+          icon={HeartIcon}
+        />
+      </View>
+    );
 
     const listConfig = {
         ingredients: false,
@@ -44,18 +81,67 @@ const RecipeScreen = ({navigation}) => {
         onMainButtonPress:ItemAnimation
         }
 
+        const openIngredient = (ing) => {
+          console.warn(ing)
+      }
+
+
   return (
     <Layout level='1'>
       <SafeAreaView>
         <Header navigation={navigation}/>
         <Layout level='1'>
           <ScrollView style={styles.scrollContainer}>
-            <RecipeModal style={styles.card} />
-            <Divider style={styles.divider}/>
-            <Text  category='h6' style={styles.textHeader}>
-                More cocktails with Gin
-            </Text>
-            {data.map(ListItem(listConfig))}
+            { _.isEmpty(recipeData) ? (
+               <Layout 
+               style={styles.spinner}
+               >
+                <Spinner size='giant'/>
+               </Layout>
+            ) : (
+               <Layout style={styles.card}>
+                <Card header={CardsHeader} footer={CardsFooter} style={styles.card}>
+                    <Layout>
+                        {recipeData.Ingredients.map((ingredient) => (
+                            <Text category='s1' key={ingredient.ID}> 
+                                {ingredient.Amount} {ingredient.Measurement} of <Text style={styles.link} status='primary' category='s1' onPress={() => openIngredient(ingredient.ID)}>{ingredient.Name}</Text>
+                            </Text>
+                        ))}
+                    </Layout>
+                    <Divider style={styles.cardDivider}/>
+                    <Layout>
+                        <Text>
+                            {recipeData.Instructions}
+                        </Text>
+                    </Layout>
+                </Card>
+              </Layout>
+            )}
+            {cocktailsList.length !== 0 ? (
+              <>
+               <Divider style={styles.divider}/>
+              <Text  category='h6' style={styles.textHeader}>
+                More cocktails with {recipeData.Ingredients[0].Name}
+              </Text>
+              {cocktailsList.slice(0,listLength).map(ListItem(listConfig))}
+              <Layout 
+              style={styles.buttonContainer}
+              >
+                <Button
+                  onPress={() => setListLength(listLength + 10)}
+                  style={styles.button}
+                > More </Button>
+            </Layout>
+              </>
+            ) : (
+              <Layout 
+              style={styles.spinner}
+              >
+                <Spinner size='giant'/>
+              </Layout>
+            )}
+
+            
             <Modal
               isVisible={visible}
               onBackdropPress={toggleModal}
@@ -64,6 +150,7 @@ const RecipeScreen = ({navigation}) => {
             >
                 <RecipeModal />
             </Modal>
+            <Layout level='1' style={{height: 250,}}/>
           </ScrollView>
         </Layout>
       </SafeAreaView>
@@ -75,21 +162,6 @@ const styles = StyleSheet.create({
   scrollContainer:{
     height: '100%',
   },
-  card:{
-    marginBottom: 8,
-    marginTop: 8,
-    marginHorizontal: 8,
-    borderRadius: 10,
-    borderColor: 'transparent',
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.29,
-    shadowRadius: 4.65,
-    elevation: 7,
-  },
   divider: {
     marginHorizontal: 8,
     marginVertical: 24,
@@ -98,7 +170,49 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     justifyContent: 'center',
     textAlign:'center',
-  }
+  },
+  footerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  card: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    maxWidth: '100%',
+    marginBottom: 8,
+    marginTop: 8,
+    marginHorizontal: 8,
+    borderRadius: 10,
+    borderColor: 'transparent',
+    shadowColor: "#000",
+    shadowOffset: {
+        width: 0,
+        height: 3,
+    },
+    shadowOpacity: 0.29,
+    shadowRadius: 4.65,
+    elevation: 7,
+    },
+  cardDivider: {
+      marginBottom: 16,
+      marginTop: 16,
+  },
+  link: {
+      padding: 0,
+      margin: 0,
+  },
+  spinner: {
+    height: '100%',
+    justifyContent: 'center',
+    textAlign:'center',
+    alignItems: 'center',
+  },
+  buttonContainer : {
+    marginTop: 10,
+    justifyContent: 'center',
+    textAlign:'center',
+    alignItems: 'center',
+  },
 });
 
 export default RecipeScreen;

@@ -37,16 +37,19 @@ const ListItemComponent = (constArgs) => {
           let handleViewRef;
 
           return (
-            <Animatable.View key={index} ref={ ref => handleViewRef = ref}>
+            <Animatable.View key={item.ID || index} ref={ ref => handleViewRef = ref}>
               <Layout style={styles.lisItem}>
                 <TouchableOpacity 
-                    onPress={onPress}
+                    onPress={() => onPress(item)}
                   >
                   <Layout style={styles.container}>
                       <Layout style={styles.layoutTittle}>
-                      <Text>
-                          {`${item.title} ${index + 1}`}
-                      </Text>
+                        <Text>
+                            {item.Name}
+                        </Text>
+                        <Text appearance='hint' category='c2'>
+                          {item.Popularity} recipes includes 
+                        </Text>
                       </Layout>
                       <Layout style={styles.layoutButton}>
                       {added?(
@@ -54,13 +57,13 @@ const ListItemComponent = (constArgs) => {
                             appearance='ghost'
                             status='danger'
                             icon={RemoveIcon}
-                            onPress={() => onMainButtonPress(handleViewRef)}
+                            onPress={() => onMainButtonPress(handleViewRef, item)}
                         />
                       ):(
                           <Button
                           status='info'
                           icon={AddedIcon}
-                          onPress={() => onMainButtonPress(handleViewRef)}
+                          onPress={() => onMainButtonPress(handleViewRef, item)}
                       >Add</Button>  
                       )}
                       </Layout>
@@ -76,19 +79,19 @@ const ListItemComponent = (constArgs) => {
 
           return(
 
-            <Animatable.View key={index} ref={ ref => handleViewRef = ref}>
+            <Animatable.View key={item.CocktailID} ref={ ref => handleViewRef = ref}>
               <Layout style={styles.lisItem}>
                 <TouchableOpacity 
                   onLongPress={onLongPress}
-                  onPress={onPress}
+                  onPress={() => onPress(item)}
                 >
                     <Layout style={styles.container}>
                         <Layout style={styles.layoutTittle}>
                             <Text>
-                              {item.title}
+                              {item.CocktailName}
                             </Text>
-                            <Text appearance='hint'>
-                              {item.description}
+                            <Text appearance='hint' category='c2'>
+                              {item.MissingIngr == 0 ? "You can make it!" : `You need ${item.MissingIngr} ${item.MissingIngr !== 1? 'ingredients': 'ingredient'} more`}
                             </Text>
                           </Layout>
                         <Layout style={styles.layoutButton}>
@@ -110,7 +113,7 @@ const ListItemComponent = (constArgs) => {
 
 const styles = StyleSheet.create({
     lisItem:{
-      marginBottom: 8,
+      marginBottom: 10,
       marginTop: 8,
       marginHorizontal: 8,
       padding: 8,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { createStackNavigator } from 'react-navigation-stack';
 import {
@@ -10,8 +10,11 @@ import FavoriteScreen from '../screens/FavoriteScreen';
 import CocktailScreen from '../screens/CocktailScreen';
 import RecipeScreen from '../screens/RecipeScreen';
 import IngredientScreen from '../screens/IngredientScreen';
+import SearchedCocktailsScreen from '../screens/SearchedCocktailsScreen';
 import IngredientTabNavigator from './IngredientTopBar';
-import {ListIcon, CocktailIcon as EmailIcon, HeartIcon } from '../components/Icons';
+import {ListIcon, CocktailIcon, HeartIcon } from '../components/Icons';
+import IconBadge from 'react-native-icon-badge';
+import { connect } from 'react-redux';
 
 const config ={
   headerMode: 'none',
@@ -19,12 +22,30 @@ const config ={
   }
 }
 
-const TabBarComponent = ({ navigation }) => {
+const TabBarComponent = ({ navigation, foundCocktailsNumber }) => {
 
   const onSelect = (index) => {
     const selectedTabRoute = navigation.state.routes[index];
     navigation.navigate(selectedTabRoute.routeName);
   };
+
+  const getBadge = (style, icon) => {
+    return (
+    <View style={{flexDirection: 'row',alignItems: 'center',justifyContent: 'center',}}>
+      <IconBadge
+        MainElement={icon(style)}
+        BadgeElement={
+          <Text style={{color:'#FFFFFF'}}>3</Text>
+        }
+        IconBadgeStyle={
+          {left: 12,
+            top: 0,
+          right: 0}
+        }
+        Hidden={false}
+        />
+    </View>)
+  }
 
   return (
       <BottomNavigation
@@ -34,10 +55,18 @@ const TabBarComponent = ({ navigation }) => {
         appearance="noIndicator"
         >
         <BottomNavigationTab title='Ingredients' icon={ListIcon}/>
-        <BottomNavigationTab title='Cocktails' icon={EmailIcon}/>
+        <BottomNavigationTab title={`Cocktails(${foundCocktailsNumber})`} icon={CocktailIcon}/>
         <BottomNavigationTab title='Favorites' icon={HeartIcon}/>
       </BottomNavigation>
   );
+};
+
+const mapStateToProps = (state) => {
+  return (
+    {
+      foundCocktailsNumber: state.cocktails.cocktailsByIngredients.length,
+    }
+  )
 };
 
 const TabNavigator = createBottomTabNavigator({
@@ -47,6 +76,7 @@ const TabNavigator = createBottomTabNavigator({
     }, config),
   Cocktails: createStackNavigator({ 
     Cocktails: CocktailScreen,
+    SearchedCocktails: SearchedCocktailsScreen,
     Recipe: RecipeScreen,
   }, config),
   Favorites: createStackNavigator({ 
@@ -54,7 +84,7 @@ const TabNavigator = createBottomTabNavigator({
     Recipe: RecipeScreen 
   }, config),
 }, {
-  tabBarComponent: TabBarComponent,
+  tabBarComponent: connect(mapStateToProps)(TabBarComponent),
 });
 
 const styles = StyleSheet.create({
