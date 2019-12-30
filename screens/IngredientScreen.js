@@ -39,7 +39,7 @@ const IngredientScreen = ({navigation, favCocktails, user, toggle}) => {
     const ToggleFollow = (ref, item) => 
     {
       ref.shake(800)
-      if (!_.isEmpty(user)) {
+      if (user.logged) {
         toggle(item, user.token, favCocktails)
       }
     }

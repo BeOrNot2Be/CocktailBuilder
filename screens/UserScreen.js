@@ -8,35 +8,45 @@ import {
     Divider
   } from '@ui-kitten/components';
   import { LinearGradient } from 'expo-linear-gradient';
-  import { ThemeContext } from '../themes/theme-context';
-
-
-const UserScreen = ({navigation}) => {
-      const theme = React.useContext(ThemeContext);
-      const [checked, setChecked] = React.useState(false);
-      
-      const onCheckedChange = (isChecked) => {
-        setChecked(isChecked);
-        theme.toggleTheme();
-      };
+  import { connect } from 'react-redux';
+  import { 
+    LOG_OUT,
+    TOGGLE_THEME
+  } from '../actions/User';
+const UserScreen = ({navigation, user, toggleTheme, LogOut}) => {
 
       return (
         <Layout style={styles.drawerContainer}>
           <Layout style={styles.headerContainer} >
-            <LinearGradient
-              start={[0, 0.5]}
-              colors={['#0BAB64', '#3BB78F']}
-              style={styles.gradient} 
-            >
-              <Layout style={styles.boxHeader} >
-                <Layout style={styles.avatarContainer}>
-                  <Avatar style={styles.circle} shape='rounded' source={require('../assets/images/avatar.jpg')}/>
+            <TouchableOpacity onPress={ user.logged ? () => {} : () => googleLogin()}>
+              <LinearGradient
+                start={[0, 0.5]}
+                colors={['#0BAB64', '#3BB78F']}
+                style={styles.gradient} 
+              >
+                <Layout style={styles.boxHeader} >
+                {user.logged ? (
+                  <>
+                  <Layout style={styles.avatarContainer}>
+                    <Avatar style={styles.circle} shape='rounded' source={{uri: user.userInfo.photoUrl}}/>
+                  </Layout>
+                  <Text category='h6'>
+                    {user.userInfo.name}
+                  </Text>
+                  </>
+                ) : (
+                  <>
+                    <Layout style={styles.avatarContainer}>
+                      <Avatar style={styles.circle} shape='rounded' source={require('../assets/images/icon.png')}/>
+                    </Layout>
+                    <Text category='h6'>
+                      Cocktail Builder
+                    </Text>
+                  </>
+                )}
                 </Layout>
-                <Text category='h6'>
-                  Alex Weinstein
-                </Text>
-              </Layout>
-            </LinearGradient>
+              </LinearGradient>
+            </TouchableOpacity>
           </Layout>
           <Layout style={styles.middleContainer} level='2'/>
           <Layout style={styles.footerContainer}>
@@ -44,15 +54,15 @@ const UserScreen = ({navigation}) => {
               <Toggle
                 text='Theme'
                 status='basic'
-                checked={checked}
-                onChange={onCheckedChange}
+                checked={user.theme == 1? true: false}
+                onChange={toggleTheme}
               />
             </Layout>
             <Divider/>
             <Layout style={styles.boxFooter}>
               <TouchableOpacity                   
                 style={styles.LogOutButton}
-                onPress={() => navigation.navigate('LogOut')}
+                onPress={() => LogOut()}
               >
                 <Text 
                   status="danger"
@@ -124,4 +134,17 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UserScreen;
+const mapStateToProps = (state) => {
+  return (
+    {
+      user: state.user
+    }
+  )
+};
+
+const mapDispatchToProps = dispatch => ({
+  toggleTheme: () => dispatch({type: TOGGLE_THEME}),
+  LogOut : () => dispatch({type: LOG_OUT}),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserScreen);

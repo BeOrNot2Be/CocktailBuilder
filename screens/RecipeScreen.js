@@ -71,7 +71,7 @@ const RecipeScreen = ({navigation, favCocktails, toggle, user }) => {
           status='danger'
           appearance='ghost'
           icon={_.includes(favCocktails.map(e => e.CocktailID), recipe.CocktailID)? HeartIcon: HeartOutlineIcon}
-          onPress={() => {if (!_.isEmpty(user)) {toggle(recipe, user.token, favCocktails)}}}
+          onPress={() => {if (user.logged) {toggle(recipe, user.token, favCocktails)}}}
           />
       </View>
     );
@@ -79,7 +79,7 @@ const RecipeScreen = ({navigation, favCocktails, toggle, user }) => {
     const ToggleFollow = (ref, item) => 
     {
       ref.shake(800)
-      if (!_.isEmpty(user)) {
+      if (user.logged) {
         toggle(item, user.token, favCocktails)
       }
     }

@@ -5,6 +5,9 @@ import {
   REMOVE_FAV_COCKTAIL,
   FETCH_FAV_COCKTAIL,
 } from '../actions/Cocktails'
+import { 
+  LOG_OUT
+} from '../actions/User';
 
 const INITIAL_STATE = {
     searchedCocktails:[],
@@ -25,6 +28,9 @@ const cocktailsReducer = (state = INITIAL_STATE, action) => {
 
     case FETCH_FAV_COCKTAIL:
       return {...state, favCocktails: action.data}
+
+    case LOG_OUT:
+        return {...state, favCocktails: []}
 
     case REMOVE_FAV_COCKTAIL:
       return {...state, favCocktails: state.favCocktails.filter(item => item.CocktailID !== action.data.CocktailID)}

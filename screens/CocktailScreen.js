@@ -37,7 +37,7 @@ const CocktailScreen = ({ navigation, cocktails, search, favCocktails, toggle, u
 
   const ToggleFollow = (ref, item) => {
     ref.shake(800)
-    if (!_.isEmpty(user)) {
+    if (user.logged) {
       toggle(item, user.token, favCocktails)
     }
   }

@@ -15,20 +15,19 @@ import LogOutScreen from '../screens/LogOutScreen';
 import MainTabNavigator from './MainTabNavigator';
 import { HomeIcon } from '../components/Icons';
 import { createAppContainer } from 'react-navigation';
-import { ThemeContext } from '../themes/theme-context';
 import { Dimensions } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
+import { connect } from 'react-redux';
+import { 
+  LOG_OUT,
+  TOGGLE_THEME
+} from '../actions/User';
+import GoogleApi from '../api/google';
 
-const DrawerComponent  = ({ navigation }) => {
+const DrawerComponent  = ({ navigation, user, LogOut, googleLogin, toggleTheme}) => {
 
-  const theme = React.useContext(ThemeContext);
-  const [checked, setChecked] = React.useState(false);
   const [route, setRoute] = React.useState(navigation.state.routes[0].routeName);
 
-  const onCheckedChange = (isChecked) => {
-    setChecked(isChecked);
-    theme.toggleTheme();
-  };
 
   const onSelect = (index) => {
     const { [index]: selectedTabRoute } = navigation.state.routes;
@@ -68,19 +67,32 @@ const DrawerComponent  = ({ navigation }) => {
   return (
         <Layout style={styles.drawerContainer}>
           <Layout style={styles.headerContainer} >
-            <TouchableOpacity onPress={() => onSelect(2)}>
+            <TouchableOpacity onPress={ user.logged ? () => onSelect(2) : () => googleLogin()}>
               <LinearGradient
                 start={[0, 0.5]}
                 colors={['#0BAB64', '#3BB78F']}
                 style={styles.gradient} 
               >
                 <Layout style={styles.boxHeader} >
+                {user.logged ? (
+                  <>
                   <Layout style={styles.avatarContainer}>
-                    <Avatar style={styles.circle} shape='rounded' source={require('../assets/images/avatar.jpg')}/>
+                    <Avatar style={styles.circle} shape='rounded' source={{uri: user.userInfo.photoUrl}}/>
                   </Layout>
                   <Text category='h6'>
-                    Alex Weinstein
+                    {user.userInfo.name}
                   </Text>
+                  </>
+                ) : (
+                  <>
+                    <Layout style={styles.avatarContainer}>
+                      <Avatar style={styles.circle} shape='rounded' source={require('../assets/images/icon.png')}/>
+                    </Layout>
+                    <Text category='h6'>
+                      Cocktail Builder
+                    </Text>
+                  </>
+                )}
                 </Layout>
               </LinearGradient>
             </TouchableOpacity>
@@ -97,17 +109,26 @@ const DrawerComponent  = ({ navigation }) => {
               <Toggle
                 text='Theme'
                 status='basic'
-                checked={checked}
-                onChange={onCheckedChange}
+                checked={user.theme == 1? true: false}
+                onChange={toggleTheme}
               />
             </Layout>
             <Divider/>
             <Layout style={styles.boxFooter}>
-              <TouchableOpacity style={{width:'100%'}} onPress={() => onSelect(1)}>
-                <Text 
-                  style={styles.LogOutButton}
-                  status="danger"
-                >Log Out</Text>
+              <TouchableOpacity style={{width:'100%'}}>
+                {user.logged? (
+                  <Text 
+                    style={styles.LogOutButton}
+                    status="danger"
+                    onPress={() => LogOut()} // alert check screens / delete logout  
+                  >Log Out</Text>
+                ): (
+                  <Text 
+                    style={styles.LogOutButton}
+                    status="info"
+                    onPress={() => googleLogin()}
+                  >Log In</Text>
+                )}
               </TouchableOpacity>
             </Layout>
             <Layout style={{flex:1}}>
@@ -120,6 +141,20 @@ const DrawerComponent  = ({ navigation }) => {
   );
 };
 
+const mapStateToProps = (state) => {
+  return (
+    {
+      user: state.user
+    }
+  )
+};
+
+const mapDispatchToProps = dispatch => ({
+  LogOut : () => dispatch({type: LOG_OUT}),
+  googleLogin: () => GoogleApi.fullSignInWithGoogleAsync(dispatch),
+  toggleTheme: () => dispatch({type: TOGGLE_THEME}) 
+  //add theme toggle
+});
 
 const DrawerNavigator  = createDrawerNavigator({
   Home: {
@@ -132,7 +167,7 @@ const DrawerNavigator  = createDrawerNavigator({
     screen: UserScreen
   },
 }, {
-  contentComponent: DrawerComponent,
+  contentComponent: connect(mapStateToProps, mapDispatchToProps)(DrawerComponent),
   drawerPosition: 'right',
   drawerOpenRoute: 'Drawer',
   drawerCloseRoute: 'DrawerClose',

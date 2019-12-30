@@ -12,11 +12,12 @@ import Modal from 'react-native-modal';
 import Header from '../components/Header';
 import { connect } from 'react-redux';
 import MainSourceFetch from '../api/web';
+import GoogleApi from '../api/google';
 import _ from 'lodash';
 
 let fetched = false;
 
-const FavoriteScreen = ({navigation, cocktails, user, removeFav, login, fetchFav}) => {
+const FavoriteScreen = ({navigation, cocktails, user, removeFav, fetchFav, googleLogin}) => {
 
   const [visible, setVisible] = React.useState(false);
 
@@ -35,9 +36,9 @@ const FavoriteScreen = ({navigation, cocktails, user, removeFav, login, fetchFav
     setVisible(true);
   };
 
-  const ItemAnimation = (ref, item) => {
+  const RemoveItem = (ref, item) => {
     ref.bounceOutLeft(800)
-    if (!_.isEmpty(user)) {
+    if (user.logged) {
       removeFav(item, user.token, cocktails)
     }
   }
@@ -48,15 +49,19 @@ const FavoriteScreen = ({navigation, cocktails, user, removeFav, login, fetchFav
     fav:true,
     onLongPress:openModal,
     onPress:openRecipe,
-    onMainButtonPress:ItemAnimation,
+    onMainButtonPress:RemoveItem,
     favsID: cocktails.map(e => e.CocktailID)
     }
   
   React.useEffect(() => {
     if (!fetched){
-      if (!_.isEmpty(user)) {
+      if (user.logged) {
         fetchFav( user.token )
         fetched = true
+      }
+    } else {
+      if (!user.logged){
+        fetched = false
       }
     }
   })
@@ -68,7 +73,7 @@ const FavoriteScreen = ({navigation, cocktails, user, removeFav, login, fetchFav
         <Layout level='1' style={styles.scrollContainer}>
           <ScrollView>
             {
-              !_.isEmpty(user)? (
+              user.logged? (
                 <>
                   {cocktails.map(ListItem(listConfig))}
                   <Modal
@@ -84,7 +89,7 @@ const FavoriteScreen = ({navigation, cocktails, user, removeFav, login, fetchFav
                   <Text>To unlock useful functionality like favorites list you need to have an account</Text>
                   <Button 
                     status="danger"
-                    onPress={() => login()}
+                    onPress={() => googleLogin()}
                   >Login for FREE !</Button>
                 </Layout>
               )
@@ -123,8 +128,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => ({
   removeFav : (removed, token, favs) => MainSourceFetch.saveRemovedFav(removed, favs, token, dispatch),
-  login: () => MainSourceFetch.getToken("timchick.ua@gmail.com", dispatch), // as an example
   fetchFav : (token) => MainSourceFetch.getFavs( token, dispatch ),
+  googleLogin: () => GoogleApi.fullSignInWithGoogleAsync(dispatch),
   //addFav : (added, token, favs) => MainSourceFetch.saveAddedFav(added, favs, token, dispatch),
 });
 

@@ -5,35 +5,15 @@ import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import { 
-  ApplicationProvider,
-  IconRegistry,
-} from '@ui-kitten/components';
-import { mapping, dark, light } from '@eva-design/eva';
-import { EvaIconsPack } from '@ui-kitten/eva-icons';
-import { IonicIconsPack } from './ionic-icons';
-import AppNavigator from './navigation/Drawer';
-import { default as lightTheme } from './themes/custom-theme.json';
-import { default as darkTheme } from './themes/night-theme.json';
-import { default as customMapping } from './themes/custom-mapping.json';
-import { ThemeContext } from './themes/theme-context';
+import AppComponent from './AppComponent';
 import reducer from './reducers/MainReducer';
 
-const themes = { light:{...light, ...lightTheme}, dark:{...dark, ...darkTheme} };
 
 const store = createStore(reducer);
 
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
-
-  const [theme, setTheme] = React.useState('light');
-  const currentTheme = themes[theme];
-
-  const toggleTheme = () => {
-    const nextTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(nextTheme);
-  };
-
+  
   if (!isLoadingComplete && !props.skipLoadingScreen) {
     return (
       <AppLoading
@@ -45,16 +25,7 @@ export default function App(props) {
   } else {
     return (
       <Provider store={ store }>
-        <IconRegistry icons={[EvaIconsPack, IonicIconsPack]} />
-        <ThemeContext.Provider value={{ theme, toggleTheme }}>
-          <ApplicationProvider
-            mapping={mapping}
-            theme={currentTheme}
-            customMapping={customMapping}
-          >
-            <AppNavigator />
-          </ApplicationProvider>
-        </ThemeContext.Provider>
+        <AppComponent/>
       </Provider>
     );
   }

@@ -7,12 +7,15 @@ import {
 } from '../actions/Cocktails';
 import { 
     ADD_TOKEN,
-    
+    GOOGLE_SIGN_IN
 } from '../actions/User';
 import _ from 'lodash';
 import { 
     SEARCHED_INGREDIENTS,
 } from '../actions/Ingredients';
+
+import * as Google from 'expo-google-app-auth';
+
 
 const validateStrInput = (input) =>{
     return input
@@ -189,5 +192,27 @@ export default class MainSourceFetch {
             console.error(error);
           });
     }
+
+    static async signInWithGoogleAsync(dispatch) {
+        try {
+          const result = await Google.logInAsync({
+            androidClientId: "629930544514-kgpsf2jgqqnijqdscd02k8r9tdc2hqcm.apps.googleusercontent.com",
+            iosClientId: "629930544514-a4sin974ddd6nispqjcsvd621fd4g6di.apps.googleusercontent.com",
+            scopes: ['profile', 'email'],
+          });
+      
+          if (result.type === 'success') {
+            dispatch({
+                type:GOOGLE_SIGN_IN,
+                data: result
+            })
+          } else {
+            console.warn({ cancelled: true });
+          }
+        } catch (e) {
+          console.warn({ error: true });
+        }
+      }
+      
 
 }
