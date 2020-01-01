@@ -17,7 +17,6 @@ import _ from 'lodash';
 let fetched = false;
 
 const FavoriteScreen = ({navigation, cocktails, user, removeFav, fetchFav, googleLogin}) => {
-  console.warn(1)
   const openRecipe = (item) => {
     navigation.push('Recipe', {recipe: item})
   };

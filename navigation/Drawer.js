@@ -11,7 +11,6 @@ import {
   Button
 } from '@ui-kitten/components';
 import UserScreen from '../screens/UserScreen';
-import LogOutScreen from '../screens/LogOutScreen';
 import RecipeModalScreen from '../screens/RecipeModalScreen';
 import { createStackNavigator } from 'react-navigation-stack';
 import MainTabNavigator from './MainTabNavigator';
@@ -75,7 +74,7 @@ const DrawerComponent  = ({ navigation, user, LogOut, googleLogin, toggleTheme, 
   return (
         <Layout style={styles.drawerContainer}>
           <Layout style={styles.headerContainer} >
-            <TouchableOpacity onPress={ user.logged ? () => onSelect(2) : () => googleLogin()}>
+            <TouchableOpacity onPress={ user.logged ? () => onSelect(1) : () => googleLogin()}>
               <LinearGradient
                 start={[0, 0.5]}
                 colors={['#0BAB64', '#3BB78F']}
@@ -139,7 +138,7 @@ const DrawerComponent  = ({ navigation, user, LogOut, googleLogin, toggleTheme, 
                         { text: 'Yes', onPress: () => LogOut() },
                       ],
                       { cancelable: false }
-                    )} // alert check screens / delete logout
+                    )}
                   >Log Out</Text>
                 ): (
                   <Text 
@@ -217,9 +216,6 @@ const DrawerNavigator  = createDrawerNavigator({
         }),
       } 
   ),
-  LogOut: { 
-    screen: LogOutScreen
-  },
   User: { 
     screen: UserScreen
   },
