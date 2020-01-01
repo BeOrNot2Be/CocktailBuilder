@@ -50,7 +50,7 @@ const ListItemComponent = (constArgs) => {
                             {item.Name}
                         </Text>
                         <Text appearance='hint' category='c2'>
-                          {item.Popularity} recipes includes 
+                          {item.Popularity == 0? 1: item.Popularity} recipes includes 
                         </Text>
                       </Layout>
                       <Layout style={styles.layoutButton}>
@@ -83,7 +83,7 @@ const ListItemComponent = (constArgs) => {
             <Animatable.View key={item.CocktailID} ref={ ref => handleViewRef = ref}>
               <Layout style={styles.lisItem}>
                 <TouchableOpacity 
-                  onLongPress={onLongPress}
+                  onLongPress={() => onLongPress(item)}
                   onPress={() => onPress(item)}
                 >
                     <Layout style={styles.container}>
@@ -93,8 +93,11 @@ const ListItemComponent = (constArgs) => {
                             </Text>
                             <Text appearance='hint' category='c2'>
                               {fav? 
-                                `${item.Ingredients.length} ${item.Ingredients.length !== 1? 'ingredients': 'ingredient'}` : 
-                                (item.MissingIngr == 0 ? "You can make it!" : `You need ${item.MissingIngr} ${item.MissingIngr !== 1? 'ingredients': 'ingredient'} more`)}
+                                `${item.Ingredients.length != 0? item.Ingredients.length: 1} ${item.Ingredients.length !== 1? 'ingredients': 'ingredient'}` : 
+                                (item.MissingIngr == 0 ? "You can make it!" : (
+                                  item.MissingIngr !== undefined ? `You need ${item.MissingIngr} ${item.MissingIngr !== 1? 'ingredients': 'ingredient'} more` :
+                                  `${item.TotalIngredients != 0? item.TotalIngredients: 1} ${item.TotalIngredients !== 1? 'ingredients': 'ingredient'}`
+                                ))}
                             </Text>
                           </Layout>
                         <Layout style={styles.layoutButton}>

@@ -1,12 +1,11 @@
 import React from 'react';
-import { StyleSheet, ScrollView, Text } from 'react-native';
+import { StyleSheet, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
-import Modal from 'react-native-modal';
 import { 
   Input,
-  Layout
+  Layout,
+  Text
 } from '@ui-kitten/components';
-import RecipeModal from '../components/RecipeModal';
 import ListItem from '../components/listItem';
 import Header from '../components/Header';
 import {
@@ -15,22 +14,12 @@ import {
 } from '../components/Icons'; 
 import { connect } from 'react-redux';
 import MainSourceFetch from '../api/web';
+import GoogleApi from '../api/google';
 import _ from 'lodash';
 
-const SearchedCocktailsScreen = ({ navigation, cocktails, search,  favCocktails, toggle, user }) => {
+const SearchedCocktailsScreen = ({ navigation, cocktails, search,  favCocktails, toggle, user, googleLogin }) => {
   const [inputValue, setInputValue] = React.useState(navigation.getParam('inputSearch', ''));
   const [lastSearch, setLastSearch] = React.useState(navigation.getParam('inputSearch', ''));
-
-  const [visible, setVisible] = React.useState(false);
-
-  const toggleModal = () => {
-    setVisible(false);
-  };
-
-  const openModal = (index) => {
-    //FETCH DATA && LOADING
-    setVisible(true);
-  };
 
   const openRecipe = (item) => {
     navigation.push('Recipe', {recipe: item})
@@ -41,7 +30,23 @@ const SearchedCocktailsScreen = ({ navigation, cocktails, search,  favCocktails,
     ref.shake(800)
     if (user.logged) {
       toggle(item, user.token, favCocktails)
+    } else {
+      Alert.alert(
+        'Alert',
+        'You need to sign in before using this functionality',
+        [
+          {
+            text: 'Ok',
+          },
+          { text: 'Sign In', onPress: () => googleLogin() },
+        ],
+        { cancelable: false }
+      )
     }
+  }
+
+  const openModal = (item) => {
+    navigation.push('modal', {recipe:item})
   }
   
   const listConfig = {
@@ -72,17 +77,13 @@ const SearchedCocktailsScreen = ({ navigation, cocktails, search,  favCocktails,
                   />
               </Layout>
               {cocktails.length === 0 ? (
-              <Text>No results found for search:{lastSearch}</Text>
+                <Layout style={styles.textContainer}>
+                  <Text category='p2' status='basic'>No results found for search: {lastSearch}</Text>
+                </Layout>
               ) : (
                 <>
                   {cocktails.map(ListItem(listConfig))}
                   <Layout level='1' style={{height: 200,}}/>
-                  <Modal
-                  isVisible={visible}
-                  onBackdropPress={toggleModal}
-                    >
-                    <RecipeModal />
-                  </Modal>
                 </>
               )}
           </ScrollView>
@@ -102,6 +103,9 @@ const styles = StyleSheet.create({
   },
   scrollContainer:{
     height: '100%',
+  },
+  textContainer: {
+    paddingLeft: 24
   }
 });
 
@@ -116,6 +120,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = dispatch => ({
+  googleLogin: () => GoogleApi.fullSignInWithGoogleAsync(dispatch),
   search : input => MainSourceFetch.getCocktailsByName(input, dispatch),
   toggle : (item, token, favs) => {
     const favIDs = favs.map(e => e.CocktailID);

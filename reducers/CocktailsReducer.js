@@ -8,6 +8,7 @@ import {
 import { 
   LOG_OUT
 } from '../actions/User';
+import _ from 'lodash';
 
 const INITIAL_STATE = {
     searchedCocktails:[],
@@ -24,7 +25,11 @@ const cocktailsReducer = (state = INITIAL_STATE, action) => {
       return {...state, cocktailsByIngredients:action.data}
 
     case ADD_FAV_COCKTAIL:
-      return {...state, favCocktails: state.favCocktails.concat(action.data)}
+      if (_.indexOf(state.favCocktails, action.data) === -1) {
+        return {...state, favCocktails: state.favCocktails.concat(action.data)}
+      } else {
+        return state
+      }
 
     case FETCH_FAV_COCKTAIL:
       return {...state, favCocktails: action.data}

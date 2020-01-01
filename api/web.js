@@ -16,6 +16,7 @@ import {
 
 import * as Google from 'expo-google-app-auth';
 
+import NetInfo from '@react-native-community/netinfo';
 
 const validateStrInput = (input) =>{
     return input
@@ -25,7 +26,22 @@ const makeIngredientsFetchable = (ingredients) =>{
     return ingredients.map(ingredient => ingredient.ID).join('-')
 }
 
+const ConnectionIssue = () => {
+NetInfo.fetch().then(state => {
+    if (!state.isConnected) {
+        alert('You are not connected to the Internet')
+    }
+  });
+}
+
+const FetchingIssue = () => {
+    alert('Some network issues happened. Check your connection or give us some time to fix issues!')
+}
+
 export default class MainSourceFetch {
+
+
+
     static getCocktailsByName(input, dispatch){
         const str = validateStrInput(input) 
         fetch(`https://www.cocktailbuilder.com/json/cocktailsByName?param=${str}`)
@@ -37,7 +53,8 @@ export default class MainSourceFetch {
             });
         })
         .catch(error => {
-            console.error(error);
+            FetchingIssue()
+            ConnectionIssue()
           });
     }
 
@@ -52,7 +69,8 @@ export default class MainSourceFetch {
             });
         })
         .catch(error => {
-            console.error(error);
+            FetchingIssue()
+            ConnectionIssue()
           });
     }
 
@@ -65,7 +83,8 @@ export default class MainSourceFetch {
             };
         })
         .catch(error => {
-            console.error(error);
+            FetchingIssue()
+            ConnectionIssue()
           });
     }
 
@@ -79,7 +98,8 @@ export default class MainSourceFetch {
             });
         })
         .catch(error => {
-            console.error(error);
+            FetchingIssue()
+            ConnectionIssue()
           });
     }
 
@@ -92,7 +112,8 @@ export default class MainSourceFetch {
             }
         })
         .catch(error => {
-            console.error(error);
+            FetchingIssue()
+            ConnectionIssue()
           });
     }
 
@@ -105,7 +126,8 @@ export default class MainSourceFetch {
             dispatchFunc(responseJson);
         })
         .catch(error => {
-            console.error(error);
+            FetchingIssue()
+            ConnectionIssue()
           });
     }
 
@@ -125,7 +147,8 @@ export default class MainSourceFetch {
             })
         })
         .catch(error => {
-            console.error(error);
+            FetchingIssue()
+            ConnectionIssue()
           });
     }
 
@@ -142,7 +165,8 @@ export default class MainSourceFetch {
             }
         })
         .catch(error => {
-            console.error(error);
+            FetchingIssue()
+            ConnectionIssue()
           });
     }
 
@@ -165,7 +189,8 @@ export default class MainSourceFetch {
             }
         })
         .catch(error => {
-            console.error(error);
+            FetchingIssue()
+            ConnectionIssue()
           });
     }
 
@@ -189,7 +214,8 @@ export default class MainSourceFetch {
             }
         })
         .catch(error => {
-            console.error(error);
+            FetchingIssue()
+            ConnectionIssue()
           });
     }
 

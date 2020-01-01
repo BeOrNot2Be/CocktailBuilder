@@ -9,11 +9,6 @@ import { connect } from 'react-redux';
 import MainSourceFetch from '../api/web';
 import { REMOVE_INGREDIENT_FROM_SEARCH_BY } from '../actions/Ingredients';
 
-const data = new Array(5).fill({
-  title: 'Title for Item',
-});
-
-
 const AddedIngredients= ({ navigation, addedIngredients, getCocktailsByIngredients ,removeIngredient }) => {
 
   const openIngredient = () => {
@@ -23,7 +18,6 @@ const AddedIngredients= ({ navigation, addedIngredients, getCocktailsByIngredien
 
   const removeIngredientToList = (ref, item) => {
     removeIngredient(item)
-    ref.slideOutLeft(800);
     getCocktailsByIngredients(addedIngredients.filter(ing => ing.ID !== item.ID ))
   }
 
@@ -37,9 +31,9 @@ const AddedIngredients= ({ navigation, addedIngredients, getCocktailsByIngredien
   return (
     <Layout level='2' style={styles.scrollContainer}>
       <ScrollView>
-          {(data.length === 0)? (
-            <Layout style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-              <Text category='h1'>
+          {(addedIngredients.length === 0)? (
+            <Layout style={{flex: 1, justifyContent: 'center', alignItems: 'center', }} level='2'>
+              <Text appearance='hint' category='h3'>
                 No Added Ingredients
               </Text>
             </Layout>

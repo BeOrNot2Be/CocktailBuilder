@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, ScrollView, SafeAreaView } from 'react-native';
+import { StyleSheet, ScrollView, SafeAreaView, Alert } from 'react-native';
 'react-native';
 import {
   Layout,
@@ -7,46 +7,51 @@ import {
   Spinner,
   Button
 } from '@ui-kitten/components';
-import Modal from 'react-native-modal';
 import ListItem from '../components/listItem';
 import Header from '../components/Header';
-import RecipeModal from '../components/RecipeModal';
 import { connect } from 'react-redux';
 import MainSourceFetch from '../api/web';
+import GoogleApi from '../api/google';
 import _ from 'lodash';
 
 
-const IngredientScreen = ({navigation, favCocktails, user, toggle}) => {
+const IngredientScreen = ({navigation, favCocktails, user, toggle, googleLogin}) => {
     const [cocktailsList, setCocktailsList] = React.useState([]);
-    const [visible, setVisible] = React.useState(false);
     const [listLength, setListLength] = React.useState(10);
 
     const ingredient = navigation.getParam('ingredient', {Name: "vodka", ID: 3, Popularity:2642, NormalizedIngredientID: 1})
-
-    const toggleModal = () => {
-      setVisible(false);
-    };
     
     React.useEffect(() => {
       MainSourceFetch.getCocktailsByIngredient(ingredient, setCocktailsList, cocktailsList);
     })
-
-    const openModal = (index) => {
-      //FETCH DATA && LOADING
-      setVisible(true);
-    };
 
     const ToggleFollow = (ref, item) => 
     {
       ref.shake(800)
       if (user.logged) {
         toggle(item, user.token, favCocktails)
+      } else {
+        Alert.alert(
+          'Alert',
+          'You need to sign in before using this functionality',
+          [
+            {
+              text: 'Ok',
+            },
+            { text: 'Sign In', onPress: () => googleLogin() },
+          ],
+          { cancelable: false }
+        )
       }
     }
 
     const openRecipe = (item) => {
         navigation.push('Recipe', {recipe: item})
       };
+
+    const openModal = (item) => {
+        navigation.push('modal', {recipe:item})
+      }
 
     const listConfig = {
         ingredients: false,
@@ -67,20 +72,26 @@ const IngredientScreen = ({navigation, favCocktails, user, toggle}) => {
             <Text  category='h6' style={styles.textHeader}>
                 More cocktails with {ingredient.Name}
             </Text>
-            <Text appearance='hint' category='c2' style={styles.textHeader}>
+            {ingredient.Popularity !== undefined? (
+              <Text appearance='hint' category='c2' style={styles.textHeader}>
                 {ingredient.Popularity} results
-            </Text>
+              </Text>
+            ) : (<></>)}
             {cocktailsList.length !== 0 ? (
               <>
               {cocktailsList.slice(0,listLength).map(ListItem(listConfig))}
-              <Layout 
-              style={styles.buttonContainer}
-              >
-                <Button
-                  onPress={() => setListLength(listLength + 10)}
-                  style={styles.button}
-                > More </Button>
-            </Layout>
+              {cocktailsList.length > listLength ? (
+                <Layout 
+                style={styles.buttonContainer}
+                >
+                  <Button
+                    onPress={() => setListLength(listLength + 10)}
+                    style={styles.button}
+                  > More </Button>
+              </Layout>
+              ) : (
+                <></>
+              )}
               </>
             ) : (
               <Layout 
@@ -89,14 +100,6 @@ const IngredientScreen = ({navigation, favCocktails, user, toggle}) => {
                 <Spinner size='giant'/>
               </Layout>
             )}
-            <Modal
-              isVisible={visible}
-              onBackdropPress={toggleModal}
-              animationIn="fadeIn"
-              animationOut="fadeOut"
-            >
-                <RecipeModal />
-            </Modal>
             <Layout level='1' style={{height: 250,}}/>
           </ScrollView>
         </Layout>
@@ -138,6 +141,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = dispatch => ({
+  googleLogin: () => GoogleApi.fullSignInWithGoogleAsync(dispatch),
   toggle : (item, token, favs) => {
     const favIDs = favs.map(e => e.CocktailID);
     if (_.includes(favIDs, item.CocktailID)) {

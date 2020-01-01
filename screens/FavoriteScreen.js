@@ -1,14 +1,13 @@
 import React from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
+import { StyleSheet, ScrollView, Alert} from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import {
   Layout,
   Button,
   Text
 } from '@ui-kitten/components';
-import RecipeModal from '../components/RecipeModal';
 import ListItem from '../components/listItem';
-import Modal from 'react-native-modal';
+import { GoogleIcon } from '../components/Icons';
 import Header from '../components/Header';
 import { connect } from 'react-redux';
 import MainSourceFetch from '../api/web';
@@ -18,29 +17,32 @@ import _ from 'lodash';
 let fetched = false;
 
 const FavoriteScreen = ({navigation, cocktails, user, removeFav, fetchFav, googleLogin}) => {
-
-  const [visible, setVisible] = React.useState(false);
-
-  const toggleModal = () => {
-    setVisible(false);
-  };
-
-  
-
+  console.warn(1)
   const openRecipe = (item) => {
     navigation.push('Recipe', {recipe: item})
-  };
-
-  const openModal = (index) => {
-    //FETCH DATA && LOADING
-    setVisible(true);
   };
 
   const RemoveItem = (ref, item) => {
     ref.bounceOutLeft(800)
     if (user.logged) {
       removeFav(item, user.token, cocktails)
+    } else {
+      Alert.alert(
+        'Alert',
+        'You need to sign in before using this functionality',
+        [
+          {
+            text: 'Ok',
+          },
+          { text: 'Sign In', onPress: () => googleLogin() },
+        ],
+        { cancelable: false }
+      )
     }
+  }
+
+  const openModal = (item) => {
+    navigation.push('modal', {recipe:item})
   }
 
   const listConfig = {
@@ -71,26 +73,26 @@ const FavoriteScreen = ({navigation, cocktails, user, removeFav, fetchFav, googl
       <SafeAreaView>
         <Header navigation={navigation}/>
         <Layout level='1' style={styles.scrollContainer}>
-          <ScrollView>
+          <ScrollView >
             {
               user.logged? (
                 <>
                   {cocktails.map(ListItem(listConfig))}
-                  <Modal
-                    isVisible={visible}
-                    onBackdropPress={toggleModal}
-                      >
-                      <RecipeModal />
-                  </Modal>
                   <Layout level='1' style={{height: 250,}}/>
                 </>
               ) : (
                 <Layout style={styles.CTAdiv}>
-                  <Text>To unlock useful functionality like favorites list you need to have an account</Text>
-                  <Button 
-                    status="danger"
-                    onPress={() => googleLogin()}
-                  >Login for FREE !</Button>
+                  <Layout style={styles.formContainer}>
+                    <Text 
+                      appearance='hint'
+                      category='label'
+                    >To unlock useful functionality like favorites list you need to have an account</Text>
+                    </Layout>
+                    <Button 
+                      status="danger"
+                      onPress={() => googleLogin()}
+                      icon={GoogleIcon}
+                    >Join for FREE</Button>
                 </Layout>
               )
             } 
@@ -110,10 +112,16 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   CTAdiv: {
+    marginTop: '30%',
     height: '100%',
     justifyContent: 'center',
     textAlign:'center',
     alignItems: 'center',
+  },
+  formContainer: {
+    maxWidth: '70%',
+    textAlign:'center',
+    marginBottom: 24,
   }
 });
 

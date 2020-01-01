@@ -3,33 +3,46 @@ import {
   GOOGLE_SIGN_IN,
   GOOGLE_FULL_SIGN_IN,
   LOG_OUT,
-  TOGGLE_THEME
+  TOGGLE_THEME,
+  USER_CACHE_CLEANED_ERROR,
+  CACHE_SIGN_IN,
 } from '../actions/User';
+import NativeApi from '../api/native';
 
 const INITIAL_STATE = {
   logged: false,
-  theme: 1 // cache
+  theme: 1 
 };
 
 const userReducer = (state = INITIAL_STATE, action) => {
+  let user;
   switch (action.type) {
     case ADD_TOKEN: 
-    //save cache
-      return {...state, token: action.data, logged: true}
+      user = {...state, token: action.data, logged: true};
+      NativeApi.SaveUser(user)
+      return user
 
     case GOOGLE_SIGN_IN:
       return {...state, googleUser: action.data}
 
     case GOOGLE_FULL_SIGN_IN:
-      //save cache
-      return {...state, ...action.data}
+      user = {...state, ...action.data};
+      NativeApi.SaveUser(user)
+      return user
+
+    case CACHE_SIGN_IN:
+      user = {...state, ...action.data};
+      NativeApi.SaveUser(user)
+      return user;
+      
         
     case LOG_OUT:
-      //clear cache
         return INITIAL_STATE
 
     case TOGGLE_THEME:
-        return {...state, theme: state.theme == 1? 0 : 1 }
+        user = {...state, theme: state.theme == 1? 0 : 1 };
+        NativeApi.SaveUser(user)
+        return user
 
     default:
       return state

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, ScrollView, SafeAreaView, View } from 'react-native'; //check View to layout
+import { StyleSheet, ScrollView, SafeAreaView, View, Alert } from 'react-native'; //check View to layout
 import {
   Layout,
   Divider,
@@ -9,10 +9,8 @@ import {
   CardHeader,
   Spinner
 } from '@ui-kitten/components';
-import Modal from 'react-native-modal';
 import ListItem from '../components/listItem';
 import Header from '../components/Header';
-import RecipeModal from '../components/RecipeModal';
 import {
   HeartIcon,
   ShareIcon,
@@ -20,25 +18,17 @@ import {
 } from '../components/Icons';
 import { connect } from 'react-redux';
 import MainSourceFetch from '../api/web';
+import NativeApi from '../api/native';
+import GoogleApi from '../api/google';
 import _ from 'lodash';
 
 
 
-const RecipeScreen = ({navigation, favCocktails, toggle, user }) => {
-
-    const [visible, setVisible] = React.useState(false);
+const RecipeScreen = ({navigation, favCocktails, toggle, user, googleLogin }) => {
     const [recipeData, setRecipeData] = React.useState({});
     const [cocktailsList, setCocktailsList] = React.useState([]);
     const [listLength, setListLength] = React.useState(10);
     const recipe = navigation.getParam('recipe', {Name: "vodka", ID: 3, Popularity:2642, NormalizedIngredientID: 1})// improve it
-    const toggleModal = () => {
-      setVisible(false);
-    };
-  
-    const openModal = (index) => {
-      //FETCH DATA && LOADING
-      setVisible(true);
-    };
 
     const openRecipe = (item) => {
         navigation.push('Recipe', {recipe: item})
@@ -57,6 +47,24 @@ const RecipeScreen = ({navigation, favCocktails, toggle, user }) => {
         description='by CocktailBuilder'
       />
     );
+
+    const CardToggleFollow = () => {
+      if (user.logged) {
+        toggle(recipe, user.token, favCocktails)
+      } else {
+        Alert.alert(
+          'Alert',
+          'You need to sign in before using this functionality',
+          [
+            {
+              text: 'Ok',
+            },
+            { text: 'Sign In', onPress: () => googleLogin() },
+          ],
+          { cancelable: false }
+        )
+      }
+    }
     
     const CardsFooter = () => ( // add functionality
       <View style={styles.footerContainer}>
@@ -64,14 +72,14 @@ const RecipeScreen = ({navigation, favCocktails, toggle, user }) => {
           style={styles.footerControl}
           appearance='ghost'
           icon={ShareIcon}
-          onPress={() => {console.warn(recipeData.Url)}}
+          onPress={() => NativeApi.ShareLink(recipeData)}
         />
         <Button
           style={styles.footerControl}
           status='danger'
           appearance='ghost'
           icon={_.includes(favCocktails.map(e => e.CocktailID), recipe.CocktailID)? HeartIcon: HeartOutlineIcon}
-          onPress={() => {if (user.logged) {toggle(recipe, user.token, favCocktails)}}}
+          onPress={CardToggleFollow}
           />
       </View>
     );
@@ -81,7 +89,23 @@ const RecipeScreen = ({navigation, favCocktails, toggle, user }) => {
       ref.shake(800)
       if (user.logged) {
         toggle(item, user.token, favCocktails)
+      } else {
+        Alert.alert(
+          'Alert',
+          'You need to sign in before using this functionality',
+          [
+            {
+              text: 'Ok',
+            },
+            { text: 'Sign In', onPress: () => googleLogin() },
+          ],
+          { cancelable: false }
+        )
       }
+    }
+
+    const openModal = (item) => {
+      navigation.push('modal', {recipe:item})
     }
 
     const listConfig = {
@@ -94,8 +118,8 @@ const RecipeScreen = ({navigation, favCocktails, toggle, user }) => {
         favsID: favCocktails.map(e => e.CocktailID)
         }
 
-        const openIngredient = (ing) => {
-          console.warn(ing)
+        const openIngredient = (item) => {
+          navigation.push('Ingredient', {ingredient: item})
       }
 
 
@@ -117,7 +141,7 @@ const RecipeScreen = ({navigation, favCocktails, toggle, user }) => {
                     <Layout>
                         {recipeData.Ingredients.map((ingredient) => (
                             <Text category='s1' key={ingredient.ID}> 
-                                {ingredient.Amount} {ingredient.Measurement} of <Text style={styles.link} status='primary' category='s1' onPress={() => openIngredient(ingredient.ID)}>{ingredient.Name}</Text>
+                                {ingredient.Amount} {ingredient.Measurement} of <Text style={styles.link} status='primary' category='s1' onPress={() => openIngredient(ingredient)}>{ingredient.Name}</Text>
                             </Text>
                         ))}
                     </Layout>
@@ -137,14 +161,16 @@ const RecipeScreen = ({navigation, favCocktails, toggle, user }) => {
                 More cocktails with {recipeData.Ingredients[0].Name}
               </Text>
               {cocktailsList.slice(0,listLength).map(ListItem(listConfig))}
-              <Layout 
-              style={styles.buttonContainer}
-              >
-                <Button
-                  onPress={() => setListLength(listLength + 10)}
-                  style={styles.button}
-                > More </Button>
-            </Layout>
+              {cocktailsList.length > listLength? (
+                <Layout 
+                  style={styles.buttonContainer}
+                  >
+                    <Button
+                      onPress={() => setListLength(listLength + 10)}
+                      style={styles.button}
+                    > More </Button>
+                </Layout>
+              ) : (<></>)}
               </>
             ) : (
               <Layout 
@@ -153,16 +179,6 @@ const RecipeScreen = ({navigation, favCocktails, toggle, user }) => {
                 <Spinner size='giant'/>
               </Layout>
             )}
-
-            
-            <Modal
-              isVisible={visible}
-              onBackdropPress={toggleModal}
-              animationIn="fadeIn"
-              animationOut="fadeOut"
-            >
-                <RecipeModal />
-            </Modal>
             <Layout level='1' style={{height: 250,}}/>
           </ScrollView>
         </Layout>
@@ -238,6 +254,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = dispatch => ({
+  googleLogin: () => GoogleApi.fullSignInWithGoogleAsync(dispatch),
   toggle : (item, token, favs) => {
     const favIDs = favs.map(e => e.CocktailID);
     if (_.includes(favIDs, item.CocktailID)) {

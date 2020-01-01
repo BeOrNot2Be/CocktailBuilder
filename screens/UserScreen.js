@@ -1,18 +1,22 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import {
-    Text,
-    Layout,
-    Avatar,
-    Toggle,
-    Divider
-  } from '@ui-kitten/components';
-  import { LinearGradient } from 'expo-linear-gradient';
-  import { connect } from 'react-redux';
-  import { 
-    LOG_OUT,
-    TOGGLE_THEME
-  } from '../actions/User';
+  Text,
+  Layout,
+  Avatar,
+  Toggle,
+  Divider
+} from '@ui-kitten/components';
+import { LinearGradient } from 'expo-linear-gradient';
+import { connect } from 'react-redux';
+import { 
+  LOG_OUT,
+  TOGGLE_THEME
+} from '../actions/User';
+import NativeApi from '../api/native';
+
+
+
 const UserScreen = ({navigation, user, toggleTheme, LogOut}) => {
 
       return (
@@ -62,7 +66,18 @@ const UserScreen = ({navigation, user, toggleTheme, LogOut}) => {
             <Layout style={styles.boxFooter}>
               <TouchableOpacity                   
                 style={styles.LogOutButton}
-                onPress={() => LogOut()}
+                onPress={() => Alert.alert(
+                  'Alert',
+                  'Are you sure that you wanna sign out?',
+                  [
+                    {
+                      text: 'Cancel',
+                      style: 'cancel',
+                    },
+                    { text: 'Yes', onPress: () => LogOut(navigation) },
+                  ],
+                  { cancelable: false }
+                )}
               >
                 <Text 
                   status="danger"
@@ -144,7 +159,11 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => ({
   toggleTheme: () => dispatch({type: TOGGLE_THEME}),
-  LogOut : () => dispatch({type: LOG_OUT}),
+  LogOut : (navigation) => {
+    NativeApi.ClearUserCache(dispatch);
+    dispatch({type: LOG_OUT});
+    navigation.navigate('Home')
+  },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserScreen);

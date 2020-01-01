@@ -91,3 +91,6 @@ export  const CrossIcon = (style) => (
     <Icon {...style} name='close-outline' />
   );
   
+  export  const GoogleIcon = (style) => (
+    <Icon {...style} name='google' />
+  );

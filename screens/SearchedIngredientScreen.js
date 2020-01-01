@@ -14,19 +14,21 @@ import { connect } from 'react-redux';
 import MainSourceFetch from '../api/web';
 import { ADD_INGREDIENT_TO_SEARCH_BY } from '../actions/Ingredients';
 import Fuse from 'fuse.js';
+import _ from 'lodash';
 
+let typingTimeout = null;
 
-
-const IngredientScreen = ({navigation, searchedIngredients, addedIngredients, addIngredient, getCocktailsByIngredients, getIngredientList }) => {
+const IngredientScreen = ({navigation, searchEngine, addedIngredients, addIngredient, getCocktailsByIngredients, getIngredientList }) => {
   const [inputValue, setInputValue] = React.useState('');
   const [listLength, setListLength] = React.useState(10);
-
+  const [founded, setFounded] = React.useState([]);
   getIngredientList();
 
   const addIngredientToList = (ref, item) => {
-    addIngredient(item)
-    ref.slideOutRight(800);
-    getCocktailsByIngredients(addedIngredients.concat(item))
+    if (_.indexOf(addedIngredients, item) === -1) {
+      addIngredient(item)
+      getCocktailsByIngredients(addedIngredients.concat(item))
+    }
   }
 
   const openIngredient = (item) => {
@@ -41,21 +43,18 @@ const IngredientScreen = ({navigation, searchedIngredients, addedIngredients, ad
     onMainButtonPress:addIngredientToList
     }
 
-  //search
-  let founded;
   
-  var options = {
-    threshold: 0.2,
-    maxPatternLength: 32,
-    minMatchCharLength: 3,
-    keys: [
-      "Name",
-    ]
+  const searchInput = text => {
+    clearTimeout(typingTimeout);
+    if (text.length > 2) {
+      typingTimeout = setTimeout(() => {
+        setFounded(searchEngine.search(text).sort((a, b) => (a.Popularity > b.Popularity) ? -1 : 1))
+      }, 400);
+    } else {
+      setFounded([])
+    }
+    setInputValue(text);
   }
-
-  const searchEngine = new Fuse(searchedIngredients, options);
-
-  founded = searchEngine.search(inputValue);
 
   return (
     <Layout level='2' style={styles.scrollContainer}>
@@ -64,7 +63,7 @@ const IngredientScreen = ({navigation, searchedIngredients, addedIngredients, ad
             <Input
               placeholder='Search'
               value={inputValue}
-              onChangeText={setInputValue}
+              onChangeText={searchInput}
               icon={SearchIcon}
               caption={founded.length !== 0 ? `Founded ${founded.length} results` : ''}
             />
@@ -72,6 +71,7 @@ const IngredientScreen = ({navigation, searchedIngredients, addedIngredients, ad
           {founded.length !== 0 ? (
             <>
             {founded.slice(0,listLength).map(ListItem(listConfig))}
+            {founded.length > listLength? (
             <Layout 
               style={styles.buttonContainer}
               level='2'
@@ -79,11 +79,14 @@ const IngredientScreen = ({navigation, searchedIngredients, addedIngredients, ad
               <Button
                 onPress={() => setListLength(listLength + 10)}
               > More </Button>
-            </Layout>
+            </Layout>) : (<>
+            </>)}
             </>
           ) : 
               (inputValue !== '' ? (
-              <Text>No results found for search:{inputValue}</Text>
+                <Layout style={styles.textContainer} level="2">
+                  <Text category='p2' status='basic'>No results found for search: {inputValue}</Text>
+                </Layout>
               ):<></>)}
           <Layout level='2' style={{height: 80,}}/>
       </ScrollView>
@@ -107,13 +110,25 @@ const styles = StyleSheet.create({
     textAlign:'center',
     alignItems: 'center',
   },
+  textContainer: {
+    paddingLeft: 24
+  }
 });
+
+var options = {
+  threshold: 0.2,
+  maxPatternLength: 32,
+  minMatchCharLength: 3,
+  keys: [
+    "Name",
+  ]
+}
 
 const mapStateToProps = (state) => {
   return (
     {
       addedIngredients: state.ingredients.addedIngredients,
-      searchedIngredients: state.ingredients.searchedIngredients,
+      searchEngine: new Fuse(state.ingredients.searchedIngredients, options),
     }
   )
 };

@@ -9,6 +9,18 @@ import MainSourceFetch from '../api/web';
 import * as Google from 'expo-google-app-auth';
 
 
+const ConnectionIssue = () => {
+  NetInfo.fetch().then(state => {
+      if (!state.isConnected) {
+          alert('You are not connected to the Internet')
+      }
+    });
+  }
+  
+  const FetchingIssue = () => {
+      alert('Some network issues happened. Check your connection or give us some time to fix issues!')
+  }
+
 export default class GoogleApi {
 
     static async signInWithGoogleAsync(dispatch) {
@@ -28,7 +40,8 @@ export default class GoogleApi {
             console.warn({ cancelled: true });
           }
         } catch (e) {
-          console.warn({ error: true });
+          FetchingIssue()
+          ConnectionIssue()
         }
     }
 
@@ -50,7 +63,8 @@ export default class GoogleApi {
             console.warn({ cancelled: true });
           }
         } catch (e) {
-          console.warn({ error: true });
+          FetchingIssue()
+          ConnectionIssue()
         }
     }
       

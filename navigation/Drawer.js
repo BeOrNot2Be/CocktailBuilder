@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, Alert, Easing, Animated } from 'react-native';
 import { createDrawerNavigator } from 'react-navigation-drawer';
 import {
   Avatar,
@@ -12,6 +12,8 @@ import {
 } from '@ui-kitten/components';
 import UserScreen from '../screens/UserScreen';
 import LogOutScreen from '../screens/LogOutScreen';
+import RecipeModalScreen from '../screens/RecipeModalScreen';
+import { createStackNavigator } from 'react-navigation-stack';
 import MainTabNavigator from './MainTabNavigator';
 import { HomeIcon } from '../components/Icons';
 import { createAppContainer } from 'react-navigation';
@@ -23,11 +25,17 @@ import {
   TOGGLE_THEME
 } from '../actions/User';
 import GoogleApi from '../api/google';
+import NativeApi from '../api/native';
 
-const DrawerComponent  = ({ navigation, user, LogOut, googleLogin, toggleTheme}) => {
+
+
+const DrawerComponent  = ({ navigation, user, LogOut, googleLogin, toggleTheme, initUser}) => {
 
   const [route, setRoute] = React.useState(navigation.state.routes[0].routeName);
 
+  if (user.userInfo === undefined) {
+    initUser();
+  }
 
   const onSelect = (index) => {
     const { [index]: selectedTabRoute } = navigation.state.routes;
@@ -120,7 +128,18 @@ const DrawerComponent  = ({ navigation, user, LogOut, googleLogin, toggleTheme})
                   <Text 
                     style={styles.LogOutButton}
                     status="danger"
-                    onPress={() => LogOut()} // alert check screens / delete logout  
+                    onPress={() => Alert.alert(
+                      'Alert',
+                      'Are you sure that you wanna sign out?',
+                      [
+                        {
+                          text: 'Cancel',
+                          style: 'cancel',
+                        },
+                        { text: 'Yes', onPress: () => LogOut() },
+                      ],
+                      { cancelable: false }
+                    )} // alert check screens / delete logout
                   >Log Out</Text>
                 ): (
                   <Text 
@@ -150,16 +169,54 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  LogOut : () => dispatch({type: LOG_OUT}),
+  LogOut : () => {NativeApi.ClearUserCache(dispatch); dispatch({type: LOG_OUT})},
   googleLogin: () => GoogleApi.fullSignInWithGoogleAsync(dispatch),
-  toggleTheme: () => dispatch({type: TOGGLE_THEME}) 
-  //add theme toggle
+  toggleTheme: () => dispatch({type: TOGGLE_THEME}), 
+  initUser: () => NativeApi.GetUser(dispatch),
 });
 
 const DrawerNavigator  = createDrawerNavigator({
-  Home: {
-    screen: MainTabNavigator
-  },
+  Home: createStackNavigator(
+      {
+        content: MainTabNavigator,
+        modal: { screen: RecipeModalScreen },
+      },
+      {
+        headerMode: 'none',
+        mode: 'modal',
+        initialRouteName: 'content',
+        transparentCard: true,
+        cardShadowEnabled: false,
+        defaultNavigationOptions: {
+          gesturesEnabled: false,
+        },
+        transitionConfig: () => ({
+          transitionSpec: {
+            duration: 250,
+            easing: Easing.out(Easing.poly(4)),
+            timing: Animated.timing,
+            useNativeDriver: true,
+          },
+          screenInterpolator: sceneProps => {
+            const { layout, position, scene } = sceneProps;
+            const thisSceneIndex = scene.index;
+        
+            const height = layout.initHeight;
+            const translateY = position.interpolate({
+              inputRange: [thisSceneIndex - 1, thisSceneIndex, thisSceneIndex + 1],
+              outputRange: [height, 0, 0],
+            });
+        
+            const opacity = position.interpolate({
+              inputRange: [thisSceneIndex - 1, thisSceneIndex, thisSceneIndex + 1],
+              outputRange: [1, 1, 0.5],
+            });
+        
+            return { opacity, transform: [{ translateY }] };
+          },
+        }),
+      } 
+  ),
   LogOut: { 
     screen: LogOutScreen
   },
