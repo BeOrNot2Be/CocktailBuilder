@@ -16,10 +16,12 @@ function createIconsMap() {
 }
 
 const IconProvider = (name) => ({
-  toReactElement: (props) => IonicIcon({ name, ...props }),
+  toReactElement: (props) => { return IonicIcon({ name, ...props })},
 });
 
-function IonicIcon({ name, style }) {
+function IonicIcon({ name, ...style }) {
+  delete style.animation;
+  delete style.style; // need to delete because of the bug when custom icon inside some tags 
   const { height, tintColor, ...iconStyle } = StyleSheet.flatten(style);
   return (
     <Ionicons name={name} size={height} color={tintColor} style={iconStyle} />

@@ -84,13 +84,24 @@ export  const ListIcon = (style) => (
   );
 
 export  const CocktailIcon = (style) => (
-    <Icon {...style} name='ios-beer' pack='ionic' />
+    <Icon 
+      {...style}
+      name='ios-beer'
+      pack='ionic'
+    />
   );
 
 export  const CrossIcon = (style) => (
     <Icon {...style} name='close-outline' />
   );
   
-  export  const GoogleIcon = (style) => (
-    <Icon {...style} name='google' />
+export  const GoogleIcon = (style) => (
+  <Icon {...style} name='google' />
+);
+
+export const HeartMenuIcon = (style) => (
+  <Icon
+    {...style}
+    name='heart'
+     />
   );

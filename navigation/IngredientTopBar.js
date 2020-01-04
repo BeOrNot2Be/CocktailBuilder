@@ -25,8 +25,8 @@ const TabBarComponent = ({ navigation, addedIngredientNumber }) => {
         <SafeAreaView>
         <Header navigation={navigation}/>
         <TabBar selectedIndex={navigation.state.index} onSelect={onSelect}>
-            <Tab title='Searched' icon={SearchIcon} />
-            <Tab title={`Added(${addedIngredientNumber})`} icon={AddedSquareIcon} />
+            <Tab title='Search' icon={SearchIcon} />
+            <Tab title={`In My Bar (${addedIngredientNumber})`} icon={AddedSquareIcon} />
         </TabBar>
         </SafeAreaView>
     </Layout>

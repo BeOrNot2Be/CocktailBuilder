@@ -50,17 +50,16 @@ const ListItemComponent = (constArgs) => {
                             {item.Name}
                         </Text>
                         <Text appearance='hint' category='c2'>
-                          {item.Popularity == 0? 1: item.Popularity} recipes includes 
+                          Used in {item.Popularity == 0? 1: item.Popularity} recipes 
                         </Text>
                       </Layout>
                       <Layout style={styles.layoutButton}>
                       {added?(
                           <Button 
-                            appearance='ghost'
                             status='danger'
                             icon={RemoveIcon}
                             onPress={() => onMainButtonPress(handleViewRef, item)}
-                        />
+                          >Remove</Button>
                       ):(
                           <Button
                           status='info'

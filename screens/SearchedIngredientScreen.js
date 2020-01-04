@@ -17,6 +17,7 @@ import Fuse from 'fuse.js';
 import _ from 'lodash';
 
 let typingTimeout = null;
+let searching = true;
 
 const IngredientScreen = ({navigation, searchEngine, addedIngredients, addIngredient, getCocktailsByIngredients, getIngredientList }) => {
   const [inputValue, setInputValue] = React.useState('');
@@ -46,14 +47,16 @@ const IngredientScreen = ({navigation, searchEngine, addedIngredients, addIngred
   
   const searchInput = text => {
     clearTimeout(typingTimeout);
-    if (text.length > 2) {
-      typingTimeout = setTimeout(() => {
-        setFounded(searchEngine.search(text).sort((a, b) => (a.Popularity > b.Popularity) ? -1 : 1))
-      }, 400);
-    } else {
-      setFounded([])
-    }
+    searching = true
+    typingTimeout = setTimeout(() => {
+      searching = false;
+      setFounded(searchEngine.search(text).sort((a, b) => (a.Popularity > b.Popularity) ? -1 : 1))
+    }, 400);
     setInputValue(text);
+  }
+
+  const getMore = () => {
+    setListLength(listLength + 10)
   }
 
   return (
@@ -65,7 +68,7 @@ const IngredientScreen = ({navigation, searchEngine, addedIngredients, addIngred
               value={inputValue}
               onChangeText={searchInput}
               icon={SearchIcon}
-              caption={founded.length !== 0 ? `Founded ${founded.length} results` : ''}
+              caption={founded.length !== 0 ? `Found ${founded.length} results` : ''}
             />
           </Layout>
           {founded.length !== 0 ? (
@@ -77,13 +80,13 @@ const IngredientScreen = ({navigation, searchEngine, addedIngredients, addIngred
               level='2'
               >
               <Button
-                onPress={() => setListLength(listLength + 10)}
+                onPress={getMore}
               > More </Button>
             </Layout>) : (<>
             </>)}
             </>
           ) : 
-              (inputValue !== '' ? (
+              (inputValue !== '' && !searching ? (
                 <Layout style={styles.textContainer} level="2">
                   <Text category='p2' status='basic'>No results found for search: {inputValue}</Text>
                 </Layout>

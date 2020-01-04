@@ -44,21 +44,25 @@ const RecipeModal = ({navigation,  favCocktails, toggle, user, googleLogin}) => 
       }
     })
 
+    const askForLogin = () => {
+      Alert.alert(
+        'Alert',
+        'You need to sign in before using this functionality',
+        [
+          {
+            text: 'Ok',
+          },
+          { text: 'Sign In', onPress: () => googleLogin() },
+        ],
+        { cancelable: false }
+      )
+    }
+
     const CardToggleFollow = () => {
       if (user.logged) {
         toggle(recipe, user.token, favCocktails)
       } else {
-        Alert.alert(
-          'Alert',
-          'You need to sign in before using this functionality',
-          [
-            {
-              text: 'Ok',
-            },
-            { text: 'Sign In', onPress: () => googleLogin() },
-          ],
-          { cancelable: false }
-        )
+        askForLogin()
       }
     }
 

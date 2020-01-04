@@ -21,22 +21,26 @@ const FavoriteScreen = ({navigation, cocktails, user, removeFav, fetchFav, googl
     navigation.push('Recipe', {recipe: item})
   };
 
+  const askForLogin = () => {
+    Alert.alert(
+      'Alert',
+      'You need to sign in before using this functionality',
+      [
+        {
+          text: 'Ok',
+        },
+        { text: 'Sign In', onPress: () => googleLogin() },
+      ],
+      { cancelable: false }
+    )
+  }
+
   const RemoveItem = (ref, item) => {
     ref.bounceOutLeft(800)
     if (user.logged) {
       removeFav(item, user.token, cocktails)
     } else {
-      Alert.alert(
-        'Alert',
-        'You need to sign in before using this functionality',
-        [
-          {
-            text: 'Ok',
-          },
-          { text: 'Sign In', onPress: () => googleLogin() },
-        ],
-        { cancelable: false }
-      )
+      askForLogin()
     }
   }
 

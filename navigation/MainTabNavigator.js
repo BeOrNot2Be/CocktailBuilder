@@ -1,10 +1,12 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { createStackNavigator } from 'react-navigation-stack';
 import {
   BottomNavigation,
   BottomNavigationTab,
+  Text,
+  Layout
 } from '@ui-kitten/components';
 import FavoriteScreen from '../screens/FavoriteScreen';
 import CocktailScreen from '../screens/CocktailScreen';
@@ -12,7 +14,7 @@ import RecipeScreen from '../screens/RecipeScreen';
 import IngredientScreen from '../screens/IngredientScreen';
 import SearchedCocktailsScreen from '../screens/SearchedCocktailsScreen';
 import IngredientTabNavigator from './IngredientTopBar';
-import {ListIcon, CocktailIcon, HeartIcon } from '../components/Icons';
+import {ListIcon, CocktailIcon, HeartMenuIcon } from '../components/Icons';
 import IconBadge from 'react-native-icon-badge';
 import { connect } from 'react-redux';
 
@@ -22,29 +24,44 @@ const config ={
   }
 }
 
-const TabBarComponent = ({ navigation, foundCocktailsNumber }) => {
+const TabBarComponent = ({ navigation, foundCocktailsNumber, theme, favCocktailsNumber }) => {
 
   const onSelect = (index) => {
     const selectedTabRoute = navigation.state.routes[index];
     navigation.navigate(selectedTabRoute.routeName);
   };
 
-  const getBadge = (style, icon) => {
-    return (
-    <View style={{flexDirection: 'row',alignItems: 'center',justifyContent: 'center',}}>
-      <IconBadge
-        MainElement={icon(style)}
-        BadgeElement={
-          <Text style={{color:'#FFFFFF'}}>3</Text>
-        }
-        IconBadgeStyle={
-          {left: 12,
-            top: 0,
-          right: 0}
-        }
-        Hidden={false}
-        />
-    </View>)
+  const getBadge = (style, icon, num) => {
+    if (num > 0 ) {
+      return (
+        <View style={{flexDirection: 'row',alignItems: 'center',justifyContent: 'center',}}>
+          <IconBadge
+            MainElement={
+              icon(style)
+            }
+            BadgeElement={
+              <Layout
+                style={{...styles.badge, backgroundColor: theme? '#DB3B29' : '#FF4463'}}
+              >
+                <Text
+                  style={{color:'#FFFFFF'}}
+                  category='label'
+                >{num}</Text>
+              </Layout>
+            }
+            IconBadgeStyle={
+              {left: 12,
+                top: 0,
+              right: 0,
+            backgroundColor: ''}
+            }
+            Hidden={false}
+            />
+        </View>)
+    }
+    else {
+      return icon(style); 
+    }
   }
 
   return (
@@ -55,8 +72,8 @@ const TabBarComponent = ({ navigation, foundCocktailsNumber }) => {
         appearance="noIndicator"
         >
         <BottomNavigationTab title='Ingredients' icon={ListIcon}/>
-        <BottomNavigationTab title={`Cocktails(${foundCocktailsNumber})`} icon={CocktailIcon}/>
-        <BottomNavigationTab title='Favorites' icon={HeartIcon}/>
+        <BottomNavigationTab title={`Cocktails`} icon={(style) => getBadge(style, CocktailIcon, foundCocktailsNumber)}/>
+        <BottomNavigationTab title='Favorites' icon={(style) => getBadge(style, HeartMenuIcon, favCocktailsNumber)}/>
       </BottomNavigation>
   );
 };
@@ -65,6 +82,8 @@ const mapStateToProps = (state) => {
   return (
     {
       foundCocktailsNumber: state.cocktails.cocktailsByIngredients.length,
+      favCocktailsNumber: state.cocktails.favCocktails.length,
+      theme: state.user.theme
     }
   )
 };
@@ -104,6 +123,14 @@ const styles = StyleSheet.create({
     shadowRadius: 4.65,
     elevation: 7,
   },
+  badge: {
+    marginLeft: 10,
+    minWidth:20,
+    height:20,
+    borderRadius:15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });
 
 export default TabNavigator;

@@ -12,7 +12,7 @@ export default class NativeApi {
         try {
             const result = await Share.share({
               message:
-                item.Url,
+                `${item.Url}?utm_source=share_recipe&utm_medium=native_app`,
             });
       
             if (result.action === Share.sharedAction) {

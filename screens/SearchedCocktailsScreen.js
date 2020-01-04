@@ -25,23 +25,27 @@ const SearchedCocktailsScreen = ({ navigation, cocktails, search,  favCocktails,
     navigation.push('Recipe', {recipe: item})
   };
 
+  const askForLogin = () => {
+    Alert.alert(
+      'Alert',
+      'You need to sign in before using this functionality',
+      [
+        {
+          text: 'Ok',
+        },
+        { text: 'Sign In', onPress: () => googleLogin() },
+      ],
+      { cancelable: false }
+    )
+  }
+  
   const ToggleFollow = (ref, item) => 
   {
     ref.shake(800)
     if (user.logged) {
       toggle(item, user.token, favCocktails)
     } else {
-      Alert.alert(
-        'Alert',
-        'You need to sign in before using this functionality',
-        [
-          {
-            text: 'Ok',
-          },
-          { text: 'Sign In', onPress: () => googleLogin() },
-        ],
-        { cancelable: false }
-      )
+      askForLogin()
     }
   }
 
