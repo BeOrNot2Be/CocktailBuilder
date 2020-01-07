@@ -22,8 +22,10 @@ import _ from 'lodash';
 
 let typingTimeout = null;
 let searching = true;
+let fetchedSearched = false;
+let fetchedInventory = false;
 
-const IngredientScreen = ({navigation, searchEngine, addedIngredients, addIngredient, getCocktailsByIngredients, getIngredientList, added, setAdded, getInventoryList, user }) => {
+const IngredientScreen = ({navigation, searchEngine, addIngredient, getIngredientList, added, setAdded, getInventoryList, user }) => {
   const [inputValue, setInputValue] = React.useState('');
   const [founded, setFounded] = React.useState([]);
   const [listLengthStart, setListLengthStart] = React.useState(0);
@@ -32,11 +34,11 @@ const IngredientScreen = ({navigation, searchEngine, addedIngredients, addIngred
 
   getIngredientList();
 
-  getCocktailsByIngredients(addedIngredients)
-
   React.useEffect(() => {
       if (user.logged) {
         getInventoryList( user.token )
+      } else {
+        fetchedInventory = false
       }
   })
 
@@ -146,28 +148,24 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
   return (
     {
-      addedIngredients: state.ingredients.addedIngredients,
       added: state.ingredients.addedCheck,
       searchEngine:  state.ingredients.searchEngine,
-      user: state.user
+      user: state.user,
     }
   )
 };
 
-let fetchedSearched = false;
-let fetchedInventory = false;
 
 const mapDispatchToProps = dispatch => ({
-  getCocktailsByIngredients : addedIngredients => MainSourceFetch.getCocktailsByIngredients(addedIngredients, dispatch),
   addIngredient: (id) => dispatch({ type:ADD_INGREDIENT_TO_SEARCH_BY, data: id }),
   getIngredientList: () => { 
     if (!fetchedSearched){
       MainSourceFetch.getIngredientsList(dispatch);
       fetchedSearched = true
    }},
-  getInventoryList: (token) => { 
+  getInventoryList: (token) => {
     if (!fetchedInventory){
-      MainSourceFetch.getInventoryIngs(token, dispatch);
+      MainSourceFetch.getInventoryIngs(token, dispatch)
       fetchedInventory = true
    }},
   setAdded: (addedID) => dispatch({ type:ADDED_CHECK_MAP_UPDATE, data: addedID }),

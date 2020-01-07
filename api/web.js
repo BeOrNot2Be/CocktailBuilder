@@ -60,7 +60,8 @@ export default class MainSourceFetch {
           });
     }
 
-    static getCocktailsByIngredients(ingredients, dispatch){
+    static getCocktailsByIngredients(ingredients, dispatch, token=false){
+        console.warn('update')
         const str = makeIngredientsFetchable(ingredients) 
         fetch(`https://www.cocktailbuilder.com/json/topByIngredients?param=${str}`)
         .then(response => response.json())
@@ -74,6 +75,9 @@ export default class MainSourceFetch {
             FetchingIssue()
             ConnectionIssue()
           });
+        if (token !== false) {
+            this.saveInventoryIngs(ingredients, token, dispatch)
+        } 
     }
 
     static getCocktailsByIngredient(ingredient, setState, cocktailsList){

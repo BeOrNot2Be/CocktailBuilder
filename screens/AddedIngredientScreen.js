@@ -9,16 +9,20 @@ import { connect } from 'react-redux';
 import MainSourceFetch from '../api/web';
 import { REMOVE_INGREDIENT_FROM_SEARCH_BY, ADDED_CHECK_MAP_UPDATE } from '../actions/Ingredients';
 
-const AddedIngredients= ({ navigation, addedIngredients, getCocktailsByIngredients, removeIngredient, setAdded }) => {
+const AddedIngredients= ({ navigation, addedIngredients, getCocktailsByIngredients, removeIngredient, setAdded, user }) => {
 
   const openIngredient = () => {
     navigation.push('Ingredient')
   };
 
+  if (user.logged) {
+    getCocktailsByIngredients(addedIngredients, user.token)
+  } else {
+    getCocktailsByIngredients(addedIngredients)
+  }
 
   const removeIngredientToList = (ref, item) => {
     removeIngredient(item)
-    getCocktailsByIngredients(addedIngredients.filter(ing => ing.ID !== item.ID ))
     setAdded(item.ID)
   }
 
@@ -61,12 +65,13 @@ const mapStateToProps = (state) => {
   return (
     {
       addedIngredients: state.ingredients.addedIngredients,
+      user: state.user
     }
   )
 };
 
 const mapDispatchToProps = dispatch => ({
-  getCocktailsByIngredients : addedIngredients => MainSourceFetch.getCocktailsByIngredients(addedIngredients, dispatch),
+  getCocktailsByIngredients : (addedIngredients, token) => MainSourceFetch.getCocktailsByIngredients(addedIngredients, dispatch, token),
   removeIngredient: (item) => dispatch({ type:REMOVE_INGREDIENT_FROM_SEARCH_BY, data: item }),
   setAdded: (addedID) => dispatch({ type:ADDED_CHECK_MAP_UPDATE, data: addedID }),
 });

@@ -28,7 +28,7 @@ const INITIAL_STATE = {
 
 const mergeWithBackEnd = (clientInventory, backendInventoryIds, fullList) => {
   let exist;
-  const newFetchedItems = [];
+  const newFetchedItems = [...clientInventory];
 
   for (let ingID of backendInventoryIds){
     exist = false;
@@ -65,11 +65,11 @@ const ingredientsReducer = (state = INITIAL_STATE, action) => {
     }
 
     case GET_INVENTORY_INGS:
-      const mergedAddedIngs = mergeWithBackEnd(state.addedIngredients, action.data, state.searchedIngredients);  
+      const mergedAddedIngs = mergeWithBackEnd(state.addedIngredients, action.data, state.searchedIngredients);
       return {
         ...state, 
         addedIngredients: mergedAddedIngs,
-        addedCheck: updateAddedIngCheckMap(state.addedCheck, mergedAddedIngs)
+        addedCheck: updateAddedIngCheckMap(state.addedCheck, mergedAddedIngs),
       }
     
     case ADDED_CHECK_MAP_UPDATE:
