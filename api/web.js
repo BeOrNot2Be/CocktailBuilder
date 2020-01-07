@@ -12,6 +12,8 @@ import {
 import _ from 'lodash';
 import { 
     SEARCHED_INGREDIENTS,
+    GET_INVENTORY_INGS,
+    SAVE_INVENTORY_INGS
 } from '../actions/Ingredients';
 
 import * as Google from 'expo-google-app-auth';
@@ -163,6 +165,43 @@ export default class MainSourceFetch {
             for (cocktailIndex of responseJson) {
                 this.getCocktailById(cocktailIndex, loadFavIntoState);
             }
+        })
+        .catch(error => {
+            FetchingIssue()
+            ConnectionIssue()
+          });
+    }
+
+    static getInventoryIngs(token, dispatch){
+        fetch(`https://www.cocktailbuilder.com/api/users/${token}/inventory`)
+        .then(response => response.json())
+        .then(responseJson => {
+            dispatch({
+                type: GET_INVENTORY_INGS,
+                data: responseJson 
+            })
+        })
+        .catch(error => {
+            FetchingIssue()
+            ConnectionIssue()
+          });
+        return []
+    }
+
+    static saveInventoryIngs(ings, token, dispatch){
+        fetch(`https://www.cocktailbuilder.com/api/users/${token}/inventory`, 
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
+            body: (ings).map(ing => `ingredients[]=${ing.ID}`).join('&')
+        })
+        .then(response => response.json())
+        .then(responseJson => {
+            dispatch({
+                type: SAVE_INVENTORY_INGS,
+            })
         })
         .catch(error => {
             FetchingIssue()

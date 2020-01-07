@@ -4,12 +4,8 @@ import * as Font from 'expo-font';
 import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
 import AppComponent from './AppComponent';
-import reducer from './reducers/MainReducer';
-
-
-const store = createStore(reducer);
+import store from './store';
 
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);

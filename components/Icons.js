@@ -16,12 +16,20 @@ export const AddedIcon = (style) => (
     <Icon {...style} name='plus-circle-outline' />
   );
 
+export const CheckedIcon = (style) => (
+    <Icon {...style} name='checkmark-circle-outline' />
+  );
+
 export const SearchIcon = (style) => (
     <Icon {...style} name='search-outline' />
   );
 
 export const HomeIcon = (style) => (
     <Icon {...style} name='home-outline' />
+  );
+
+export const ForwardIcon = (style) => (
+    <Icon {...style} name='arrow-forward' />
   );
 
 export const HeartIcon = (style) => (
