@@ -36,6 +36,6 @@ const AppComponent = ({theme}) => {
 
 const mapStateToProps = (state) => ({
     theme: state.user.theme
-})
+  })
 
 export default connect(mapStateToProps, null)(AppComponent)

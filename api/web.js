@@ -40,55 +40,64 @@ const FetchingIssue = () => {
     alert('Some network issues happened. Check your connection or give us some time to fix issues!')
 }
 
+const makeCocktailListWithAds = (cocktailList) => {
+    let interval = 9;
+    while (interval < cocktailList.length) {
+        cocktailList.splice(interval, 0, {ad: true});
+        interval += 10;
+    }
+    return cocktailList
+}
+
 export default class MainSourceFetch {
 
 
 
-    static getCocktailsByName(input, dispatch){
+    static getCocktailsByName(input, dispatch){ // make with adds 
         const str = validateStrInput(input) 
         fetch(`https://www.cocktailbuilder.com/json/cocktailsByName?param=${str}`)
         .then(response => response.json())
         .then(responseJson => {
             dispatch({
                 type: SEARCHED_RECIPES,
-                data: responseJson
+                data: makeCocktailListWithAds(responseJson)
             });
         })
         .catch(error => {
+            console.error(error)
             FetchingIssue()
             ConnectionIssue()
           });
     }
 
-    static getCocktailsByIngredients(ingredients, dispatch, token=false){
-        console.warn('update')
+    static getCocktailsByIngredients(ingredients, dispatch){ // make with adds 
         const str = makeIngredientsFetchable(ingredients) 
-        fetch(`https://www.cocktailbuilder.com/json/topByIngredients?param=${str}`)
+        fetch(`https://www.cocktailbuilder.com/json/topByIngredients?max=100&param=${str}`)
         .then(response => response.json())
         .then(responseJson => {
             dispatch({
                 type: GET_COCKTAILS_BY_INGREDIENTS,
-                data: responseJson
+                data: makeCocktailListWithAds(responseJson),
+                args: {ingsStr: ingredients.map(ing => `ingredients[]=${ing.ID}`).join('&')} // additional info for further fetching 
             });
         })
         .catch(error => {
+            console.error(error)
             FetchingIssue()
             ConnectionIssue()
           });
-        if (token !== false) {
-            this.saveInventoryIngs(ingredients, token, dispatch)
-        } 
     }
 
-    static getCocktailsByIngredient(ingredient, setState, cocktailsList){
+    static getCocktailsByIngredient(ingredient, setState, cocktailsList){ // make with adds 
         fetch(`https://www.cocktailbuilder.com/json/topByIngredients?param=${ingredient.ID}`)
         .then(response => response.json())
         .then(responseJson => {
             if (cocktailsList.length != responseJson.length) {
-                setState(responseJson)
+                setState(makeCocktailListWithAds(responseJson))
             };
         })
         .catch(error => {
+            console.error(error)
             FetchingIssue()
             ConnectionIssue()
           });
@@ -104,6 +113,7 @@ export default class MainSourceFetch {
             });
         })
         .catch(error => {
+            console.error(error)
             FetchingIssue()
             ConnectionIssue()
           });
@@ -118,6 +128,7 @@ export default class MainSourceFetch {
             }
         })
         .catch(error => {
+            console.error(error)
             FetchingIssue()
             ConnectionIssue()
           });
@@ -132,6 +143,7 @@ export default class MainSourceFetch {
             dispatchFunc(responseJson);
         })
         .catch(error => {
+            console.error(error)
             FetchingIssue()
             ConnectionIssue()
           });
@@ -153,6 +165,7 @@ export default class MainSourceFetch {
             })
         })
         .catch(error => {
+            console.error(error)
             FetchingIssue()
             ConnectionIssue()
           });
@@ -171,9 +184,28 @@ export default class MainSourceFetch {
             }
         })
         .catch(error => {
+            console.error(error)
             FetchingIssue()
             ConnectionIssue()
           });
+    }
+
+    static getFavsIDFetchReturn(token){
+        return fetch(`https://www.cocktailbuilder.com/api/users/${token}/favorites`).then(response => response.json())
+    }
+
+    static getFavByIDFetchReturn(ID){
+        return fetch(`https://www.cocktailbuilder.com/json/cocktailDetails?param=${ID}`)
+        .then(response => response.json())
+        .then(responseJson => {
+            responseJson.CocktailID = ID; 
+            responseJson.CocktailName = responseJson.Name;
+            return responseJson
+        })
+    }
+
+    static getInventoryIngsFetchReturn(token) {
+        return fetch(`https://www.cocktailbuilder.com/api/users/${token}/inventory`).then(response => response.json())
     }
 
     static getInventoryIngs(token, dispatch){
@@ -186,6 +218,7 @@ export default class MainSourceFetch {
             })
         })
         .catch(error => {
+            console.error(error)
             FetchingIssue()
             ConnectionIssue()
           });
@@ -199,7 +232,7 @@ export default class MainSourceFetch {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
               },
-            body: (ings).map(ing => `ingredients[]=${ing.ID}`).join('&')
+            body: ings
         })
         .then(response => response.json())
         .then(responseJson => {
@@ -208,6 +241,7 @@ export default class MainSourceFetch {
             })
         })
         .catch(error => {
+            console.error(error)
             FetchingIssue()
             ConnectionIssue()
           });
@@ -232,6 +266,7 @@ export default class MainSourceFetch {
             }
         })
         .catch(error => {
+            console.error(error)
             FetchingIssue()
             ConnectionIssue()
           });
@@ -257,6 +292,7 @@ export default class MainSourceFetch {
             }
         })
         .catch(error => {
+            console.error(error)
             FetchingIssue()
             ConnectionIssue()
           });

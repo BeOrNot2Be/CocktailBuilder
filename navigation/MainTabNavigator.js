@@ -46,7 +46,7 @@ const TabBarComponent = ({ navigation, foundCocktailsNumber, theme, favCocktails
                 <Text
                   style={{color:'#FFFFFF'}}
                   category='label'
-                >{num}</Text>
+                >{num > 99 ? `${99}+` : num}</Text>
               </Layout>
             }
             IconBadgeStyle={
@@ -72,7 +72,7 @@ const TabBarComponent = ({ navigation, foundCocktailsNumber, theme, favCocktails
         appearance="noIndicator"
         >
         <BottomNavigationTab title='Ingredients' icon={ListIcon}/>
-        <BottomNavigationTab title={`Cocktails`} icon={(style) => getBadge(style, CocktailIcon, foundCocktailsNumber)}/>
+        <BottomNavigationTab title={`Cocktails`} icon={(style) => getBadge(style, CocktailIcon, foundCocktailsNumber )}/>
         <BottomNavigationTab title='Favorites' icon={(style) => getBadge(style, HeartMenuIcon, favCocktailsNumber)}/>
       </BottomNavigation>
   );
@@ -81,8 +81,8 @@ const TabBarComponent = ({ navigation, foundCocktailsNumber, theme, favCocktails
 const mapStateToProps = (state) => {
   return (
     {
-      foundCocktailsNumber: state.cocktails.cocktailsByIngredients.length,
-      favCocktailsNumber: state.cocktails.favCocktails.length,
+      foundCocktailsNumber:  state.cocktails.cocktailsByIngredients.length - Math.floor(state.cocktails.cocktailsByIngredients.length/10), // get amount without adds
+      favCocktailsNumber: state.cocktails.favCocktails.length - Math.floor(state.cocktails.favCocktails.length/10),
       theme: state.user.theme
     }
   )
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   },
   badge: {
     marginLeft: 10,
-    minWidth:20,
+    minWidth:30,
     height:20,
     borderRadius:15,
     alignItems: 'center',

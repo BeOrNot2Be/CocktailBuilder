@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity} from 'react-native';
+import {Platform, StyleSheet, TouchableOpacity} from 'react-native';
 import {
     Text,
     Layout,
@@ -13,7 +13,11 @@ import {
 } from './Icons';
 import * as Animatable from 'react-native-animatable';
 import _ from 'lodash';
+import {
+  AdMobBanner,
+} from 'expo-ads-admob'
 
+const unitID =  Platform.OS === 'ios'? 'ca-app-pub-3940256099942544/6300978111' : 'ca-app-pub-3940256099942544/6300978111'
 const ListItemComponent = (constArgs) => {
     const {
       ingredients,
@@ -75,43 +79,57 @@ const ListItemComponent = (constArgs) => {
         )};
     } else {
         return (item, index) => {
-
-          let handleViewRef;
-          return(
-
-            <Animatable.View key={item.CocktailID} ref={ ref => handleViewRef = ref}>
-              <Layout style={styles.lisItem}>
-                <TouchableOpacity 
-                  onLongPress={() => onLongPress(item)}
-                  onPress={() => onPress(item)}
-                >
-                    <Layout style={styles.container}>
-                        <Layout style={styles.layoutTittle}>
-                            <Text>
-                              {item.CocktailName}
-                            </Text>
-                            <Text appearance='hint' category='c2'>
-                              {fav? 
-                                `${item.Ingredients.length != 0? item.Ingredients.length: 1} ${item.Ingredients.length !== 1? 'ingredients': 'ingredient'}` : 
-                                (item.MissingIngr == 0 ? "You can make it!" : (
-                                  item.MissingIngr !== undefined ? `You need ${item.MissingIngr} ${item.MissingIngr !== 1? 'ingredients': 'ingredient'} more` :
-                                  `${item.TotalIngredients != 0? item.TotalIngredients: 1} ${item.TotalIngredients !== 1? 'ingredients': 'ingredient'}`
-                                ))}
-                            </Text>
-                          </Layout>
-                        <Layout style={styles.layoutButton}>
-                        <Button
-                            appearance='ghost'
-                            status='danger'
-                            icon={_.includes(favsID, item.CocktailID)? HeartIcon : HeartOutlineIcon}
-                            onPress={() => onMainButtonPress(handleViewRef, item)}
-                        />
-                        </Layout>
-                    </Layout>
-                </TouchableOpacity>
+          console.log(item)
+          if (item.ad) {
+            return (
+              <Layout style={styles.ads} key={index}>
+                <AdMobBanner
+                  bannerSize="mediumRectangle"
+                  adUnitID={unitID}
+                  servePersonalizedAds={true}
+                  testDevices={[AdMobBanner.simulatorId]}
+                  onAdFailedToLoad={error => console.error(error)}
+                />
               </Layout>
-            </Animatable.View>
-        )};
+            );
+          } else {
+            let handleViewRef;
+            return(
+
+              <Animatable.View key={item.CocktailID} ref={ ref => handleViewRef = ref}>
+                <Layout style={styles.lisItem}>
+                  <TouchableOpacity 
+                    onLongPress={() => onLongPress(item)}
+                    onPress={() => onPress(item)}
+                  >
+                      <Layout style={styles.container}>
+                          <Layout style={styles.layoutTittle}>
+                              <Text>
+                                {item.CocktailName}
+                              </Text>
+                              <Text appearance='hint' category='c2'>
+                                {fav? 
+                                  `${item.Ingredients.length != 0? item.Ingredients.length: 1} ${item.Ingredients.length !== 1? 'ingredients': 'ingredient'}` : 
+                                  (item.MissingIngr == 0 ? "You can make it!" : (
+                                    item.MissingIngr !== undefined ? `You need ${item.MissingIngr} ${item.MissingIngr !== 1? 'ingredients': 'ingredient'} more` :
+                                    `${item.TotalIngredients != 0? item.TotalIngredients: 1} ${item.TotalIngredients !== 1? 'ingredients': 'ingredient'}`
+                                  ))}
+                              </Text>
+                            </Layout>
+                          <Layout style={styles.layoutButton}>
+                          <Button
+                              appearance='ghost'
+                              status='danger'
+                              icon={_.includes(favsID, item.CocktailID)? HeartIcon : HeartOutlineIcon}
+                              onPress={() => onMainButtonPress(handleViewRef, item)}
+                          />
+                          </Layout>
+                      </Layout>
+                  </TouchableOpacity>
+                </Layout>
+              </Animatable.View>
+          )
+          }};
     } 
 }
 
@@ -147,6 +165,12 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       flex: 4
     },
+    ads: {
+      marginVertical: 10,
+      justifyContent: 'center',
+      textAlign:'center',
+      alignItems: 'center',
+    }
   });
 
 export default ListItemComponent;

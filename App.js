@@ -6,9 +6,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { Provider } from 'react-redux';
 import AppComponent from './AppComponent';
 import store from './store';
+import * as firebase from 'firebase';
+import { firebaseConfig } from './constants/ApiKeys';
+
 
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
+  if (!firebase.apps.length) {firebase.initializeApp(firebaseConfig)}
   
   if (!isLoadingComplete && !props.skipLoadingScreen) {
     return (

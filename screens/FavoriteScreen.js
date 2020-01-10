@@ -14,8 +14,6 @@ import MainSourceFetch from '../api/web';
 import GoogleApi from '../api/google';
 import _ from 'lodash';
 
-let fetched = false;
-
 const FavoriteScreen = ({navigation, cocktails, user, removeFav, fetchFav, googleLogin}) => {
   const openRecipe = (item) => {
     navigation.push('Recipe', {recipe: item})
@@ -57,19 +55,6 @@ const FavoriteScreen = ({navigation, cocktails, user, removeFav, fetchFav, googl
     onMainButtonPress:RemoveItem,
     favsID: cocktails.map(e => e.CocktailID)
     }
-  
-  React.useEffect(() => {
-    if (!fetched){
-      if (user.logged) {
-        fetchFav( user.token )
-        fetched = true
-      }
-    } else {
-      if (!user.logged){
-        fetched = false
-      }
-    }
-  })
 
   return (
     <Layout level='1'>
@@ -141,7 +126,6 @@ const mapDispatchToProps = dispatch => ({
   removeFav : (removed, token, favs) => MainSourceFetch.saveRemovedFav(removed, favs, token, dispatch),
   fetchFav : (token) => MainSourceFetch.getFavs( token, dispatch ),
   googleLogin: () => GoogleApi.fullSignInWithGoogleAsync(dispatch),
-  //addFav : (added, token, favs) => MainSourceFetch.saveAddedFav(added, favs, token, dispatch),
 });
 
 

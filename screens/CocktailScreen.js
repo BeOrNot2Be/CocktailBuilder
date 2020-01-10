@@ -5,13 +5,16 @@ import {
   Input,
   Layout,
   Button,
-  Text
+  Text,
+  ButtonGroup
 } from '@ui-kitten/components';
 import ListItem from '../components/listItem';
 import Header from '../components/Header';
 import {
   SearchIcon,
-  CrossIcon
+  CrossIcon,
+  ForwardIcon,
+  BackIcon
 } from '../components/Icons'; 
 import { connect } from 'react-redux';
 import MainSourceFetch from '../api/web';
@@ -20,7 +23,9 @@ import _ from 'lodash';
 
 const CocktailScreen = ({ navigation, cocktails, search, favCocktails, toggle, user, googleLogin }) => {
   const [inputValue, setInputValue] = React.useState('');
-  const [listLength, setListLength] = React.useState(10); 
+  const [listLengthStart, setListLengthStart] = React.useState(0);
+  const [listLengthEnd, setListLengthEnd] = React.useState(10); 
+
 
   const openRecipe = (item) => {
     navigation.push('Recipe', {recipe: item})
@@ -50,11 +55,7 @@ const CocktailScreen = ({ navigation, cocktails, search, favCocktails, toggle, u
   }
 
   const getMore = () => {
-    if (user.logged) {
-      setListLength(listLength + 10)
-    } else {
-      askForLogin()
-    }
+    askForLogin()
   }
 
   const openModal = (item) => {
@@ -76,11 +77,24 @@ const CocktailScreen = ({ navigation, cocktails, search, favCocktails, toggle, u
     search(input)
   }
 
+  let listView;
+  const toTop = () => {
+    listView.scrollTo({x: 0, y: 0, animated: true})
+  }
+
+  if (cocktails.slice(listLengthStart, listLengthEnd).length == 0) {
+    setListLengthEnd(10)
+    setListLengthStart(0)
+  }
+
   return (
     <Layout level='1'>
       <SafeAreaView>
         <Header navigation={navigation}/>
-          <ScrollView style={styles.scrollContainer}>
+          <ScrollView 
+            style={styles.scrollContainer}
+            ref={ref => listView = ref}
+          >
               <Layout style={styles.container}>
                   <Input
                     placeholder='Search'
@@ -98,17 +112,34 @@ const CocktailScreen = ({ navigation, cocktails, search, favCocktails, toggle, u
                 </Layout>
               ) : (
                 <>
-                  {cocktails.slice(0,listLength).map(ListItem(listConfig))}
-                  {cocktails.length > listLength? (
-                    <Layout 
-                      style={styles.buttonContainer}
-                      >
+                  {cocktails.slice(listLengthStart, listLengthEnd).map(ListItem(listConfig))}
+                  <Layout 
+                    style={styles.buttonContainer}
+                    >
+                      {user.logged? (
+                        <ButtonGroup appearance='outline' size='large'>
+                        {listLengthStart > 9 ? (
+                          <Button
+                          onPress={() => {setListLengthEnd(listLengthEnd - 10); setListLengthStart(listLengthStart - 10); if(cocktails.length > listLengthEnd) {toTop()}}}
+                            style={styles.button}
+                            icon={BackIcon}
+                          ></Button>
+                        ) : (<></>)}
+                        {cocktails.length > listLengthEnd? (
+                          <Button
+                            onPress={() => {setListLengthEnd(listLengthEnd + 10); setListLengthStart(listLengthStart + 10); if(cocktails.length > listLengthEnd + 10) {toTop()}}}
+                            style={styles.button}
+                            icon={ForwardIcon}
+                          ></Button>
+                        ) : (<></>)}
+                        </ButtonGroup>
+                      ) : (
                         <Button
-                          onPress={getMore}
-                          style={styles.button}
-                        > More </Button>
-                    </Layout>
-                  ) : (<></>)}
+                        onPress={getMore}
+                        style={styles.button}
+                      > More </Button>
+                      ) }
+                  </Layout>
                   <Layout level='1' style={{height: 200,}}/>
                 </>
               )}

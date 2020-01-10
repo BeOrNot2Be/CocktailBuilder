@@ -14,7 +14,6 @@ import {
   BackIcon
   } from '../components/Icons'; 
 import { connect } from 'react-redux';
-import MainSourceFetch from '../api/web';
 import { 
   ADD_INGREDIENT_TO_SEARCH_BY,
   ADDED_CHECK_MAP_UPDATE } from '../actions/Ingredients';
@@ -22,25 +21,13 @@ import _ from 'lodash';
 
 let typingTimeout = null;
 let searching = true;
-let fetchedSearched = false;
-let fetchedInventory = false;
 
-const IngredientScreen = ({navigation, searchEngine, addIngredient, getIngredientList, added, setAdded, getInventoryList, user }) => {
+
+const IngredientScreen = ({navigation, searchEngine, addIngredient, added, setAdded }) => {
   const [inputValue, setInputValue] = React.useState('');
   const [founded, setFounded] = React.useState([]);
   const [listLengthStart, setListLengthStart] = React.useState(0);
   const [listLengthEnd, setListLengthEnd] = React.useState(10); 
-
-
-  getIngredientList();
-
-  React.useEffect(() => {
-      if (user.logged) {
-        getInventoryList( user.token )
-      } else {
-        fetchedInventory = false
-      }
-  })
 
   const addIngredientToList = (ref, item) => {
       addIngredient(item)
@@ -64,10 +51,14 @@ const IngredientScreen = ({navigation, searchEngine, addIngredient, getIngredien
     }, 400);
     setInputValue(text);
   }
-
+  const flatListRef = React.useRef()
+  const toTop = () => {
+    flatListRef.current.scrollToOffset({ animated: true, offset: 0 })
+  }
   return (
     <Layout level='2' style={styles.scrollContainer}>
             <FlatList
+              ref={flatListRef}
               data={founded.slice(listLengthStart, listLengthEnd)}
               keyExtractor={item => item.ID.toString()}
               ListHeaderComponent={
@@ -96,15 +87,13 @@ const IngredientScreen = ({navigation, searchEngine, addIngredient, getIngredien
                       <ButtonGroup appearance='outline' size='large'>
                       {listLengthStart > 9 ? (
                         <Button
-                        onPress={() => {setListLengthEnd(listLengthEnd - 10); setListLengthStart(listLengthStart - 10)}}
-                          style={styles.button}
+                        onPress={() => {setListLengthEnd(listLengthEnd - 10); setListLengthStart(listLengthStart - 10); if(founded.length > listLengthEnd) {toTop()}}}
                           icon={BackIcon}
                         ></Button>
                       ) : (<></>)}
                       {founded.length > listLengthEnd? (
                         <Button
-                          onPress={() => {setListLengthEnd(listLengthEnd + 10); setListLengthStart(listLengthStart + 10)}}
-                          style={styles.button}
+                          onPress={() => {setListLengthEnd(listLengthEnd + 10); setListLengthStart(listLengthStart + 10);  if(founded.length > listLengthEnd + 10) {toTop()}}}
                           icon={ForwardIcon}
                         ></Button>
                       ) : (<></>)}
@@ -150,7 +139,6 @@ const mapStateToProps = (state) => {
     {
       added: state.ingredients.addedCheck,
       searchEngine:  state.ingredients.searchEngine,
-      user: state.user,
     }
   )
 };
@@ -158,16 +146,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => ({
   addIngredient: (id) => dispatch({ type:ADD_INGREDIENT_TO_SEARCH_BY, data: id }),
-  getIngredientList: () => { 
-    if (!fetchedSearched){
-      MainSourceFetch.getIngredientsList(dispatch);
-      fetchedSearched = true
-   }},
-  getInventoryList: (token) => {
-    if (!fetchedInventory){
-      MainSourceFetch.getInventoryIngs(token, dispatch)
-      fetchedInventory = true
-   }},
   setAdded: (addedID) => dispatch({ type:ADDED_CHECK_MAP_UPDATE, data: addedID }),
 });
 

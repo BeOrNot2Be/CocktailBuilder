@@ -9,17 +9,19 @@ import { connect } from 'react-redux';
 import MainSourceFetch from '../api/web';
 import { REMOVE_INGREDIENT_FROM_SEARCH_BY, ADDED_CHECK_MAP_UPDATE } from '../actions/Ingredients';
 
-const AddedIngredients= ({ navigation, addedIngredients, getCocktailsByIngredients, removeIngredient, setAdded, user }) => {
+const AddedIngredients= ({ navigation, addedIngredients, getCocktailsByIngredients, removeIngredient, setAdded }) => {
 
   const openIngredient = () => {
     navigation.push('Ingredient')
   };
 
+  
+  getCocktailsByIngredients(addedIngredients)
+  /* 
   if (user.logged) {
     getCocktailsByIngredients(addedIngredients, user.token)
   } else {
-    getCocktailsByIngredients(addedIngredients)
-  }
+  */
 
   const removeIngredientToList = (ref, item) => {
     removeIngredient(item)
@@ -65,7 +67,6 @@ const mapStateToProps = (state) => {
   return (
     {
       addedIngredients: state.ingredients.addedIngredients,
-      user: state.user
     }
   )
 };

@@ -9,6 +9,7 @@ import {
 import MainSourceFetch from '../api/web';
 import Fuse from 'fuse.js';
 import _ from 'lodash';
+import { loop, Cmd } from 'redux-loop';
 
 var options = {
   threshold: 0.2,
@@ -19,12 +20,14 @@ var options = {
   ]
 }
 
-const INITIAL_STATE = {
+const INITIAL_STATE = loop({
   searchedIngredients:[],
   addedIngredients:[],
   addedCheck: new Map(),
   searchEngine: new Fuse([], options),
-};
+}, Cmd.run(MainSourceFetch.getIngredientsList, {
+  args: [Cmd.dispatch]
+}));
 
 const mergeWithBackEnd = (clientInventory, backendInventoryIds, fullList) => {
   let exist;
@@ -82,7 +85,6 @@ const ingredientsReducer = (state = INITIAL_STATE, action) => {
         ...state,
         addedIngredients: state.addedIngredients.filter(item => item.ID !== action.data.ID),
       }
-      //topByIngredients
 
     default:
       return state

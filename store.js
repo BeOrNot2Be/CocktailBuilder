@@ -1,6 +1,12 @@
-import { createStore } from 'redux';
+import { createStore, compose } from 'redux';
 import reducer from './reducers/MainReducer';
+import { install  } from 'redux-loop';
 
-const mainStore = createStore(reducer);
+
+const enhancer = compose(
+    install()
+  );
+
+const mainStore = createStore(reducer, {}, install());
 
 export default mainStore;

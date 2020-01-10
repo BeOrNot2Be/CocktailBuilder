@@ -28,14 +28,15 @@ import NativeApi from '../api/native';
 
 
 
-const DrawerComponent  = ({ navigation, user, LogOut, googleLogin, toggleTheme, initUser}) => {
+const DrawerComponent  = ({ navigation, user, LogOut, googleLogin, toggleTheme, initUser, searchedIngredients}) => {
 
   const [route, setRoute] = React.useState(navigation.state.routes[0].routeName);
-
-  if (user.userInfo === undefined) {
-    initUser();
+  if (searchedIngredients.length != 0) {
+    if (user.userInfo === undefined) {
+      initUser();
+    }  
   }
-
+  
   const onSelect = (index) => {
     const { [index]: selectedTabRoute } = navigation.state.routes;
     navigation.navigate(selectedTabRoute.routeName);
@@ -162,7 +163,8 @@ const DrawerComponent  = ({ navigation, user, LogOut, googleLogin, toggleTheme, 
 const mapStateToProps = (state) => {
   return (
     {
-      user: state.user
+      user: state.user,
+      searchedIngredients: state.ingredients.searchedIngredients
     }
   )
 };

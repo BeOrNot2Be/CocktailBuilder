@@ -25,10 +25,16 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "userInterfaceStyle": "light"
+      "userInterfaceStyle": "light",
+      "config":{
+        "googleMobileAdsAppId":"ca-app-pub-3062572241441297~9783587491"
+      }
     },
     "android": {
-      "userInterfaceStyle": "automatic"
+      "userInterfaceStyle": "light",
+      "config":{
+        "googleMobileAdsAppId":"ca-app-pub-3062572241441297~8767386275"
+      }
     }
   }
 }

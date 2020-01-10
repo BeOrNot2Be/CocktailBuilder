@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from 'redux-loop';
 import userReducer from './UserReducer';
 import cocktailsReducer from './CocktailsReducer';
 import ingredientsReducer from './IngredientsReducer';
