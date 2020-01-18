@@ -1,11 +1,11 @@
 import React from 'react';
-import { StyleSheet, ScrollView, FlatList} from 'react-native';
+import { StyleSheet, FlatList } from 'react-native';
 import {
   Layout,
-  Input,
   Text,
   Button,
-  ButtonGroup
+  ButtonGroup,
+  Input
 } from '@ui-kitten/components';
 import ListItem from '../components/SearchedIngredientItem';
 import {
@@ -14,6 +14,7 @@ import {
   BackIcon
   } from '../components/Icons'; 
 import { connect } from 'react-redux';
+import {NavigationEvents} from 'react-navigation';
 import { 
   ADD_INGREDIENT_TO_SEARCH_BY,
   ADDED_CHECK_MAP_UPDATE } from '../actions/Ingredients';
@@ -55,16 +56,25 @@ const IngredientScreen = ({navigation, searchEngine, addIngredient, added, setAd
   const toTop = () => {
     flatListRef.current.scrollToOffset({ animated: true, offset: 0 })
   }
+  const inputRef = React.useRef()
+
   return (
     <Layout level='2' style={styles.scrollContainer}>
+      <NavigationEvents 
+        onDidFocus={() => {if (navigation.getParam('focus', false)) { inputRef.current.focus(); }}}
+        onWillBlur={() => {navigation.setParams ({focus: false}); inputRef.current.blur()}}
+        />
             <FlatList
               ref={flatListRef}
               data={founded.slice(listLengthStart, listLengthEnd)}
               keyExtractor={item => item.ID.toString()}
+              keyboardShouldPersistTaps={'handled'}
               ListHeaderComponent={
                 <Layout style={styles.container} level='2'>
-                  <Input
+                  <Input 
                     placeholder='Search'
+                    ref={inputRef}
+                    autoCorrect={false}
                     value={inputValue}
                     onChangeText={searchInput}
                     icon={SearchIcon}

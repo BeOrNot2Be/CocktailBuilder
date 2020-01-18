@@ -17,6 +17,7 @@ import IngredientTabNavigator from './IngredientTopBar';
 import {ListIcon, CocktailIcon, HeartMenuIcon } from '../components/Icons';
 import IconBadge from 'react-native-icon-badge';
 import { connect } from 'react-redux';
+import {  SafeAreaView } from 'react-navigation';
 
 const config ={
   headerMode: 'none',
@@ -65,6 +66,7 @@ const TabBarComponent = ({ navigation, foundCocktailsNumber, theme, favCocktails
   }
 
   return (
+    <SafeAreaView>
       <BottomNavigation
         style={styles.bottomNavigation}
         selectedIndex={navigation.state.index}
@@ -75,6 +77,7 @@ const TabBarComponent = ({ navigation, foundCocktailsNumber, theme, favCocktails
         <BottomNavigationTab title={`Cocktails`} icon={(style) => getBadge(style, CocktailIcon, foundCocktailsNumber )}/>
         <BottomNavigationTab title='Favorites' icon={(style) => getBadge(style, HeartMenuIcon, favCocktailsNumber)}/>
       </BottomNavigation>
+    </SafeAreaView>
   );
 };
 

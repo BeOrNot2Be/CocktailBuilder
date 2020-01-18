@@ -65,7 +65,7 @@ const FavoriteScreen = ({navigation, cocktails, user, removeFav, fetchFav, googl
             {
               user.logged? (
                 <>
-                  {cocktails.map(ListItem(listConfig))}
+                  {_.sortBy(cocktails, [item => item.CocktailName]).map(ListItem(listConfig))}
                   <Layout level='1' style={{height: 250,}}/>
                 </>
               ) : (
@@ -80,7 +80,7 @@ const FavoriteScreen = ({navigation, cocktails, user, removeFav, fetchFav, googl
                       status="danger"
                       onPress={() => googleLogin()}
                       icon={GoogleIcon}
-                    >Join for FREE</Button>
+                    >Login with Google</Button>
                 </Layout>
               )
             } 

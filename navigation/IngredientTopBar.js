@@ -1,6 +1,5 @@
 import React from 'react';
 import {  SafeAreaView } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import { 
     TabBar,
@@ -25,8 +24,8 @@ const TabBarComponent = ({ navigation, addedIngredientNumber }) => {
         <SafeAreaView>
         <Header navigation={navigation}/>
         <TabBar selectedIndex={navigation.state.index} onSelect={onSelect}>
-            <Tab title='Search' icon={SearchIcon} />
             <Tab title={`In My Bar (${addedIngredientNumber})`} icon={AddedSquareIcon} />
+            <Tab title='Search' icon={SearchIcon} />
         </TabBar>
         </SafeAreaView>
     </Layout>
@@ -41,9 +40,9 @@ const mapStateToProps = (state) => {
   )
 };
 
-const TabNavigator = createMaterialTopTabNavigator({ 
-      Searched: SearchedIngredientsScreen,
+const TabNavigator = createMaterialTopTabNavigator({
       Added: AddedIngredientScreen,
+      Searched: SearchedIngredientsScreen,
 }, {
   tabBarComponent: connect(mapStateToProps)(TabBarComponent),
 });

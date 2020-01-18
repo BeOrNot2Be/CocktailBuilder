@@ -17,7 +17,7 @@ import {
   AdMobBanner,
 } from 'expo-ads-admob'
 
-const unitID =  Platform.OS === 'ios'? 'ca-app-pub-3940256099942544/6300978111' : 'ca-app-pub-3940256099942544/6300978111'
+const unitID =  Platform.OS === 'ios'? 'ca-app-pub-4338763897925627/6432597471' : 'ca-app-pub-4338763897925627/8128822528'
 const ListItemComponent = (constArgs) => {
     const {
       ingredients,
@@ -79,7 +79,6 @@ const ListItemComponent = (constArgs) => {
         )};
     } else {
         return (item, index) => {
-          console.log(item)
           if (item.ad) {
             return (
               <Layout style={styles.ads} key={index}>
@@ -111,7 +110,7 @@ const ListItemComponent = (constArgs) => {
                                 {fav? 
                                   `${item.Ingredients.length != 0? item.Ingredients.length: 1} ${item.Ingredients.length !== 1? 'ingredients': 'ingredient'}` : 
                                   (item.MissingIngr == 0 ? "You can make it!" : (
-                                    item.MissingIngr !== undefined ? `You need ${item.MissingIngr} ${item.MissingIngr !== 1? 'ingredients': 'ingredient'} more` :
+                                    item.MissingIngr !== undefined ? `You need ${item.MissingIngr} more ${item.MissingIngr !== 1? 'ingredients': 'ingredient'}` :
                                     `${item.TotalIngredients != 0? item.TotalIngredients: 1} ${item.TotalIngredients !== 1? 'ingredients': 'ingredient'}`
                                   ))}
                               </Text>

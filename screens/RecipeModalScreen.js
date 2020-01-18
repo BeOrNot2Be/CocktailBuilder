@@ -87,7 +87,6 @@ const RecipeModal = ({navigation,  favCocktails, toggle, user, googleLogin}) => 
     const Header = () => (
       <CardHeader
         title={recipe.CocktailName}
-        description='by CocktailBuilder'
       />
     );
 

@@ -21,22 +21,27 @@ import MainSourceFetch from '../api/web';
 import NativeApi from '../api/native';
 import GoogleApi from '../api/google';
 import _ from 'lodash';
+import {
+  AdMobBanner,
+} from 'expo-ads-admob'
 
-
+const unitID =  Platform.OS === 'ios'? 'ca-app-pub-4338763897925627/6432597471' : 'ca-app-pub-4338763897925627/8128822528'
 
 const RecipeScreen = ({navigation, favCocktails, toggle, user, googleLogin }) => {
     const [recipeData, setRecipeData] = React.useState({});
     const [cocktailsList, setCocktailsList] = React.useState([]);
     const [listLength, setListLength] = React.useState(10);
-    const recipe = navigation.getParam('recipe', {Name: "vodka", ID: 3, Popularity:2642, NormalizedIngredientID: 1})// improve it
+    const recipe = navigation.getParam('recipe', {Name: "vodka", ID: 3, Popularity:2642, NormalizedIngredientID: 1})
 
     const openRecipe = (item) => {
         navigation.push('Recipe', {recipe: item})
       };
 
     React.useEffect(() => {
-      MainSourceFetch.getCocktail(recipe, setRecipeData, recipeData);
-      if (!_.isEmpty(recipeData)){
+      if (_.isEmpty(recipeData)){
+        MainSourceFetch.getCocktail(recipe, setRecipeData, recipeData);
+      }
+      if ((!_.isEmpty(recipeData)&&(_.isEmpty(cocktailsList)))){
         MainSourceFetch.getCocktailsByIngredient(recipeData.Ingredients[0], setCocktailsList, cocktailsList);
       }
     })
@@ -44,7 +49,6 @@ const RecipeScreen = ({navigation, favCocktails, toggle, user, googleLogin }) =>
     const CardsHeader = () => (
       <CardHeader
         title={recipe.CocktailName}
-        description='by CocktailBuilder'
       />
     );
 
@@ -90,7 +94,6 @@ const RecipeScreen = ({navigation, favCocktails, toggle, user, googleLogin }) =>
     
     const ToggleFollow = (ref, item) => 
     {
-      ref.shake(800)
       if (user.logged) {
         toggle(item, user.token, favCocktails)
       } else {
@@ -137,6 +140,7 @@ const RecipeScreen = ({navigation, favCocktails, toggle, user, googleLogin }) =>
                 <Spinner size='giant'/>
                </Layout>
             ) : (
+              <>
                <Layout style={styles.card}>
                 <Card header={CardsHeader} footer={CardsFooter} style={styles.card}>
                     <Layout>
@@ -154,13 +158,23 @@ const RecipeScreen = ({navigation, favCocktails, toggle, user, googleLogin }) =>
                     </Layout>
                 </Card>
               </Layout>
-            )}
-            {cocktailsList.length !== 0 ? (
-              <>
-               <Divider style={styles.divider}/>
+              <Divider style={styles.divider}/>
               <Text  category='h6' style={styles.textHeader}>
                 More cocktails with {recipeData.Ingredients[0].Name}
               </Text>
+              <Layout style={styles.ads} >
+                <AdMobBanner
+                  bannerSize="mediumRectangle"
+                  adUnitID={unitID}
+                  servePersonalizedAds={true}
+                  testDevices={[AdMobBanner.simulatorId]}
+                  onAdFailedToLoad={error => console.error(error)}
+                />
+              </Layout>
+              </>
+            )}
+            {cocktailsList.length !== 0 ? (
+              <>
               {cocktailsList.slice(0,listLength).map(ListItem(listConfig))}
               {cocktailsList.length > listLength? (
                 <Layout 
@@ -243,6 +257,17 @@ const styles = StyleSheet.create({
     textAlign:'center',
     alignItems: 'center',
   },
+  recipeHeader: {
+    textAlign:'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  ads: {
+    marginVertical: 10,
+    justifyContent: 'center',
+    textAlign:'center',
+    alignItems: 'center',
+  }
 });
 
 const mapStateToProps = (state) => {

@@ -70,7 +70,7 @@ export default class MainSourceFetch {
           });
     }
 
-    static getCocktailsByIngredients(ingredients, dispatch){ // make with adds 
+    static getCocktailsByIngredients(ingredients, dispatch){
         const str = makeIngredientsFetchable(ingredients) 
         fetch(`https://www.cocktailbuilder.com/json/topByIngredients?max=100&param=${str}`)
         .then(response => response.json())
@@ -88,7 +88,7 @@ export default class MainSourceFetch {
           });
     }
 
-    static getCocktailsByIngredient(ingredient, setState, cocktailsList){ // make with adds 
+    static getCocktailsByIngredient(ingredient, setState, cocktailsList){ 
         fetch(`https://www.cocktailbuilder.com/json/topByIngredients?param=${ingredient.ID}`)
         .then(response => response.json())
         .then(responseJson => {
