@@ -107,6 +107,7 @@ const TabNavigator = createBottomTabNavigator({
   }, config),
 }, {
   tabBarComponent: connect(mapStateToProps)(TabBarComponent),
+  resetOnBlur : true,
 });
 
 const styles = StyleSheet.create({

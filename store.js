@@ -4,7 +4,7 @@ import { install  } from 'redux-loop';
 
 
 const enhancer = compose(
-    install()
+    install(),
   );
 
 const mainStore = createStore(reducer, {}, install());

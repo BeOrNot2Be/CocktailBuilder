@@ -26,6 +26,10 @@ const CocktailScreen = ({ navigation, cocktails, search, favCocktails, toggle, u
   const [listLengthStart, setListLengthStart] = React.useState(0);
   const [listLengthEnd, setListLengthEnd] = React.useState(10); 
 
+  console.log('main screen update')
+  console.log(favCocktails.length)
+  console.log(user)
+  console.log('main screen update')
 
   const openRecipe = (item) => {
     navigation.push('Recipe', {recipe: item})
@@ -81,10 +85,6 @@ const CocktailScreen = ({ navigation, cocktails, search, favCocktails, toggle, u
     listView.scrollTo({x: 0, y: 0, animated: true})
   }
 
-  if (cocktails.slice(listLengthStart, listLengthEnd).length == 0) {
-    setListLengthEnd(10)
-    setListLengthStart(0)
-  }
 
   return (
     <Layout level='1'>
