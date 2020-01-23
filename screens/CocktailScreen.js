@@ -13,8 +13,6 @@ import Header from '../components/Header';
 import {
   SearchIcon,
   CrossIcon,
-  ForwardIcon,
-  BackIcon
 } from '../components/Icons'; 
 import { connect } from 'react-redux';
 import MainSourceFetch from '../api/web';
@@ -23,13 +21,7 @@ import _ from 'lodash';
 
 const CocktailScreen = ({ navigation, cocktails, search, favCocktails, toggle, user, googleLogin }) => {
   const [inputValue, setInputValue] = React.useState('');
-  const [listLengthStart, setListLengthStart] = React.useState(0);
-  const [listLengthEnd, setListLengthEnd] = React.useState(10); 
-
-  console.log('main screen update')
-  console.log(favCocktails.length)
-  console.log(user)
-  console.log('main screen update')
+  const [listLengthEnd, setListLengthEnd] = React.useState(20); 
 
   const openRecipe = (item) => {
     navigation.push('Recipe', {recipe: item})
@@ -80,11 +72,6 @@ const CocktailScreen = ({ navigation, cocktails, search, favCocktails, toggle, u
     search(input)
   }
 
-  let listView;
-  const toTop = () => {
-    listView.scrollTo({x: 0, y: 0, animated: true})
-  }
-
 
   return (
     <Layout level='1'>
@@ -92,7 +79,6 @@ const CocktailScreen = ({ navigation, cocktails, search, favCocktails, toggle, u
         <Header navigation={navigation}/>
           <ScrollView 
             style={styles.scrollContainer}
-            ref={ref => listView = ref}
           >
               <Layout style={styles.container}>
                   <Input
@@ -111,32 +97,22 @@ const CocktailScreen = ({ navigation, cocktails, search, favCocktails, toggle, u
                 </Layout>
               ) : (
                 <>
-                  {cocktails.slice(listLengthStart, listLengthEnd).map(ListItem(listConfig))}
+                  {cocktails.slice(0, listLengthEnd).map(ListItem(listConfig))}
                   <Layout 
                     style={styles.buttonContainer}
                     >
                       {user.logged? (
-                        <ButtonGroup appearance='outline' size='large'>
-                        {listLengthStart > 9 ? (
+                        cocktails.length > listLengthEnd? (
                           <Button
-                          onPress={() => {setListLengthEnd(listLengthEnd - 10); setListLengthStart(listLengthStart - 10); if(cocktails.length > listLengthEnd) {toTop()}}}
+                            onPress={() => {setListLengthEnd(listLengthEnd + 20);}}
                             style={styles.button}
-                            icon={BackIcon}
-                          ></Button>
-                        ) : (<></>)}
-                        {cocktails.length > listLengthEnd? (
-                          <Button
-                            onPress={() => {setListLengthEnd(listLengthEnd + 10); setListLengthStart(listLengthStart + 10); if(cocktails.length > listLengthEnd + 10) {toTop()}}}
-                            style={styles.button}
-                            icon={ForwardIcon}
-                          ></Button>
-                        ) : (<></>)}
-                        </ButtonGroup>
+                          >Load More</Button>
+                        ) : (<></>)
                       ) : (
                         <Button
                         onPress={getMore}
                         style={styles.button}
-                      > More </Button>
+                      >Load More</Button>
                       ) }
                   </Layout>
                   <Layout level='1' style={{height: 200,}}/>

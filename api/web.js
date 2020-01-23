@@ -71,8 +71,8 @@ export default class MainSourceFetch {
     }
 
     static getCocktailsByIngredients(ingredients, dispatch){
-        const str = makeIngredientsFetchable(ingredients) 
-        fetch(`https://www.cocktailbuilder.com/json/topByIngredients?max=100&param=${str}`)
+        const str = makeIngredientsFetchable(ingredients)
+        fetch(`https://www.cocktailbuilder.com/json/topByIngredients?max=500&param=${str}`)
         .then(response => response.json())
         .then(responseJson => {
             dispatch({

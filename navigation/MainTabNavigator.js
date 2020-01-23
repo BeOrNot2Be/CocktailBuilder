@@ -18,7 +18,8 @@ import {ListIcon, CocktailIcon, HeartMenuIcon } from '../components/Icons';
 import IconBadge from 'react-native-icon-badge';
 import { connect } from 'react-redux';
 import {  SafeAreaView } from 'react-navigation';
-
+import _ from 'lodash';
+ 
 const config ={
   headerMode: 'none',
   defaultNavigationOptions: {
@@ -32,6 +33,10 @@ const TabBarComponent = ({ navigation, foundCocktailsNumber, theme, favCocktails
     navigation.navigate(selectedTabRoute.routeName);
   };
 
+  const numDigits = (x) => {
+    return Math.max(Math.floor(Math.log10(Math.abs(x))), 0) + 2;
+  }
+
   const getBadge = (style, icon, num) => {
     if (num > 0 ) {
       return (
@@ -42,12 +47,14 @@ const TabBarComponent = ({ navigation, foundCocktailsNumber, theme, favCocktails
             }
             BadgeElement={
               <Layout
-                style={{...styles.badge, backgroundColor: theme? '#DB3B29' : '#FF4463'}}
+                style={{...styles.badge, minWidth: numDigits(num) * 10, backgroundColor: theme? '#DB3B29' : '#FF4463'}} // make adjustable banner 
               >
                 <Text
                   style={{color:'#FFFFFF'}}
                   category='label'
-                >{num > 99 ? `${99}+` : num}</Text>
+                >
+                  {num == 10000 ? `${9999}+` : num}
+                  </Text>
               </Layout>
             }
             IconBadgeStyle={
@@ -81,11 +88,19 @@ const TabBarComponent = ({ navigation, foundCocktailsNumber, theme, favCocktails
   );
 };
 
+const getAmountWithoutAdds = (num) => {
+  return num - Math.floor(num/10)
+}
+
+const  getAmountThatCanBeMade = (cocktails) => {
+  return _.filter(cocktails, item => !item.MissingIngr).length
+}
+
 const mapStateToProps = (state) => {
   return (
     {
-      foundCocktailsNumber:  state.cocktails.cocktailsByIngredients.length - Math.floor(state.cocktails.cocktailsByIngredients.length/10), // get amount without adds
-      favCocktailsNumber: state.cocktails.favCocktails.length - Math.floor(state.cocktails.favCocktails.length/10),
+      foundCocktailsNumber:  getAmountThatCanBeMade(state.cocktails.cocktailsByIngredients),
+      favCocktailsNumber: getAmountWithoutAdds(state.cocktails.favCocktails.length),
       theme: state.user.theme
     }
   )
@@ -129,7 +144,6 @@ const styles = StyleSheet.create({
   },
   badge: {
     marginLeft: 10,
-    minWidth:30,
     height:20,
     borderRadius:15,
     alignItems: 'center',

@@ -10,8 +10,6 @@ import {
 import ListItem from '../components/SearchedIngredientItem';
 import {
   SearchIcon,
-  ForwardIcon,
-  BackIcon
   } from '../components/Icons'; 
 import { connect } from 'react-redux';
 import {NavigationEvents} from 'react-navigation';
@@ -27,8 +25,7 @@ let searching = true;
 const IngredientScreen = ({navigation, searchEngine, addIngredient, added, setAdded }) => {
   const [inputValue, setInputValue] = React.useState('');
   const [founded, setFounded] = React.useState([]);
-  const [listLengthStart, setListLengthStart] = React.useState(0);
-  const [listLengthEnd, setListLengthEnd] = React.useState(10); 
+  const [listLengthEnd, setListLengthEnd] = React.useState(20); 
 
   const addIngredientToList = (ref, item) => {
       addIngredient(item)
@@ -47,15 +44,11 @@ const IngredientScreen = ({navigation, searchEngine, addIngredient, added, setAd
     typingTimeout = setTimeout(() => {
       searching = false;
       setListLengthEnd(10)
-      setListLengthStart(0)
       setFounded(searchEngine.search(text).sort((a, b) => (a.Popularity > b.Popularity) ? -1 : 1))
     }, 400);
     setInputValue(text);
   }
-  const flatListRef = React.useRef()
-  const toTop = () => {
-    flatListRef.current.scrollToOffset({ animated: true, offset: 0 })
-  }
+
   const inputRef = React.useRef()
 
   return (
@@ -65,8 +58,7 @@ const IngredientScreen = ({navigation, searchEngine, addIngredient, added, setAd
         onWillBlur={() => {navigation.setParams ({focus: false}); inputRef.current.blur()}}
         />
             <FlatList
-              ref={flatListRef}
-              data={founded.slice(listLengthStart, listLengthEnd)}
+              data={founded.slice(0, listLengthEnd)}
               keyExtractor={item => item.ID.toString()}
               keyboardShouldPersistTaps={'handled'}
               ListHeaderComponent={
@@ -94,20 +86,11 @@ const IngredientScreen = ({navigation, searchEngine, addIngredient, added, setAd
                     level='2'
                     style={styles.buttonContainer}
                     > 
-                      <ButtonGroup appearance='outline' size='large'>
-                      {listLengthStart > 9 ? (
-                        <Button
-                        onPress={() => {setListLengthEnd(listLengthEnd - 10); setListLengthStart(listLengthStart - 10); if(founded.length > listLengthEnd) {toTop()}}}
-                          icon={BackIcon}
-                        ></Button>
-                      ) : (<></>)}
                       {founded.length > listLengthEnd? (
                         <Button
-                          onPress={() => {setListLengthEnd(listLengthEnd + 10); setListLengthStart(listLengthStart + 10);  if(founded.length > listLengthEnd + 10) {toTop()}}}
-                          icon={ForwardIcon}
-                        ></Button>
+                          onPress={() => {setListLengthEnd(listLengthEnd + 20);}}
+                        >Load More</Button>
                       ) : (<></>)}
-                      </ButtonGroup>
                   </Layout>
               <Layout level='2' style={{height: 80,}}/>
               </>
