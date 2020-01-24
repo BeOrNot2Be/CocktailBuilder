@@ -13,6 +13,7 @@ import { connect } from 'react-redux';
 import MainSourceFetch from '../api/web';
 import GoogleApi from '../api/google';
 import _ from 'lodash';
+import GoogleAnalytics from '../api/googleAnalytics';
 
 
 const IngredientScreen = ({navigation, favCocktails, user, toggle, googleLogin}) => {
@@ -57,6 +58,7 @@ const IngredientScreen = ({navigation, favCocktails, user, toggle, googleLogin})
     }
 
     const openRecipe = (item) => {
+        GoogleAnalytics.openedRecipe(item.CocktailName);
         navigation.push('Recipe', {recipe: item})
       };
 

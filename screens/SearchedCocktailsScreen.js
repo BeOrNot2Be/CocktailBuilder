@@ -16,12 +16,14 @@ import { connect } from 'react-redux';
 import MainSourceFetch from '../api/web';
 import GoogleApi from '../api/google';
 import _ from 'lodash';
+import GoogleAnalytics from '../api/googleAnalytics';
 
 const SearchedCocktailsScreen = ({ navigation, cocktails, search,  favCocktails, toggle, user, googleLogin }) => {
   const [inputValue, setInputValue] = React.useState(navigation.getParam('inputSearch', ''));
   const [lastSearch, setLastSearch] = React.useState(navigation.getParam('inputSearch', ''));
 
   const openRecipe = (item) => {
+    GoogleAnalytics.openedRecipe(item.CocktailName);
     navigation.push('Recipe', {recipe: item})
   };
 

@@ -12,6 +12,7 @@ import {
 import _ from 'lodash';
 import MainSourceFetch from '../api/web';
 import { loop, Cmd } from 'redux-loop';
+import GoogleAnalytics from '../api/googleAnalytics';
 
 const INITIAL_STATE = {
     searchedCocktails:[],

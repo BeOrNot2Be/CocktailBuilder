@@ -19,7 +19,8 @@ import IconBadge from 'react-native-icon-badge';
 import { connect } from 'react-redux';
 import {  SafeAreaView } from 'react-navigation';
 import _ from 'lodash';
- 
+import GoogleAnalytics from '../api/googleAnalytics';
+
 const config ={
   headerMode: 'none',
   defaultNavigationOptions: {
@@ -27,10 +28,11 @@ const config ={
 }
 
 const TabBarComponent = ({ navigation, foundCocktailsNumber, theme, favCocktailsNumber }) => {
-
+  
   const onSelect = (index) => {
     const selectedTabRoute = navigation.state.routes[index];
     navigation.navigate(selectedTabRoute.routeName);
+    GoogleAnalytics.sendMainPagesAnalytics(selectedTabRoute.routeName)
   };
 
   const numDigits = (x) => {

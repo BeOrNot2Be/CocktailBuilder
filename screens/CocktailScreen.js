@@ -6,7 +6,6 @@ import {
   Layout,
   Button,
   Text,
-  ButtonGroup
 } from '@ui-kitten/components';
 import ListItem from '../components/listItem';
 import Header from '../components/Header';
@@ -18,12 +17,14 @@ import { connect } from 'react-redux';
 import MainSourceFetch from '../api/web';
 import GoogleApi from '../api/google';
 import _ from 'lodash';
+import GoogleAnalytics from '../api/googleAnalytics';
 
 const CocktailScreen = ({ navigation, cocktails, search, favCocktails, toggle, user, googleLogin }) => {
   const [inputValue, setInputValue] = React.useState('');
   const [listLengthEnd, setListLengthEnd] = React.useState(20); 
 
   const openRecipe = (item) => {
+    GoogleAnalytics.openedRecipe(item.CocktailName);
     navigation.push('Recipe', {recipe: item})
   };
 

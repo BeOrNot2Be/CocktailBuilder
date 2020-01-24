@@ -15,9 +15,8 @@ import {
     GET_INVENTORY_INGS,
     SAVE_INVENTORY_INGS
 } from '../actions/Ingredients';
-
+import GoogleAnalytics from '../api/googleAnalytics';
 import * as Google from 'expo-google-app-auth';
-
 import NetInfo from '@react-native-community/netinfo';
 
 const validateStrInput = (input) =>{
@@ -288,7 +287,8 @@ export default class MainSourceFetch {
                     type: ADD_FAV_COCKTAIL,
                     data: item 
                 })
-                this.getCocktailById(added.CocktailID, loadFavIntoState)
+                GoogleAnalytics.addedRecipeToFav(added.CocktailName);
+                this.getCocktailById(added.CocktailID, loadFavIntoState);
             }
         })
         .catch(error => {

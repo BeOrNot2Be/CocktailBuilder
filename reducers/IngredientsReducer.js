@@ -10,6 +10,7 @@ import MainSourceFetch from '../api/web';
 import Fuse from 'fuse.js';
 import _ from 'lodash';
 import { loop, Cmd } from 'redux-loop';
+import GoogleAnalytics from '../api/googleAnalytics';
 
 var options = {
   threshold: 0.2,
@@ -62,6 +63,7 @@ const ingredientsReducer = (state = INITIAL_STATE, action) => {
       return {...state, searchedIngredients:action.data, searchEngine: new Fuse(action.data, options)}
     
     case ADD_INGREDIENT_TO_SEARCH_BY:
+      GoogleAnalytics.addedIngToMyBar(action.data.Name);
       return {
       ...state, 
       addedIngredients: state.addedIngredients.concat(action.data)

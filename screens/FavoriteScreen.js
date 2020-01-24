@@ -13,9 +13,11 @@ import { connect } from 'react-redux';
 import MainSourceFetch from '../api/web';
 import GoogleApi from '../api/google';
 import _ from 'lodash';
+import GoogleAnalytics from '../api/googleAnalytics';
 
 const FavoriteScreen = ({navigation, cocktails, user, removeFav, fetchFav, googleLogin}) => {
   const openRecipe = (item) => {
+    GoogleAnalytics.openedRecipe(item.CocktailName);
     navigation.push('Recipe', {recipe: item})
   };
 
@@ -34,7 +36,6 @@ const FavoriteScreen = ({navigation, cocktails, user, removeFav, fetchFav, googl
   }
 
   const RemoveItem = (ref, item) => {
-    ref.bounceOutLeft(800)
     if (user.logged) {
       removeFav(item, user.token, cocktails)
     } else {

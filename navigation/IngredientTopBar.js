@@ -11,12 +11,15 @@ import AddedIngredientScreen from '../screens/AddedIngredientScreen';
 import Header from '../components/Header';
 import { SearchIcon, AddedSquareIcon } from '../components/Icons';
 import { connect } from 'react-redux';
+import GoogleAnalytics from '../api/googleAnalytics';
 
 const TabBarComponent = ({ navigation, addedIngredientNumber }) => {
 
   const onSelect = (index) => {
+    console.log(navigation.state.routes);
     const selectedTabRoute = navigation.state.routes[index];
     navigation.navigate(selectedTabRoute.routeName);
+    GoogleAnalytics.sendIngsPagesAnalytics(selectedTabRoute.routeName)
   };
 
   return (

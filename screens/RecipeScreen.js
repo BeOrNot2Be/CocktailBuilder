@@ -24,6 +24,7 @@ import _ from 'lodash';
 import {
   AdMobBanner,
 } from 'expo-ads-admob'
+import GoogleAnalytics from '../api/googleAnalytics';
 
 const unitID =  Platform.OS === 'ios'? 'ca-app-pub-4338763897925627/6432597471' : 'ca-app-pub-4338763897925627/8128822528'
 
@@ -34,6 +35,7 @@ const RecipeScreen = ({navigation, favCocktails, toggle, user, googleLogin }) =>
     const recipe = navigation.getParam('recipe', {Name: "vodka", ID: 3, Popularity:2642, NormalizedIngredientID: 1})
 
     const openRecipe = (item) => {
+        GoogleAnalytics.openedRecipe(item.CocktailName);
         navigation.push('Recipe', {recipe: item})
       };
 
