@@ -17,6 +17,7 @@ import {
 import NativeApi from '../api/native';
 import { loop, Cmd } from 'redux-loop';
 import MainSourceFetch from '../api/web';
+import GoogleAnalytics from '../api/googleAnalytics';
 
 const INITIAL_STATE = {
   logged: false,
@@ -43,6 +44,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
     case ADD_TOKEN:
       user = {...state, token: action.data, logged: true};
       NativeApi.SaveUser(user)
+      GoogleAnalytics.loggedIn()
       return loop(user, Cmd.list([
         Cmd.run(MainSourceFetch.getFavsIDFetchReturn, {
         successActionCreator: usersFavsFetchSuccessfulAction,
@@ -65,6 +67,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
 
     case CACHE_SIGN_IN:
       user = {...state, ...action.data}; 
+      GoogleAnalytics.loggedIn()
       if (user.logged) {
         return loop(user, Cmd.list([
             Cmd.run(MainSourceFetch.getFavsIDFetchReturn, {

@@ -1,6 +1,6 @@
 import { Analytics, Event, PageHit  } from 'expo-analytics';
 
-const analytics = new Analytics('UA-156898270-1');
+const analytics = new Analytics('UA-759662-3');
 
 const ConnectionIssue = () => {
   NetInfo.fetch().then(state => {
@@ -18,32 +18,32 @@ export default class GoogleAnalytics {
 
     static cocktailPageOpened() {
         analytics.hit(new PageHit('CocktailPage'))
-        .then(() => {console.log("success")})
-        .catch(e => {console.log(e.message)});
+        .then(() => {{}})
+        .catch(e => {console.error(e.message)});
     }
 
     static favPageOpened() {
         analytics.hit(new PageHit('FavoritePage'))
-        .then(() => {console.log("success")})
-        .catch(e => {console.log(e.message)});
+        .then(() => {{}})
+        .catch(e => {console.error(e.message)});
     }
 
     static ingsPageOpened() {
         analytics.hit(new PageHit('IngredientsPage'))
-        .then(() => {console.log("success")})
-        .catch(e => {console.log(e.message)});
+        .then(() => {{}})
+        .catch(e => {console.error(e.message)});
     }
 
     static addedIngsOpened() {
         analytics.hit(new PageHit('MyBar'))
-        .then(() => {console.log("success")})
-        .catch(e => {console.log(e.message)});
+        .then(() => {{}})
+        .catch(e => {console.error(e.message)});
     }
 
     static searchedIngsOpened() {
         analytics.hit(new PageHit('SearchedIngredients'))
-        .then(() => {console.log("success")})
-        .catch(e => {console.log(e.message)});
+        .then(() => {{}})
+        .catch(e => {console.error(e.message)});
     }
     
     static sendMainPagesAnalytics(name) {
@@ -82,19 +82,25 @@ export default class GoogleAnalytics {
 
     static addedIngToMyBar(ing_name) {
         analytics.event(new Event('Ingredients', 'Addded to My Bar', `${ing_name} Ingredient Added to My Bar`))
-        .then(() => console.log("success"))
-        .catch(e => console.log(e.message));
+        .then(() => {})
+        .catch(e => console.error(e.message));
     }
 
     static addedRecipeToFav(recipe_name) {
         analytics.event(new Event('Recipes', 'Addded to Favorites', `${recipe_name} Recipe Added to Favorites`))
-        .then(() => console.log("success"))
-        .catch(e => console.log(e.message));
+        .then(() => {})
+        .catch(e => console.error(e.message));
     }
 
     static openedRecipe(recipe_name) {
         analytics.event(new Event('Recipes', 'Opened', `${recipe_name} Recipe Opened`))
-        .then(() => console.log("success"))
-        .catch(e => console.log(e.message));
+        .then(() => {})
+        .catch(e => console.error(e.message));
+    }
+
+    static loggedIn() {
+        analytics.event(new Event('Users', 'Logged In', 'User Signed in from Mobile App'))
+        .then(() => {})
+        .catch(e => console.error(e.message));
     }
 }
