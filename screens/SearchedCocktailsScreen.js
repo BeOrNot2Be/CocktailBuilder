@@ -1,30 +1,37 @@
+/** @format */
+
 import React from 'react';
 import { StyleSheet, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
-import { 
-  Input,
-  Layout,
-  Text
-} from '@ui-kitten/components';
+import { Input, Layout, Text } from '@ui-kitten/components';
 import ListItem from '../components/listItem';
 import Header from '../components/Header';
-import {
-  SearchIcon,
-  CrossIcon
-} from '../components/Icons'; 
+import { SearchIcon, CrossIcon } from '../components/Icons';
 import { connect } from 'react-redux';
 import MainSourceFetch from '../api/web';
 import GoogleApi from '../api/google';
 import _ from 'lodash';
 import GoogleAnalytics from '../api/googleAnalytics';
 
-const SearchedCocktailsScreen = ({ navigation, cocktails, search,  favCocktails, toggle, user, googleLogin }) => {
-  const [inputValue, setInputValue] = React.useState(navigation.getParam('inputSearch', ''));
-  const [lastSearch, setLastSearch] = React.useState(navigation.getParam('inputSearch', ''));
+const SearchedCocktailsScreen = ({
+  navigation,
+  cocktails,
+  search,
+  favCocktails,
+  toggle,
+  user,
+  googleLogin
+}) => {
+  const [inputValue, setInputValue] = React.useState(
+    navigation.getParam('inputSearch', '')
+  );
+  const [lastSearch, setLastSearch] = React.useState(
+    navigation.getParam('inputSearch', '')
+  );
 
   const openRecipe = (item) => {
     GoogleAnalytics.openedRecipe(item.CocktailName);
-    navigation.push('Recipe', {recipe: item})
+    navigation.push('Recipe', { recipe: item });
   };
 
   const askForLogin = () => {
@@ -33,70 +40,71 @@ const SearchedCocktailsScreen = ({ navigation, cocktails, search,  favCocktails,
       'You need to sign in before using this functionality',
       [
         {
-          text: 'Ok',
+          text: 'Ok'
         },
-        { text: 'Sign In', onPress: () => googleLogin() },
+        { text: 'Sign In', onPress: () => googleLogin() }
       ],
       { cancelable: false }
-    )
-  }
-  
-  const ToggleFollow = (ref, item) => 
-  {
+    );
+  };
+
+  const ToggleFollow = (ref, item) => {
     if (user.logged) {
-      toggle(item, user.token, favCocktails)
+      toggle(item, user.token, favCocktails);
     } else {
-      askForLogin()
+      askForLogin();
     }
-  }
+  };
 
   const openModal = (item) => {
-    navigation.push('modal', {recipe:item})
-  }
-  
+    navigation.push('modal', { recipe: item });
+  };
+
   const listConfig = {
     ingredients: false,
-    added:false,
-    fav:false,
-    onLongPress:openModal,
-    onPress:openRecipe,
-    onMainButtonPress:ToggleFollow,
-    favsID: favCocktails.map(e => e.CocktailID)
-    }
-  
+    added: false,
+    fav: false,
+    onLongPress: openModal,
+    onPress: openRecipe,
+    onMainButtonPress: ToggleFollow,
+    favsID: favCocktails.map((e) => e.CocktailID)
+  };
 
   return (
-    <Layout level='1'>
+    <Layout level="1">
       <SafeAreaView>
-        <Header navigation={navigation}/>
-          <ScrollView style={styles.scrollContainer}>
-              <Layout style={styles.container}>
-                  <Input
-                    placeholder='Search'
-                    value={inputValue}
-                    onChangeText={setInputValue}
-                    icon={ inputValue ? CrossIcon : SearchIcon }
-                    onIconPress={() => setInputValue('')}
-                    autoCorrect={false}
-                    onSubmitEditing={() => {search(inputValue), setLastSearch(inputValue)}}
-                  />
-              </Layout>
-              {cocktails.length === 0 ? (
-                <Layout style={styles.textContainer}>
-                  <Text category='p2' status='basic'>No results found for search: {lastSearch}</Text>
-                </Layout>
-              ) : (
-                <>
-                  {cocktails.map(ListItem(listConfig))}
-                  <Layout level='1' style={{height: 200,}}/>
-                </>
-              )}
-          </ScrollView>
+        <Header navigation={navigation} />
+        <ScrollView style={styles.scrollContainer}>
+          <Layout style={styles.container}>
+            <Input
+              placeholder="Search"
+              value={inputValue}
+              onChangeText={setInputValue}
+              icon={inputValue ? CrossIcon : SearchIcon}
+              onIconPress={() => setInputValue('')}
+              autoCorrect={false}
+              onSubmitEditing={() => {
+                search(inputValue), setLastSearch(inputValue);
+              }}
+            />
+          </Layout>
+          {cocktails.length === 0 ? (
+            <Layout style={styles.textContainer}>
+              <Text category="p2" status="basic">
+                No results found for search: {lastSearch}
+              </Text>
+            </Layout>
+          ) : (
+            <>
+              {cocktails.map(ListItem(listConfig))}
+              <Layout level="1" style={{ height: 200 }} />
+            </>
+          )}
+        </ScrollView>
       </SafeAreaView>
     </Layout>
-  )
-}
-
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -106,8 +114,8 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     backgroundColor: 'transparent'
   },
-  scrollContainer:{
-    height: '100%',
+  scrollContainer: {
+    height: '100%'
   },
   textContainer: {
     paddingLeft: 24
@@ -115,26 +123,27 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => {
-  return (
-    {
-      cocktails: state.cocktails.searchedCocktails,
-      favCocktails: state.cocktails.favCocktails,
-      user: state.user
-    }
-  )
+  return {
+    cocktails: state.cocktails.searchedCocktails,
+    favCocktails: state.cocktails.favCocktails,
+    user: state.user
+  };
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   googleLogin: () => GoogleApi.fullSignInWithGoogleAsync(dispatch),
-  search : input => MainSourceFetch.getCocktailsByName(input, dispatch),
-  toggle : (item, token, favs) => {
-    const favIDs = favs.map(e => e.CocktailID);
+  search: (input) => MainSourceFetch.getCocktailsByName(input, dispatch),
+  toggle: (item, token, favs) => {
+    const favIDs = favs.map((e) => e.CocktailID);
     if (_.includes(favIDs, item.CocktailID)) {
-      MainSourceFetch.saveRemovedFav(item, favs, token, dispatch)
+      MainSourceFetch.saveRemovedFav(item, favs, token, dispatch);
     } else {
-      MainSourceFetch.saveAddedFav(item, favs, token, dispatch)
+      MainSourceFetch.saveAddedFav(item, favs, token, dispatch);
     }
   }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(SearchedCocktailsScreen);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SearchedCocktailsScreen);

@@ -1,3 +1,5 @@
+/** @format */
+
 import { AppLoading } from 'expo';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
@@ -9,11 +11,12 @@ import store from './store';
 import * as firebase from 'firebase';
 import { firebaseConfig } from './constants/ApiKeys';
 
-
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
-  if (!firebase.apps.length) {firebase.initializeApp(firebaseConfig)}
-  
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+
   if (!isLoadingComplete && !props.skipLoadingScreen) {
     return (
       <AppLoading
@@ -24,8 +27,8 @@ export default function App(props) {
     );
   } else {
     return (
-      <Provider store={ store }>
-        <AppComponent/>
+      <Provider store={store}>
+        <AppComponent />
       </Provider>
     );
   }
@@ -33,13 +36,11 @@ export default function App(props) {
 
 async function loadResourcesAsync() {
   await Promise.all([
-    Asset.loadAsync([
-      require('./assets/images/icon.png'),
-    ]),
+    Asset.loadAsync([require('./assets/images/icon.png')]),
     Font.loadAsync({
       ...Ionicons.font,
-      'roboto': require('./assets/fonts/Roboto-Regular.ttf'),
-    }),
+      roboto: require('./assets/fonts/Roboto-Regular.ttf')
+    })
   ]);
 }
 
@@ -50,4 +51,3 @@ function handleLoadingError(error) {
 function handleFinishLoading(setLoadingComplete) {
   setLoadingComplete(true);
 }
-

@@ -1,11 +1,10 @@
+/** @format */
+
 import { createStore, compose } from 'redux';
 import reducer from './reducers/MainReducer';
-import { install  } from 'redux-loop';
+import { install } from 'redux-loop';
 
-
-const enhancer = compose(
-    install(),
-  );
+const enhancer = compose(install());
 
 const mainStore = createStore(reducer, {}, install());
 

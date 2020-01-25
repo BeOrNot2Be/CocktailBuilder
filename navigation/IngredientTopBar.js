@@ -1,11 +1,9 @@
+/** @format */
+
 import React from 'react';
-import {  SafeAreaView } from 'react-navigation';
+import { SafeAreaView } from 'react-navigation';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
-import { 
-    TabBar,
-    Tab,
-    Layout
-} from '@ui-kitten/components';
+import { TabBar, Tab, Layout } from '@ui-kitten/components';
 import SearchedIngredientsScreen from '../screens/SearchedIngredientScreen';
 import AddedIngredientScreen from '../screens/AddedIngredientScreen';
 import Header from '../components/Header';
@@ -14,40 +12,43 @@ import { connect } from 'react-redux';
 import GoogleAnalytics from '../api/googleAnalytics';
 
 const TabBarComponent = ({ navigation, addedIngredientNumber }) => {
-
   const onSelect = (index) => {
     console.log(navigation.state.routes);
     const selectedTabRoute = navigation.state.routes[index];
     navigation.navigate(selectedTabRoute.routeName);
-    GoogleAnalytics.sendIngsPagesAnalytics(selectedTabRoute.routeName)
+    GoogleAnalytics.sendIngsPagesAnalytics(selectedTabRoute.routeName);
   };
 
   return (
     <Layout level="1">
-        <SafeAreaView>
-        <Header navigation={navigation}/>
+      <SafeAreaView>
+        <Header navigation={navigation} />
         <TabBar selectedIndex={navigation.state.index} onSelect={onSelect}>
-            <Tab title={`In My Bar (${addedIngredientNumber})`} icon={AddedSquareIcon} />
-            <Tab title='Search' icon={SearchIcon} />
+          <Tab
+            title={`In My Bar (${addedIngredientNumber})`}
+            icon={AddedSquareIcon}
+          />
+          <Tab title="Search" icon={SearchIcon} />
         </TabBar>
-        </SafeAreaView>
+      </SafeAreaView>
     </Layout>
   );
 };
 
 const mapStateToProps = (state) => {
-  return (
-    {
-      addedIngredientNumber: state.ingredients.addedIngredients.length,
-    }
-  )
+  return {
+    addedIngredientNumber: state.ingredients.addedIngredients.length
+  };
 };
 
-const TabNavigator = createMaterialTopTabNavigator({
-      Added: AddedIngredientScreen,
-      Searched: SearchedIngredientsScreen,
-}, {
-  tabBarComponent: connect(mapStateToProps)(TabBarComponent),
-});
+const TabNavigator = createMaterialTopTabNavigator(
+  {
+    Added: AddedIngredientScreen,
+    Searched: SearchedIngredientsScreen
+  },
+  {
+    tabBarComponent: connect(mapStateToProps)(TabBarComponent)
+  }
+);
 
 export default TabNavigator;
