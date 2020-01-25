@@ -1,10 +1,8 @@
 /** @format */
 
-import { createStore, compose } from 'redux';
-import reducer from './reducers/MainReducer';
-import { install } from 'redux-loop';
-
-const enhancer = compose(install());
+import { createStore } from "redux";
+import { install } from "redux-loop";
+import reducer from "./reducers/MainReducer";
 
 const mainStore = createStore(reducer, {}, install());
 

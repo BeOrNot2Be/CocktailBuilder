@@ -1,23 +1,20 @@
 /** @format */
 
-import { GOOGLE_SIGN_IN, GOOGLE_FULL_SIGN_IN } from '../actions/User';
-import _ from 'lodash';
-import MainSourceFetch from '../api/web';
-
-import * as Google from 'expo-google-app-auth';
+import * as Google from "expo-google-app-auth";
+import NetInfo from "@react-native-community/netinfo";
+import { GOOGLE_SIGN_IN, GOOGLE_FULL_SIGN_IN } from "../actions/User";
+import MainSourceFetch from "./web";
 
 const ConnectionIssue = () => {
-  NetInfo.fetch().then((state) => {
+  NetInfo.fetch().then(state => {
     if (!state.isConnected) {
-      alert('You are not connected to the Internet');
+      alert("You are not connected to the Internet");
+    } else {
+      alert(
+        "Some network issues happened. Check your connection or give us some time to fix issues!"
+      );
     }
   });
-};
-
-const FetchingIssue = () => {
-  alert(
-    'Some network issues happened. Check your connection or give us some time to fix issues!'
-  );
 };
 
 export default class GoogleApi {
@@ -25,13 +22,13 @@ export default class GoogleApi {
     try {
       const result = await Google.logInAsync({
         androidClientId:
-          '629930544514-kgpsf2jgqqnijqdscd02k8r9tdc2hqcm.apps.googleusercontent.com',
+          "629930544514-kgpsf2jgqqnijqdscd02k8r9tdc2hqcm.apps.googleusercontent.com",
         iosClientId:
-          '629930544514-a4sin974ddd6nispqjcsvd621fd4g6di.apps.googleusercontent.com',
-        scopes: ['profile', 'email']
+          "629930544514-a4sin974ddd6nispqjcsvd621fd4g6di.apps.googleusercontent.com",
+        scopes: ["profile", "email"]
       });
 
-      if (result.type === 'success') {
+      if (result.type === "success") {
         dispatch({
           type: GOOGLE_SIGN_IN,
           data: {
@@ -44,7 +41,6 @@ export default class GoogleApi {
         console.warn({ cancelled: true });
       }
     } catch (e) {
-      FetchingIssue();
       ConnectionIssue();
     }
   }
@@ -53,13 +49,13 @@ export default class GoogleApi {
     try {
       const result = await Google.logInAsync({
         androidClientId:
-          '629930544514-kgpsf2jgqqnijqdscd02k8r9tdc2hqcm.apps.googleusercontent.com',
+          "629930544514-kgpsf2jgqqnijqdscd02k8r9tdc2hqcm.apps.googleusercontent.com",
         iosClientId:
-          '629930544514-a4sin974ddd6nispqjcsvd621fd4g6di.apps.googleusercontent.com',
-        scopes: ['profile', 'email']
+          "629930544514-a4sin974ddd6nispqjcsvd621fd4g6di.apps.googleusercontent.com",
+        scopes: ["profile", "email"]
       });
 
-      if (result.type === 'success') {
+      if (result.type === "success") {
         dispatch({
           type: GOOGLE_FULL_SIGN_IN,
           data: {
@@ -73,7 +69,6 @@ export default class GoogleApi {
         console.warn({ cancelled: true });
       }
     } catch (e) {
-      FetchingIssue();
       ConnectionIssue();
     }
   }

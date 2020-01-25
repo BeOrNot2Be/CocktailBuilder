@@ -1,10 +1,17 @@
 /** @format */
 
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import { TopNavigation, TopNavigationAction } from '@ui-kitten/components';
-import { DrawerActions } from 'react-navigation-drawer';
-import { BackIcon, MenuIcon } from './Icons';
+import React from "react";
+import PropTypes from "prop-types";
+import { StyleSheet } from "react-native";
+import { TopNavigation, TopNavigationAction } from "@ui-kitten/components";
+import { DrawerActions } from "react-navigation-drawer";
+import { BackIcon, MenuIcon } from "./Icons";
+
+const styles = StyleSheet.create({
+  title: {
+    fontWeight: "bold"
+  }
+});
 
 const Header = ({ navigation }) => {
   const BackAction = () => (
@@ -24,7 +31,7 @@ const Header = ({ navigation }) => {
       alignment="center"
       rightControls={DrawerToggle()}
       leftControl={
-        ['Ingredients', 'Cocktails', 'Favorites'].indexOf(
+        ["Ingredients", "Cocktails", "Favorites"].indexOf(
           navigation.state.routeName
         ) === -1
           ? BackAction()
@@ -35,10 +42,8 @@ const Header = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  title: {
-    fontWeight: 'bold'
-  }
-});
+Header.propTypes = {
+  navigation: PropTypes.any
+};
 
 export default Header;

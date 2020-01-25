@@ -1,23 +1,22 @@
 /** @format */
 
+import { loop, Cmd } from "redux-loop";
 import {
   ADD_TOKEN,
   GOOGLE_SIGN_IN,
   GOOGLE_FULL_SIGN_IN,
   LOG_OUT,
   TOGGLE_THEME,
-  USER_CACHE_CLEANED_ERROR,
   CACHE_SIGN_IN
-} from '../actions/User';
+} from "../actions/User";
 import {
   FETCH_FAV_COCKTAIL_ID,
   GET_COCKTAILS_BY_INGREDIENTS
-} from '../actions/Cocktails';
-import { GET_INVENTORY_INGS } from '../actions/Ingredients';
-import NativeApi from '../api/native';
-import { loop, Cmd } from 'redux-loop';
-import MainSourceFetch from '../api/web';
-import GoogleAnalytics from '../api/googleAnalytics';
+} from "../actions/Cocktails";
+import { GET_INVENTORY_INGS } from "../actions/Ingredients";
+import NativeApi from "../api/native";
+import MainSourceFetch from "../api/web";
+import GoogleAnalytics from "../api/googleAnalytics";
 
 const INITIAL_STATE = {
   logged: false,
@@ -85,9 +84,8 @@ const userReducer = (state = INITIAL_STATE, action) => {
             })
           ])
         );
-      } else {
-        return user;
       }
+      return user;
 
     case GET_COCKTAILS_BY_INGREDIENTS:
       if (state.logged) {
@@ -97,9 +95,8 @@ const userReducer = (state = INITIAL_STATE, action) => {
             args: [action.args.ingsStr, state.token, Cmd.dispatch]
           })
         );
-      } else {
-        return state;
       }
+      return state;
 
     case LOG_OUT:
       return INITIAL_STATE;

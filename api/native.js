@@ -1,12 +1,12 @@
 /** @format */
 
-import _ from 'lodash';
-import { Share, AsyncStorage } from 'react-native';
+import _ from "lodash";
+import { Share, AsyncStorage } from "react-native";
 import {
   CACHE_SIGN_IN,
   USER_CACHE_CLEANED,
   USER_CACHE_CLEANED_ERROR
-} from '../actions/User';
+} from "../actions/User";
 
 export default class NativeApi {
   static async ShareLink(item) {
@@ -14,7 +14,7 @@ export default class NativeApi {
       const result = await Share.share({
         message: `${item.Url}?utm_source=share_recipe&utm_medium=native_app`
       });
-
+      // for future google analytics
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
           // shared with activity type of result.activityType
@@ -31,7 +31,7 @@ export default class NativeApi {
 
   static async SaveUser(user) {
     try {
-      await AsyncStorage.setItem('user', JSON.stringify(user));
+      await AsyncStorage.setItem("user", JSON.stringify(user));
     } catch (error) {
       // Error saving data
     }
@@ -39,7 +39,7 @@ export default class NativeApi {
 
   static async GetUser(dispatch) {
     try {
-      const value = await AsyncStorage.getItem('user');
+      const value = await AsyncStorage.getItem("user");
       if (value !== null) {
         dispatch({
           type: CACHE_SIGN_IN,
@@ -53,7 +53,7 @@ export default class NativeApi {
 
   static async ClearUserCache(dispatch) {
     try {
-      await AsyncStorage.removeItem('user');
+      await AsyncStorage.removeItem("user");
       dispatch({
         type: USER_CACHE_CLEANED
       });

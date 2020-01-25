@@ -1,13 +1,29 @@
 /** @format */
 
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React from "react";
+import PropTypes from "prop-types";
+import { StyleSheet } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
-export const IonicIconsPack = {
-  name: 'ionic',
-  icons: createIconsMap()
+function IonicIcon({ name, ...style }) {
+  delete style.animation;
+  delete style.style; // need to delete because of the bug that apers when custom icon inside some tags
+  const { height, tintColor, ...iconStyle } = StyleSheet.flatten(style);
+  return (
+    <Ionicons name={name} size={height} color={tintColor} style={iconStyle} />
+  );
+}
+
+IonicIcon.propTypes = {
+  name: PropTypes.any,
+  style: PropTypes.any
 };
+
+const IconProvider = name => ({
+  toReactElement: props => {
+    return IonicIcon({ name, ...props });
+  }
+});
 
 function createIconsMap() {
   return new Proxy(
@@ -20,17 +36,7 @@ function createIconsMap() {
   );
 }
 
-const IconProvider = (name) => ({
-  toReactElement: (props) => {
-    return IonicIcon({ name, ...props });
-  }
-});
-
-function IonicIcon({ name, ...style }) {
-  delete style.animation;
-  delete style.style; // need to delete because of the bug when custom icon inside some tags
-  const { height, tintColor, ...iconStyle } = StyleSheet.flatten(style);
-  return (
-    <Ionicons name={name} size={height} color={tintColor} style={iconStyle} />
-  );
-}
+export const IonicIconsPack = {
+  name: "ionic",
+  icons: createIconsMap()
+};

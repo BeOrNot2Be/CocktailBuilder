@@ -1,46 +1,45 @@
 /** @format */
 
+import NetInfo from "@react-native-community/netinfo";
+import * as Google from "expo-google-app-auth";
+import _ from "lodash";
 import {
   SEARCHED_RECIPES,
   GET_COCKTAILS_BY_INGREDIENTS,
   REMOVE_FAV_COCKTAIL,
-  ADD_FAV_COCKTAIL,
-  FETCH_FAV_COCKTAIL
-} from '../actions/Cocktails';
-import { ADD_TOKEN, GOOGLE_SIGN_IN } from '../actions/User';
-import _ from 'lodash';
+  ADD_FAV_COCKTAIL
+} from "../actions/Cocktails";
+import { ADD_TOKEN, GOOGLE_SIGN_IN } from "../actions/User";
 import {
   SEARCHED_INGREDIENTS,
   GET_INVENTORY_INGS,
   SAVE_INVENTORY_INGS
-} from '../actions/Ingredients';
-import GoogleAnalytics from '../api/googleAnalytics';
-import * as Google from 'expo-google-app-auth';
-import NetInfo from '@react-native-community/netinfo';
+} from "../actions/Ingredients";
+import GoogleAnalytics from "./googleAnalytics";
 
-const validateStrInput = (input) => {
+const validateStrInput = input => {
   return input;
 };
 
-const makeIngredientsFetchable = (ingredients) => {
-  return ingredients.map((ingredient) => ingredient.ID).join('-');
+const makeIngredientsFetchable = ingredients => {
+  return ingredients.map(ingredient => ingredient.ID).join("-");
 };
 
 const ConnectionIssue = () => {
-  NetInfo.fetch().then((state) => {
+  NetInfo.fetch().then(state => {
     if (!state.isConnected) {
-      alert('You are not connected to the Internet');
+      alert("You are not connected to the Internet");
     }
   });
 };
 
 const FetchingIssue = () => {
   alert(
-    'Some network issues happened. Check your connection or give us some time to fix issues!'
+    "Some network issues happened. Check your connection or give us some time to fix issues!"
   );
 };
 
-const makeCocktailListWithAds = (cocktailList) => {
+const makeCocktailListWithAds = cocktailList => {
   let interval = 9;
   while (interval < cocktailList.length) {
     cocktailList.splice(interval, 0, { ad: true });
@@ -54,14 +53,14 @@ export default class MainSourceFetch {
     // make with adds
     const str = validateStrInput(input);
     fetch(`https://www.cocktailbuilder.com/json/cocktailsByName?param=${str}`)
-      .then((response) => response.json())
-      .then((responseJson) => {
+      .then(response => response.json())
+      .then(responseJson => {
         dispatch({
           type: SEARCHED_RECIPES,
           data: makeCocktailListWithAds(responseJson)
         });
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(error);
         FetchingIssue();
         ConnectionIssue();
@@ -73,19 +72,17 @@ export default class MainSourceFetch {
     fetch(
       `https://www.cocktailbuilder.com/json/topByIngredients?max=500&param=${str}`
     )
-      .then((response) => response.json())
-      .then((responseJson) => {
+      .then(response => response.json())
+      .then(responseJson => {
         dispatch({
           type: GET_COCKTAILS_BY_INGREDIENTS,
           data: makeCocktailListWithAds(responseJson),
           args: {
-            ingsStr: ingredients
-              .map((ing) => `ingredients[]=${ing.ID}`)
-              .join('&')
+            ingsStr: ingredients.map(ing => `ingredients[]=${ing.ID}`).join("&")
           } // additional info for further fetching
         });
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(error);
         FetchingIssue();
         ConnectionIssue();
@@ -96,13 +93,13 @@ export default class MainSourceFetch {
     fetch(
       `https://www.cocktailbuilder.com/json/topByIngredients?param=${ingredient.ID}`
     )
-      .then((response) => response.json())
-      .then((responseJson) => {
+      .then(response => response.json())
+      .then(responseJson => {
         if (cocktailsList.length != responseJson.length) {
           setState(makeCocktailListWithAds(responseJson));
         }
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(error);
         FetchingIssue();
         ConnectionIssue();
@@ -111,14 +108,14 @@ export default class MainSourceFetch {
 
   static getIngredientsList(dispatch) {
     fetch(`https://www.cocktailbuilder.com/json/ingredientList`)
-      .then((response) => response.json())
-      .then((responseJson) => {
+      .then(response => response.json())
+      .then(responseJson => {
         dispatch({
           type: SEARCHED_INGREDIENTS,
           data: responseJson
         });
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(error);
         FetchingIssue();
         ConnectionIssue();
@@ -129,13 +126,13 @@ export default class MainSourceFetch {
     fetch(
       `https://www.cocktailbuilder.com/json/cocktailDetails?param=${recipe.CocktailID}`
     )
-      .then((response) => response.json())
-      .then((responseJson) => {
+      .then(response => response.json())
+      .then(responseJson => {
         if (!_.isEqual(previousRecipe, responseJson)) {
           setRecipeData(responseJson);
         }
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(error);
         FetchingIssue();
         ConnectionIssue();
@@ -144,13 +141,13 @@ export default class MainSourceFetch {
 
   static getCocktailById(ID, dispatchFunc) {
     fetch(`https://www.cocktailbuilder.com/json/cocktailDetails?param=${ID}`)
-      .then((response) => response.json())
-      .then((responseJson) => {
+      .then(response => response.json())
+      .then(responseJson => {
         responseJson.CocktailID = ID;
         responseJson.CocktailName = responseJson.Name;
         dispatchFunc(responseJson);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(error);
         FetchingIssue();
         ConnectionIssue();
@@ -158,21 +155,21 @@ export default class MainSourceFetch {
   }
 
   static getToken(email, dispatch) {
-    fetch('https://www.cocktailbuilder.com/api/users/', {
-      method: 'POST',
+    fetch("https://www.cocktailbuilder.com/api/users/", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify({ email: email })
+      body: JSON.stringify({ email })
     })
-      .then((response) => response.json())
-      .then((responseJson) => {
+      .then(response => response.json())
+      .then(responseJson => {
         dispatch({
           type: ADD_TOKEN,
           data: responseJson.token
         });
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(error);
         FetchingIssue();
         ConnectionIssue();
@@ -181,18 +178,18 @@ export default class MainSourceFetch {
 
   static getFavs(token, dispatch) {
     fetch(`https://www.cocktailbuilder.com/api/users/${token}/favorites`)
-      .then((response) => response.json())
-      .then((responseJson) => {
-        const loadFavIntoState = (item) =>
+      .then(response => response.json())
+      .then(responseJson => {
+        const loadFavIntoState = item =>
           dispatch({
             type: ADD_FAV_COCKTAIL,
             data: item
           });
-        for (cocktailIndex of responseJson) {
+        responseJson.forEach(cocktailIndex => {
           this.getCocktailById(cocktailIndex, loadFavIntoState);
-        }
+        });
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(error);
         FetchingIssue();
         ConnectionIssue();
@@ -202,15 +199,15 @@ export default class MainSourceFetch {
   static getFavsIDFetchReturn(token) {
     return fetch(
       `https://www.cocktailbuilder.com/api/users/${token}/favorites`
-    ).then((response) => response.json());
+    ).then(response => response.json());
   }
 
   static getFavByIDFetchReturn(ID) {
     return fetch(
       `https://www.cocktailbuilder.com/json/cocktailDetails?param=${ID}`
     )
-      .then((response) => response.json())
-      .then((responseJson) => {
+      .then(response => response.json())
+      .then(responseJson => {
         responseJson.CocktailID = ID;
         responseJson.CocktailName = responseJson.Name;
         return responseJson;
@@ -220,19 +217,19 @@ export default class MainSourceFetch {
   static getInventoryIngsFetchReturn(token) {
     return fetch(
       `https://www.cocktailbuilder.com/api/users/${token}/inventory`
-    ).then((response) => response.json());
+    ).then(response => response.json());
   }
 
   static getInventoryIngs(token, dispatch) {
     fetch(`https://www.cocktailbuilder.com/api/users/${token}/inventory`)
-      .then((response) => response.json())
-      .then((responseJson) => {
+      .then(response => response.json())
+      .then(responseJson => {
         dispatch({
           type: GET_INVENTORY_INGS,
           data: responseJson
         });
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(error);
         FetchingIssue();
         ConnectionIssue();
@@ -242,19 +239,19 @@ export default class MainSourceFetch {
 
   static saveInventoryIngs(ings, token, dispatch) {
     fetch(`https://www.cocktailbuilder.com/api/users/${token}/inventory`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        "Content-Type": "application/x-www-form-urlencoded"
       },
       body: ings
     })
-      .then((response) => response.json())
-      .then((responseJson) => {
+      .then(response => response.json())
+      .then(() => {
         dispatch({
           type: SAVE_INVENTORY_INGS
         });
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(error);
         FetchingIssue();
         ConnectionIssue();
@@ -263,25 +260,25 @@ export default class MainSourceFetch {
 
   static saveRemovedFav(removed, favs, token, dispatch) {
     fetch(`https://www.cocktailbuilder.com/api/users/${token}/favorites`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        "Content-Type": "application/x-www-form-urlencoded"
       },
       body: favs
-        .filter((item) => item.CocktailID !== removed.CocktailID)
-        .map((fav) => `cocktails[]=${fav.CocktailID}`)
-        .join('&')
+        .filter(item => item.CocktailID !== removed.CocktailID)
+        .map(fav => `cocktails[]=${fav.CocktailID}`)
+        .join("&")
     })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        if (responseJson.result === 'success') {
+      .then(response => response.json())
+      .then(responseJson => {
+        if (responseJson.result === "success") {
           dispatch({
             type: REMOVE_FAV_COCKTAIL,
             data: removed
           });
         }
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(error);
         FetchingIssue();
         ConnectionIssue();
@@ -290,19 +287,19 @@ export default class MainSourceFetch {
 
   static saveAddedFav(added, favs, token, dispatch) {
     fetch(`https://www.cocktailbuilder.com/api/users/${token}/favorites`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        "Content-Type": "application/x-www-form-urlencoded"
       },
       body: favs
         .concat(added)
-        .map((fav) => `cocktails[]=${fav.CocktailID}`)
-        .join('&')
+        .map(fav => `cocktails[]=${fav.CocktailID}`)
+        .join("&")
     })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        if (responseJson.result === 'success') {
-          const loadFavIntoState = (item) =>
+      .then(response => response.json())
+      .then(responseJson => {
+        if (responseJson.result === "success") {
+          const loadFavIntoState = item =>
             dispatch({
               type: ADD_FAV_COCKTAIL,
               data: item
@@ -311,7 +308,7 @@ export default class MainSourceFetch {
           this.getCocktailById(added.CocktailID, loadFavIntoState);
         }
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(error);
         FetchingIssue();
         ConnectionIssue();
@@ -322,13 +319,13 @@ export default class MainSourceFetch {
     try {
       const result = await Google.logInAsync({
         androidClientId:
-          '629930544514-kgpsf2jgqqnijqdscd02k8r9tdc2hqcm.apps.googleusercontent.com',
+          "629930544514-kgpsf2jgqqnijqdscd02k8r9tdc2hqcm.apps.googleusercontent.com",
         iosClientId:
-          '629930544514-a4sin974ddd6nispqjcsvd621fd4g6di.apps.googleusercontent.com',
-        scopes: ['profile', 'email']
+          "629930544514-a4sin974ddd6nispqjcsvd621fd4g6di.apps.googleusercontent.com",
+        scopes: ["profile", "email"]
       });
 
-      if (result.type === 'success') {
+      if (result.type === "success") {
         dispatch({
           type: GOOGLE_SIGN_IN,
           data: result

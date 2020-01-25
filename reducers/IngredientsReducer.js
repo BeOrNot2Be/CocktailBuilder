@@ -1,24 +1,25 @@
 /** @format */
 
+import Fuse from "fuse.js";
+import _ from "lodash";
+import { loop, Cmd } from "redux-loop";
 import {
   SEARCHED_INGREDIENTS,
   ADD_INGREDIENT_TO_SEARCH_BY,
   REMOVE_INGREDIENT_FROM_SEARCH_BY,
   ADDED_CHECK_MAP_UPDATE,
-  GET_INVENTORY_INGS,
-  SAVE_INVENTORY_INGS
-} from '../actions/Ingredients';
-import MainSourceFetch from '../api/web';
-import Fuse from 'fuse.js';
-import _ from 'lodash';
-import { loop, Cmd } from 'redux-loop';
-import GoogleAnalytics from '../api/googleAnalytics';
+  GET_INVENTORY_INGS
+} from "../actions/Ingredients";
+import MainSourceFetch from "../api/web";
+import GoogleAnalytics from "../api/googleAnalytics";
 
-var options = {
+const BreakException = {};
+
+const options = {
   threshold: 0.2,
   maxPatternLength: 32,
   minMatchCharLength: 3,
-  keys: ['Name']
+  keys: ["Name"]
 };
 
 const INITIAL_STATE = loop(
@@ -36,27 +37,43 @@ const INITIAL_STATE = loop(
 const mergeWithBackEnd = (clientInventory, backendInventoryIds, fullList) => {
   let exist;
   const newFetchedItems = [...clientInventory];
-
-  for (let ingID of backendInventoryIds) {
+  // check
+  backendInventoryIds.forEach(ingID => {
     exist = false;
-    for (let clientIng of clientInventory) {
+    try {
+      clientInventory.forEach(clientIng => {
+        if (ingID == clientIng.ID) {
+          exist = true;
+          throw BreakException;
+        }
+      });
+    } catch (e) {
+      if (e !== BreakException) throw e;
+    }
+    if (!exist) {
+      newFetchedItems.push(_.find(fullList, ing => ing.ID === ingID));
+    }
+  });
+  /*
+  for (const ingID of backendInventoryIds) {
+    exist = false;
+    for (const clientIng of clientInventory) {
       if (ingID == clientIng.ID) {
         exist = true;
         break;
       }
     }
     if (!exist) {
-      newFetchedItems.push(_.find(fullList, (ing) => ing.ID === ingID));
+      newFetchedItems.push(_.find(fullList, ing => ing.ID === ingID));
     }
   }
+  */
   return newFetchedItems;
 };
 
 const updateAddedIngCheckMap = (oldMap, newAddedIngs) => {
   const newAdded = new Map(oldMap);
-  for (let ing of newAddedIngs) {
-    newAdded.set(ing.ID, true);
-  }
+  newAddedIngs.forEach(ing => newAdded.set(ing.ID, true)); // check
   return newAdded;
 };
 
@@ -97,7 +114,7 @@ const ingredientsReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         addedIngredients: state.addedIngredients.filter(
-          (item) => item.ID !== action.data.ID
+          item => item.ID !== action.data.ID
         )
       };
 

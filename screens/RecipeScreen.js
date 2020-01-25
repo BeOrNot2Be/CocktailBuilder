@@ -1,13 +1,15 @@
 /** @format */
 
-import React from 'react';
+import React from "react";
+import PropTypes from "prop-types";
 import {
   StyleSheet,
   ScrollView,
   SafeAreaView,
   View,
-  Alert
-} from 'react-native'; //check View to layout
+  Alert,
+  Platform
+} from "react-native";
 import {
   Layout,
   Divider,
@@ -16,22 +18,90 @@ import {
   Button,
   CardHeader,
   Spinner
-} from '@ui-kitten/components';
-import ListItem from '../components/listItem';
-import Header from '../components/Header';
-import { HeartIcon, ShareIcon, HeartOutlineIcon } from '../components/Icons';
-import { connect } from 'react-redux';
-import MainSourceFetch from '../api/web';
-import NativeApi from '../api/native';
-import GoogleApi from '../api/google';
-import _ from 'lodash';
-import { AdMobBanner } from 'expo-ads-admob';
-import GoogleAnalytics from '../api/googleAnalytics';
+} from "@ui-kitten/components";
+import { connect } from "react-redux";
+import _ from "lodash";
+import { AdMobBanner } from "expo-ads-admob";
+import ListItem from "../components/listItem";
+import Header from "../components/Header";
+import MainSourceFetch from "../api/web";
+import NativeApi from "../api/native";
+import GoogleApi from "../api/google";
+import GoogleAnalytics from "../api/googleAnalytics";
+import { HeartIcon, ShareIcon, HeartOutlineIcon } from "../components/Icons";
 
 const unitID =
-  Platform.OS === 'ios'
-    ? 'ca-app-pub-4338763897925627/6432597471'
-    : 'ca-app-pub-4338763897925627/8128822528';
+  Platform.OS === "ios"
+    ? "ca-app-pub-4338763897925627/6432597471"
+    : "ca-app-pub-4338763897925627/8128822528";
+
+const styles = StyleSheet.create({
+  scrollContainer: {
+    height: "100%"
+  },
+  divider: {
+    marginHorizontal: 8,
+    marginVertical: 24
+  },
+  textHeader: {
+    marginBottom: 16,
+    justifyContent: "center",
+    textAlign: "center"
+  },
+  footerContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end"
+  },
+  card: {
+    justifyContent: "center",
+    alignItems: "center",
+    maxWidth: "100%",
+    marginBottom: 8,
+    marginTop: 8,
+    marginHorizontal: 8,
+    borderRadius: 10,
+    borderColor: "transparent",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3
+    },
+    shadowOpacity: 0.29,
+    shadowRadius: 4.65,
+    elevation: 7
+  },
+  cardDivider: {
+    marginBottom: 16,
+    marginTop: 16
+  },
+  link: {
+    padding: 0,
+    margin: 0
+  },
+  spinner: {
+    height: "100%",
+    justifyContent: "center",
+    textAlign: "center",
+    alignItems: "center"
+  },
+  buttonContainer: {
+    marginTop: 10,
+    justifyContent: "center",
+    textAlign: "center",
+    alignItems: "center"
+  },
+  recipeHeader: {
+    textAlign: "center",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  ads: {
+    marginVertical: 10,
+    justifyContent: "center",
+    textAlign: "center",
+    alignItems: "center"
+  }
+});
 
 const RecipeScreen = ({
   navigation,
@@ -43,16 +113,16 @@ const RecipeScreen = ({
   const [recipeData, setRecipeData] = React.useState({});
   const [cocktailsList, setCocktailsList] = React.useState([]);
   const [listLength, setListLength] = React.useState(10);
-  const recipe = navigation.getParam('recipe', {
-    Name: 'vodka',
+  const recipe = navigation.getParam("recipe", {
+    Name: "vodka",
     ID: 3,
     Popularity: 2642,
     NormalizedIngredientID: 1
   });
 
-  const openRecipe = (item) => {
+  const openRecipe = item => {
     GoogleAnalytics.openedRecipe(item.CocktailName);
-    navigation.push('Recipe', { recipe: item });
+    navigation.push("Recipe", { recipe: item });
   };
 
   React.useEffect(() => {
@@ -72,13 +142,13 @@ const RecipeScreen = ({
 
   const askForLogin = () => {
     Alert.alert(
-      'Alert',
-      'You need to sign in before using this functionality',
+      "Alert",
+      "You need to sign in before using this functionality",
       [
         {
-          text: 'Ok'
+          text: "Ok"
         },
-        { text: 'Sign In', onPress: () => googleLogin() }
+        { text: "Sign In", onPress: () => googleLogin() }
       ],
       { cancelable: false }
     );
@@ -93,7 +163,6 @@ const RecipeScreen = ({
   };
 
   const CardsFooter = () => (
-    // add functionality
     <View style={styles.footerContainer}>
       <Button
         style={styles.footerControl}
@@ -107,7 +176,7 @@ const RecipeScreen = ({
         appearance="ghost"
         icon={
           _.includes(
-            favCocktails.map((e) => e.CocktailID),
+            favCocktails.map(e => e.CocktailID),
             recipe.CocktailID
           )
             ? HeartIcon
@@ -126,8 +195,8 @@ const RecipeScreen = ({
     }
   };
 
-  const openModal = (item) => {
-    navigation.push('modal', { recipe: item });
+  const openModal = item => {
+    navigation.push("modal", { recipe: item });
   };
 
   const listConfig = {
@@ -137,11 +206,11 @@ const RecipeScreen = ({
     onLongPress: openModal,
     onPress: openRecipe,
     onMainButtonPress: ToggleFollow,
-    favsID: favCocktails.map((e) => e.CocktailID)
+    favsID: favCocktails.map(e => e.CocktailID)
   };
 
-  const openIngredient = (item) => {
-    navigation.push('Ingredient', { ingredient: item });
+  const openIngredient = item => {
+    navigation.push("Ingredient", { ingredient: item });
   };
 
   const getMore = () => {
@@ -171,12 +240,12 @@ const RecipeScreen = ({
                     style={styles.card}
                   >
                     <Layout>
-                      {recipeData.Ingredients.map((ingredient) => (
+                      {recipeData.Ingredients.map(ingredient => (
                         <Text category="s1" key={ingredient.ID}>
-                          {ingredient.Amount != '' &&
-                          ingredient.Measurement != ''
+                          {ingredient.Amount != "" &&
+                          ingredient.Measurement != ""
                             ? `${ingredient.Amount} ${ingredient.Measurement} of`
-                            : ''}{' '}
+                            : ""}{" "}
                           <Text
                             style={styles.link}
                             status="primary"
@@ -202,9 +271,9 @@ const RecipeScreen = ({
                   <AdMobBanner
                     bannerSize="mediumRectangle"
                     adUnitID={unitID}
-                    servePersonalizedAds={true}
+                    servePersonalizedAds
                     testDevices={[AdMobBanner.simulatorId]}
-                    onAdFailedToLoad={(error) => console.error(error)}
+                    onAdFailedToLoad={error => console.error(error)}
                   />
                 </Layout>
               </>
@@ -215,8 +284,8 @@ const RecipeScreen = ({
                 {cocktailsList.length > listLength ? (
                   <Layout style={styles.buttonContainer}>
                     <Button onPress={getMore} style={styles.button}>
-                      {' '}
-                      More{' '}
+                      {" "}
+                      More{" "}
                     </Button>
                   </Layout>
                 ) : (
@@ -236,85 +305,25 @@ const RecipeScreen = ({
   );
 };
 
-const styles = StyleSheet.create({
-  scrollContainer: {
-    height: '100%'
-  },
-  divider: {
-    marginHorizontal: 8,
-    marginVertical: 24
-  },
-  textHeader: {
-    marginBottom: 16,
-    justifyContent: 'center',
-    textAlign: 'center'
-  },
-  footerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end'
-  },
-  card: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    maxWidth: '100%',
-    marginBottom: 8,
-    marginTop: 8,
-    marginHorizontal: 8,
-    borderRadius: 10,
-    borderColor: 'transparent',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 3
-    },
-    shadowOpacity: 0.29,
-    shadowRadius: 4.65,
-    elevation: 7
-  },
-  cardDivider: {
-    marginBottom: 16,
-    marginTop: 16
-  },
-  link: {
-    padding: 0,
-    margin: 0
-  },
-  spinner: {
-    height: '100%',
-    justifyContent: 'center',
-    textAlign: 'center',
-    alignItems: 'center'
-  },
-  buttonContainer: {
-    marginTop: 10,
-    justifyContent: 'center',
-    textAlign: 'center',
-    alignItems: 'center'
-  },
-  recipeHeader: {
-    textAlign: 'center',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  ads: {
-    marginVertical: 10,
-    justifyContent: 'center',
-    textAlign: 'center',
-    alignItems: 'center'
-  }
-});
+RecipeScreen.propTypes = {
+  favCocktails: PropTypes.any,
+  googleLogin: PropTypes.any,
+  navigation: PropTypes.any,
+  toggle: PropTypes.any,
+  user: PropTypes.any
+};
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     favCocktails: state.cocktails.favCocktails,
     user: state.user
   };
 };
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   googleLogin: () => GoogleApi.fullSignInWithGoogleAsync(dispatch),
   toggle: (item, token, favs) => {
-    const favIDs = favs.map((e) => e.CocktailID);
+    const favIDs = favs.map(e => e.CocktailID);
     if (_.includes(favIDs, item.CocktailID)) {
       MainSourceFetch.saveRemovedFav(item, favs, token, dispatch);
     } else {

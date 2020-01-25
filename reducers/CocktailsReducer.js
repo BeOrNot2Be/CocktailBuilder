@@ -1,5 +1,7 @@
 /** @format */
 
+import { loop, Cmd } from "redux-loop";
+import _ from "lodash";
 import {
   SEARCHED_RECIPES,
   GET_COCKTAILS_BY_INGREDIENTS,
@@ -7,12 +9,9 @@ import {
   REMOVE_FAV_COCKTAIL,
   FETCH_FAV_COCKTAIL,
   FETCH_FAV_COCKTAIL_ID
-} from '../actions/Cocktails';
-import { LOG_OUT } from '../actions/User';
-import _ from 'lodash';
-import MainSourceFetch from '../api/web';
-import { loop, Cmd } from 'redux-loop';
-import GoogleAnalytics from '../api/googleAnalytics';
+} from "../actions/Cocktails";
+import { LOG_OUT } from "../actions/User";
+import MainSourceFetch from "../api/web";
 
 const INITIAL_STATE = {
   searchedCocktails: [],
@@ -41,9 +40,8 @@ const cocktailsReducer = (state = INITIAL_STATE, action) => {
           ...state,
           favCocktails: state.favCocktails.concat(action.data)
         };
-      } else {
-        return state;
       }
+      return state;
 
     case FETCH_FAV_COCKTAIL:
       return { ...state, favCocktails: action.data };
@@ -52,7 +50,7 @@ const cocktailsReducer = (state = INITIAL_STATE, action) => {
       return loop(
         state,
         Cmd.list(
-          action.data.map((ID) =>
+          action.data.map(ID =>
             Cmd.run(MainSourceFetch.getFavByIDFetchReturn, {
               successActionCreator: usersFavByIDFetchSuccessfulAction,
               args: [ID]
@@ -68,7 +66,7 @@ const cocktailsReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         favCocktails: state.favCocktails.filter(
-          (item) => item.CocktailID !== action.data.CocktailID
+          item => item.CocktailID !== action.data.CocktailID
         )
       };
 

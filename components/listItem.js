@@ -1,18 +1,59 @@
 /** @format */
+/* eslint-disable no-else-return */
 
-import React from 'react';
-import { Platform, StyleSheet, TouchableOpacity } from 'react-native';
-import { Text, Layout, Button } from '@ui-kitten/components';
-import { RemoveIcon, AddedIcon, HeartIcon, HeartOutlineIcon } from './Icons';
-import * as Animatable from 'react-native-animatable';
-import _ from 'lodash';
-import { AdMobBanner } from 'expo-ads-admob';
+import React from "react";
+import { Platform, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, Layout, Button } from "@ui-kitten/components";
+import * as Animatable from "react-native-animatable";
+import _ from "lodash";
+import { AdMobBanner } from "expo-ads-admob";
+import { RemoveIcon, AddedIcon, HeartIcon, HeartOutlineIcon } from "./Icons";
 
 const unitID =
-  Platform.OS === 'ios'
-    ? 'ca-app-pub-4338763897925627/6432597471'
-    : 'ca-app-pub-4338763897925627/8128822528';
-const ListItemComponent = (constArgs) => {
+  Platform.OS === "ios"
+    ? "ca-app-pub-4338763897925627/6432597471"
+    : "ca-app-pub-4338763897925627/8128822528";
+
+const styles = StyleSheet.create({
+  lisItem: {
+    marginBottom: 10,
+    marginTop: 8,
+    marginHorizontal: 8,
+    padding: 8,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3
+    },
+    shadowOpacity: 0.29,
+    shadowRadius: 4.65,
+    elevation: 7
+  },
+  container: {
+    paddingHorizontal: 0,
+    flexDirection: "row",
+    justifyContent: "flex-start"
+  },
+  layoutButton: {
+    paddingHorizontal: 0,
+    flex: 2,
+    justifyContent: "flex-start"
+  },
+  layoutTittle: {
+    paddingHorizontal: 0,
+    justifyContent: "center",
+    flex: 4
+  },
+  ads: {
+    marginVertical: 10,
+    justifyContent: "center",
+    textAlign: "center",
+    alignItems: "center"
+  }
+});
+
+const ListItemComponent = constArgs => {
   const {
     ingredients,
     added,
@@ -39,7 +80,9 @@ const ListItemComponent = (constArgs) => {
       return (
         <Animatable.View
           key={item.ID || index}
-          ref={(ref) => (handleViewRef = ref)}
+          ref={ref => {
+            handleViewRef = ref;
+          }}
         >
           <Layout style={styles.lisItem}>
             <TouchableOpacity onPress={() => onPress(item)}>
@@ -83,9 +126,9 @@ const ListItemComponent = (constArgs) => {
             <AdMobBanner
               bannerSize="mediumRectangle"
               adUnitID={unitID}
-              servePersonalizedAds={true}
+              servePersonalizedAds
               testDevices={[AdMobBanner.simulatorId]}
-              onAdFailedToLoad={(error) => console.error(error)}
+              onAdFailedToLoad={error => console.error(error)}
             />
           </Layout>
         );
@@ -94,7 +137,9 @@ const ListItemComponent = (constArgs) => {
         return (
           <Animatable.View
             key={item.CocktailID}
-            ref={(ref) => (handleViewRef = ref)}
+            ref={ref => {
+              handleViewRef = ref;
+            }}
           >
             <Layout style={styles.lisItem}>
               <TouchableOpacity
@@ -112,16 +157,16 @@ const ListItemComponent = (constArgs) => {
                               : 1
                           } ${
                             item.Ingredients.length !== 1
-                              ? 'ingredients'
-                              : 'ingredient'
+                              ? "ingredients"
+                              : "ingredient"
                           }`
                         : item.MissingIngr == 0
-                        ? 'You can make it!'
+                        ? "You can make it!"
                         : item.MissingIngr !== undefined
                         ? `You need ${item.MissingIngr} more ${
                             item.MissingIngr !== 1
-                              ? 'ingredients'
-                              : 'ingredient'
+                              ? "ingredients"
+                              : "ingredient"
                           }`
                         : `${
                             item.TotalIngredients != 0
@@ -129,8 +174,8 @@ const ListItemComponent = (constArgs) => {
                               : 1
                           } ${
                             item.TotalIngredients !== 1
-                              ? 'ingredients'
-                              : 'ingredient'
+                              ? "ingredients"
+                              : "ingredient"
                           }`}
                     </Text>
                   </Layout>
@@ -155,44 +200,5 @@ const ListItemComponent = (constArgs) => {
     };
   }
 };
-
-const styles = StyleSheet.create({
-  lisItem: {
-    marginBottom: 10,
-    marginTop: 8,
-    marginHorizontal: 8,
-    padding: 8,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 3
-    },
-    shadowOpacity: 0.29,
-    shadowRadius: 4.65,
-    elevation: 7
-  },
-  container: {
-    paddingHorizontal: 0,
-    flexDirection: 'row',
-    justifyContent: 'flex-start'
-  },
-  layoutButton: {
-    paddingHorizontal: 0,
-    flex: 2,
-    justifyContent: 'flex-start'
-  },
-  layoutTittle: {
-    paddingHorizontal: 0,
-    justifyContent: 'center',
-    flex: 4
-  },
-  ads: {
-    marginVertical: 10,
-    justifyContent: 'center',
-    textAlign: 'center',
-    alignItems: 'center'
-  }
-});
 
 export default ListItemComponent;

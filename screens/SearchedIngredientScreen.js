@@ -1,26 +1,41 @@
 /** @format */
 
-import React from 'react';
-import { StyleSheet, FlatList } from 'react-native';
-import {
-  Layout,
-  Text,
-  Button,
-  ButtonGroup,
-  Input
-} from '@ui-kitten/components';
-import ListItem from '../components/SearchedIngredientItem';
-import { SearchIcon } from '../components/Icons';
-import { connect } from 'react-redux';
-import { NavigationEvents } from 'react-navigation';
+import React from "react";
+import PropTypes from "prop-types";
+import { StyleSheet, FlatList } from "react-native";
+import { Layout, Text, Button, Input } from "@ui-kitten/components";
+import { connect } from "react-redux";
+import { NavigationEvents } from "react-navigation";
+import ListItem from "../components/SearchedIngredientItem";
+import { SearchIcon } from "../components/Icons";
 import {
   ADD_INGREDIENT_TO_SEARCH_BY,
   ADDED_CHECK_MAP_UPDATE
-} from '../actions/Ingredients';
-import _ from 'lodash';
+} from "../actions/Ingredients";
 
 let typingTimeout = null;
 let searching = true;
+
+const styles = StyleSheet.create({
+  container: {
+    paddingRight: 16,
+    paddingLeft: 16,
+    paddingTop: 10,
+    paddingBottom: 5
+  },
+  scrollContainer: {
+    height: "100%"
+  },
+  buttonContainer: {
+    marginTop: 10,
+    justifyContent: "center",
+    textAlign: "center",
+    alignItems: "center"
+  },
+  textContainer: {
+    paddingLeft: 24
+  }
+});
 
 const IngredientScreen = ({
   navigation,
@@ -29,7 +44,7 @@ const IngredientScreen = ({
   added,
   setAdded
 }) => {
-  const [inputValue, setInputValue] = React.useState('');
+  const [inputValue, setInputValue] = React.useState("");
   const [founded, setFounded] = React.useState([]);
   const [listLengthEnd, setListLengthEnd] = React.useState(20);
 
@@ -38,13 +53,13 @@ const IngredientScreen = ({
     setAdded(item.ID);
   };
 
-  const openIngredient = (item) => {
-    navigation.push('Ingredient', {
+  const openIngredient = item => {
+    navigation.push("Ingredient", {
       ingredient: item
     });
   };
 
-  const searchInput = (text) => {
+  const searchInput = text => {
     clearTimeout(typingTimeout);
     searching = true;
     typingTimeout = setTimeout(() => {
@@ -65,7 +80,7 @@ const IngredientScreen = ({
     <Layout level="2" style={styles.scrollContainer}>
       <NavigationEvents
         onDidFocus={() => {
-          if (navigation.getParam('focus', false)) {
+          if (navigation.getParam("focus", false)) {
             inputRef.current.focus();
           }
         }}
@@ -76,8 +91,8 @@ const IngredientScreen = ({
       />
       <FlatList
         data={founded.slice(0, listLengthEnd)}
-        keyExtractor={(item) => item.ID.toString()}
-        keyboardShouldPersistTaps={'handled'}
+        keyExtractor={item => item.ID.toString()}
+        keyboardShouldPersistTaps="handled"
         ListHeaderComponent={
           <Layout style={styles.container} level="2">
             <Input
@@ -88,12 +103,12 @@ const IngredientScreen = ({
               onChangeText={searchInput}
               icon={SearchIcon}
               caption={
-                founded.length !== 0 ? `Found ${founded.length} results` : ''
+                founded.length !== 0 ? `Found ${founded.length} results` : ""
               }
             />
             {founded.length !== 0 ? (
               <></>
-            ) : inputValue !== '' && !searching ? (
+            ) : inputValue !== "" && !searching ? (
               <Layout style={styles.textContainer} level="2">
                 <Text category="p2" status="basic">
                   No results found for search: {inputValue}
@@ -136,39 +151,25 @@ const IngredientScreen = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    paddingRight: 16,
-    paddingLeft: 16,
-    paddingTop: 10,
-    paddingBottom: 5
-  },
-  scrollContainer: {
-    height: '100%'
-  },
-  buttonContainer: {
-    marginTop: 10,
-    justifyContent: 'center',
-    textAlign: 'center',
-    alignItems: 'center'
-  },
-  textContainer: {
-    paddingLeft: 24
-  }
-});
+IngredientScreen.propTypes = {
+  addIngredient: PropTypes.any,
+  added: PropTypes.any,
+  navigation: PropTypes.any,
+  searchEngine: PropTypes.any,
+  setAdded: PropTypes.any
+};
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     added: state.ingredients.addedCheck,
     searchEngine: state.ingredients.searchEngine
   };
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  addIngredient: (id) =>
+const mapDispatchToProps = dispatch => ({
+  addIngredient: id =>
     dispatch({ type: ADD_INGREDIENT_TO_SEARCH_BY, data: id }),
-  setAdded: (addedID) =>
-    dispatch({ type: ADDED_CHECK_MAP_UPDATE, data: addedID })
+  setAdded: addedID => dispatch({ type: ADDED_CHECK_MAP_UPDATE, data: addedID })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(IngredientScreen);

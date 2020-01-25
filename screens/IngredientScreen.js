@@ -1,16 +1,39 @@
 /** @format */
 
-import React from 'react';
-import { StyleSheet, ScrollView, SafeAreaView, Alert } from 'react-native';
-('react-native');
-import { Layout, Text, Spinner, Button } from '@ui-kitten/components';
-import ListItem from '../components/listItem';
-import Header from '../components/Header';
-import { connect } from 'react-redux';
-import MainSourceFetch from '../api/web';
-import GoogleApi from '../api/google';
-import _ from 'lodash';
-import GoogleAnalytics from '../api/googleAnalytics';
+import React from "react";
+import PropTypes from "prop-types";
+import { StyleSheet, ScrollView, SafeAreaView, Alert } from "react-native";
+import { Layout, Text, Spinner, Button } from "@ui-kitten/components";
+import { connect } from "react-redux";
+import _ from "lodash";
+import ListItem from "../components/listItem";
+import Header from "../components/Header";
+import MainSourceFetch from "../api/web";
+import GoogleApi from "../api/google";
+import GoogleAnalytics from "../api/googleAnalytics";
+
+const styles = StyleSheet.create({
+  scrollContainer: {
+    height: "100%"
+  },
+  textHeader: {
+    marginBottom: 16,
+    justifyContent: "center",
+    textAlign: "center"
+  },
+  buttonContainer: {
+    marginTop: 10,
+    justifyContent: "center",
+    textAlign: "center",
+    alignItems: "center"
+  },
+  spinner: {
+    height: "100%",
+    justifyContent: "center",
+    textAlign: "center",
+    alignItems: "center"
+  }
+});
 
 const IngredientScreen = ({
   navigation,
@@ -22,8 +45,8 @@ const IngredientScreen = ({
   const [cocktailsList, setCocktailsList] = React.useState([]);
   const [listLength, setListLength] = React.useState(10);
 
-  const ingredient = navigation.getParam('ingredient', {
-    Name: 'vodka',
+  const ingredient = navigation.getParam("ingredient", {
+    Name: "vodka",
     ID: 3,
     Popularity: 2642,
     NormalizedIngredientID: 1
@@ -39,13 +62,13 @@ const IngredientScreen = ({
 
   const askForLogin = () => {
     Alert.alert(
-      'Alert',
-      'You need to sign in before using this functionality',
+      "Alert",
+      "You need to sign in before using this functionality",
       [
         {
-          text: 'Ok'
+          text: "Ok"
         },
-        { text: 'Sign In', onPress: () => googleLogin() }
+        { text: "Sign In", onPress: () => googleLogin() }
       ],
       { cancelable: false }
     );
@@ -67,13 +90,13 @@ const IngredientScreen = ({
     }
   };
 
-  const openRecipe = (item) => {
+  const openRecipe = item => {
     GoogleAnalytics.openedRecipe(item.CocktailName);
-    navigation.push('Recipe', { recipe: item });
+    navigation.push("Recipe", { recipe: item });
   };
 
-  const openModal = (item) => {
-    navigation.push('modal', { recipe: item });
+  const openModal = item => {
+    navigation.push("modal", { recipe: item });
   };
 
   const listConfig = {
@@ -83,7 +106,7 @@ const IngredientScreen = ({
     onLongPress: openModal,
     onPress: openRecipe,
     onMainButtonPress: ToggleFollow,
-    favsID: favCocktails.map((e) => e.CocktailID)
+    favsID: favCocktails.map(e => e.CocktailID)
   };
 
   return (
@@ -108,8 +131,8 @@ const IngredientScreen = ({
                 {cocktailsList.length > listLength ? (
                   <Layout style={styles.buttonContainer}>
                     <Button onPress={getMore} style={styles.button}>
-                      {' '}
-                      More{' '}
+                      {" "}
+                      More{" "}
                     </Button>
                   </Layout>
                 ) : (
@@ -129,40 +152,25 @@ const IngredientScreen = ({
   );
 };
 
-const styles = StyleSheet.create({
-  scrollContainer: {
-    height: '100%'
-  },
-  textHeader: {
-    marginBottom: 16,
-    justifyContent: 'center',
-    textAlign: 'center'
-  },
-  buttonContainer: {
-    marginTop: 10,
-    justifyContent: 'center',
-    textAlign: 'center',
-    alignItems: 'center'
-  },
-  spinner: {
-    height: '100%',
-    justifyContent: 'center',
-    textAlign: 'center',
-    alignItems: 'center'
-  }
-});
+IngredientScreen.propTypes = {
+  favCocktails: PropTypes.any,
+  googleLogin: PropTypes.any,
+  navigation: PropTypes.any,
+  toggle: PropTypes.any,
+  user: PropTypes.any
+};
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     favCocktails: state.cocktails.favCocktails,
     user: state.user
   };
 };
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   googleLogin: () => GoogleApi.fullSignInWithGoogleAsync(dispatch),
   toggle: (item, token, favs) => {
-    const favIDs = favs.map((e) => e.CocktailID);
+    const favIDs = favs.map(e => e.CocktailID);
     if (_.includes(favIDs, item.CocktailID)) {
       MainSourceFetch.saveRemovedFav(item, favs, token, dispatch);
     } else {
