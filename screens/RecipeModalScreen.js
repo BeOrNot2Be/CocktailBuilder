@@ -5,9 +5,9 @@ import PropTypes from "prop-types";
 import {
   StyleSheet,
   View,
-  SafeAreaView,
   TouchableWithoutFeedback,
-  Alert
+  Alert,
+  SafeAreaView
 } from "react-native";
 import {
   Button,

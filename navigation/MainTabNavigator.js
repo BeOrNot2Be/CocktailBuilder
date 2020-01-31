@@ -2,7 +2,7 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, SafeAreaView } from "react-native";
 import { createBottomTabNavigator } from "react-navigation-tabs";
 import { createStackNavigator } from "react-navigation-stack";
 import {
@@ -13,7 +13,6 @@ import {
 } from "@ui-kitten/components";
 import IconBadge from "react-native-icon-badge";
 import { connect } from "react-redux";
-import { SafeAreaView } from "react-navigation";
 import _ from "lodash";
 import FavoriteScreen from "../screens/FavoriteScreen";
 import CocktailScreen from "../screens/CocktailScreen";
@@ -23,10 +22,20 @@ import SearchedCocktailsScreen from "../screens/SearchedCocktailsScreen";
 import IngredientTabNavigator from "./IngredientTopBar";
 import { ListIcon, CocktailIcon, HeartMenuIcon } from "../components/Icons";
 import GoogleAnalytics from "../api/googleAnalytics";
+import Header from "../components/Header";
 
 const config = {
-  headerMode: "none",
-  defaultNavigationOptions: {}
+  navigationOptions: {},
+  defaultNavigationOptions: {
+    header: ({ scene, previous, navigation }) => (
+      <Header scene={scene} previous={previous} navigation={navigation} />
+    )
+  }
+};
+
+FavoriteScreen.navigationOptions = ({ navigation }) => {
+  const header = null;
+  return header;
 };
 
 const styles = StyleSheet.create({
@@ -139,7 +148,12 @@ const getAmountWithoutAdds = num => {
 };
 
 const getAmountThatCanBeMade = cocktails => {
-  return _.filter(cocktails, item => !item.MissingIngr).length;
+  return _.filter(cocktails, item => {
+    if (item.MissingIngr === undefined) {
+      return false;
+    }
+    return !item.MissingIngr;
+  }).length; // true to exclude added ads
 };
 
 const mapStateToProps = state => {

@@ -3,13 +3,11 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { StyleSheet, ScrollView, Alert } from "react-native";
-import { SafeAreaView } from "react-navigation";
-import { Input, Layout, Button, Text } from "@ui-kitten/components";
+import { Input, Layout, Button } from "@ui-kitten/components";
 import { connect } from "react-redux";
 import _ from "lodash";
 import ListItem from "../components/listItem";
-import Header from "../components/Header";
-import { SearchIcon, CrossIcon } from "../components/Icons";
+import { SearchIcon, CrossIcon, BackIcon } from "../components/Icons";
 import MainSourceFetch from "../api/web";
 import GoogleApi from "../api/google";
 import GoogleAnalytics from "../api/googleAnalytics";
@@ -33,6 +31,12 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     height: "100%",
+    justifyContent: "center",
+    textAlign: "center",
+    alignItems: "center"
+  },
+  addIngsButtonContainer: {
+    marginTop: 10,
     justifyContent: "center",
     textAlign: "center",
     alignItems: "center"
@@ -103,54 +107,55 @@ const CocktailScreen = ({
 
   return (
     <Layout level="1">
-      <SafeAreaView>
-        <Header navigation={navigation} />
-        <ScrollView style={styles.scrollContainer}>
-          <Layout style={styles.container}>
-            <Input
-              placeholder="Search"
-              value={inputValue}
-              onChangeText={setInputValue}
-              icon={inputValue ? CrossIcon : SearchIcon}
-              onIconPress={() => setInputValue("")}
-              autoCorrect={false}
-              onSubmitEditing={() => onSearch(inputValue)}
-            />
+      <ScrollView style={styles.scrollContainer}>
+        <Layout style={styles.container}>
+          <Input
+            placeholder="Search"
+            value={inputValue}
+            onChangeText={setInputValue}
+            icon={inputValue ? CrossIcon : SearchIcon}
+            onIconPress={() => setInputValue("")}
+            autoCorrect={false}
+            onSubmitEditing={() => onSearch(inputValue)}
+          />
+        </Layout>
+        {cocktails.length === 0 ? (
+          <Layout style={styles.addIngsButtonContainer}>
+            <Button
+              style={styles.button}
+              icon={BackIcon}
+              onPress={() => navigation.navigate("Searched", { focus: true })}
+            >
+              Add my ingredients
+            </Button>
           </Layout>
-          {cocktails.length === 0 ? (
-            <Layout style={styles.textContainer}>
-              <Text category="h3" appearance="hint">
-                Add some ingredients
-              </Text>
-            </Layout>
-          ) : (
-            <>
-              {cocktails.slice(0, listLengthEnd).map(ListItem(listConfig))}
-              <Layout style={styles.buttonContainer}>
-                {user.logged ? (
-                  cocktails.length > listLengthEnd ? (
-                    <Button
-                      onPress={() => {
-                        setListLengthEnd(listLengthEnd + 20);
-                      }}
-                      style={styles.button}
-                    >
-                      Load More
-                    </Button>
-                  ) : (
-                    <></>
-                  )
-                ) : (
-                  <Button onPress={getMore} style={styles.button}>
+        ) : (
+          <>
+            {cocktails.slice(0, listLengthEnd).map(ListItem(listConfig))}
+            <Layout style={styles.buttonContainer}>
+              {user.logged ? (
+                cocktails.length > listLengthEnd ? (
+                  <Button
+                    onPress={() => {
+                      setListLengthEnd(listLengthEnd + 20);
+                    }}
+                    style={styles.button}
+                  >
                     Load More
                   </Button>
-                )}
-              </Layout>
-              <Layout level="1" style={{ height: 200 }} />
-            </>
-          )}
-        </ScrollView>
-      </SafeAreaView>
+                ) : (
+                  <></>
+                )
+              ) : (
+                <Button onPress={getMore} style={styles.button}>
+                  Load More
+                </Button>
+              )}
+            </Layout>
+            <Layout level="1" style={{ height: 200 }} />
+          </>
+        )}
+      </ScrollView>
     </Layout>
   );
 };

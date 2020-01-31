@@ -22,6 +22,12 @@ function handleFinishLoading(setLoadingComplete) {
 
 async function loadResourcesAsync() {
   await Promise.all([
+    Asset.loadAsync([
+      require("./assets/images/btn_google_signin_dark_normal_web.png")
+    ]),
+    Asset.loadAsync([
+      require("./assets/images/btn_google_signin_light_normal_web.png")
+    ]),
     Asset.loadAsync([require("./assets/images/icon.png")]),
     Font.loadAsync({
       ...Ionicons.font,

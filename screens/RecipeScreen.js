@@ -5,10 +5,10 @@ import PropTypes from "prop-types";
 import {
   StyleSheet,
   ScrollView,
-  SafeAreaView,
   View,
   Alert,
-  Platform
+  Platform,
+  SafeAreaView
 } from "react-native";
 import {
   Layout,
@@ -23,7 +23,6 @@ import { connect } from "react-redux";
 import _ from "lodash";
 import { AdMobBanner } from "expo-ads-admob";
 import ListItem from "../components/listItem";
-import Header from "../components/Header";
 import MainSourceFetch from "../api/web";
 import NativeApi from "../api/native";
 import GoogleApi from "../api/google";
@@ -224,7 +223,6 @@ const RecipeScreen = ({
   return (
     <Layout level="1">
       <SafeAreaView>
-        <Header navigation={navigation} />
         <Layout level="1">
           <ScrollView style={styles.scrollContainer}>
             {_.isEmpty(recipeData) ? (
@@ -259,14 +257,13 @@ const RecipeScreen = ({
                     </Layout>
                     <Divider style={styles.cardDivider} />
                     <Layout>
-                      <Text>{recipeData.Instructions}</Text>
+                      <Text>
+                        {recipeData.Instructions.replace(/<[^>]+>/g, "")}
+                      </Text>
                     </Layout>
                   </Card>
                 </Layout>
                 <Divider style={styles.divider} />
-                <Text category="h6" style={styles.textHeader}>
-                  More cocktails with {recipeData.Ingredients[0].Name}
-                </Text>
                 <Layout style={styles.ads}>
                   <AdMobBanner
                     bannerSize="mediumRectangle"
@@ -276,6 +273,10 @@ const RecipeScreen = ({
                     onAdFailedToLoad={error => console.error(error)}
                   />
                 </Layout>
+                <Divider style={styles.divider} />
+                <Text category="h6" style={styles.textHeader}>
+                  More cocktails with {recipeData.Ingredients[0].Name}
+                </Text>
               </>
             )}
             {cocktailsList.length !== 0 ? (
@@ -312,6 +313,8 @@ RecipeScreen.propTypes = {
   toggle: PropTypes.any,
   user: PropTypes.any
 };
+
+//RecipeScreen.navigationOptions = { title: "Home" };
 
 const mapStateToProps = state => {
   return {

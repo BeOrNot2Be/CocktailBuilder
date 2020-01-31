@@ -2,7 +2,7 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { StyleSheet, ScrollView, SafeAreaView, Alert } from "react-native";
+import { StyleSheet, ScrollView, Alert, SafeAreaView } from "react-native";
 import { Layout, Text, Spinner, Button } from "@ui-kitten/components";
 import { connect } from "react-redux";
 import _ from "lodash";
@@ -112,7 +112,6 @@ const IngredientScreen = ({
   return (
     <Layout level="1">
       <SafeAreaView>
-        <Header navigation={navigation} />
         <Layout level="1">
           <ScrollView style={styles.scrollContainer}>
             <Text category="h6" style={styles.textHeader}>

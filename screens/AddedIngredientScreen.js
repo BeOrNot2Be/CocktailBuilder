@@ -12,8 +12,8 @@ import {
   REMOVE_INGREDIENT_FROM_SEARCH_BY,
   ADDED_CHECK_MAP_UPDATE
 } from "../actions/Ingredients";
-import { GoogleIcon, ForwardIcon } from "../components/Icons";
-import GoogleApi from "../api/google";
+import { ForwardIcon } from "../components/Icons";
+import RealGoogleButton from "../components/GoogleButton";
 
 const styles = StyleSheet.create({
   scrollContainer: {
@@ -34,8 +34,7 @@ const AddedIngredients = ({
   getCocktailsByIngredients,
   removeIngredient,
   setAdded,
-  user,
-  googleLogin
+  user
 }) => {
   const openIngredient = () => {
     navigation.push("Ingredient");
@@ -71,21 +70,13 @@ const AddedIngredients = ({
           <></>
         ) : (
           <Layout level="2" style={styles.buttonContainer}>
-            <Button
-              style={styles.button}
-              status="danger"
-              onPress={() => googleLogin()}
-              icon={GoogleIcon}
-            >
-              Login with Google
-            </Button>
+            <RealGoogleButton />
           </Layout>
         )}
         <Layout level="2" style={styles.buttonContainer}>
           <Button
             style={styles.button}
             icon={ForwardIcon}
-            status="success"
             onPress={() => navigation.navigate("Searched", { focus: true })}
           >
             Add my ingredients
@@ -100,7 +91,6 @@ const AddedIngredients = ({
 AddedIngredients.propTypes = {
   addedIngredients: PropTypes.any,
   getCocktailsByIngredients: PropTypes.any,
-  googleLogin: PropTypes.any,
   navigation: PropTypes.any,
   removeIngredient: PropTypes.any,
   setAdded: PropTypes.any,
@@ -123,9 +113,7 @@ const mapDispatchToProps = dispatch => ({
     ),
   removeIngredient: item =>
     dispatch({ type: REMOVE_INGREDIENT_FROM_SEARCH_BY, data: item }),
-  setAdded: addedID =>
-    dispatch({ type: ADDED_CHECK_MAP_UPDATE, data: addedID }),
-  googleLogin: () => GoogleApi.fullSignInWithGoogleAsync(dispatch)
+  setAdded: addedID => dispatch({ type: ADDED_CHECK_MAP_UPDATE, data: addedID })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddedIngredients);

@@ -7,7 +7,7 @@ import {
   SEARCHED_INGREDIENTS,
   ADD_INGREDIENT_TO_SEARCH_BY,
   REMOVE_INGREDIENT_FROM_SEARCH_BY,
-  ADDED_CHECK_MAP_UPDATE,
+  UNLOGGED_ADD_INGREDIENT_TO_SEARCH_BY,
   GET_INVENTORY_INGS
 } from "../actions/Ingredients";
 import MainSourceFetch from "../api/web";
@@ -78,6 +78,7 @@ const updateAddedIngCheckMap = (oldMap, newAddedIngs) => {
 };
 
 const ingredientsReducer = (state = INITIAL_STATE, action) => {
+  let newAdded;
   switch (action.type) {
     case SEARCHED_INGREDIENTS:
       return {
@@ -88,9 +89,26 @@ const ingredientsReducer = (state = INITIAL_STATE, action) => {
 
     case ADD_INGREDIENT_TO_SEARCH_BY:
       GoogleAnalytics.addedIngToMyBar(action.data.Name);
+      newAdded = new Map(state.addedCheck);
+      newAdded.set(action.data.ID, !state.addedCheck.get(action.data.ID));
       return {
         ...state,
-        addedIngredients: state.addedIngredients.concat(action.data)
+        addedIngredients: state.addedIngredients.concat(action.data),
+        addedCheck: newAdded
+      };
+
+    case UNLOGGED_ADD_INGREDIENT_TO_SEARCH_BY:
+      if (state.addedIngredients.length === 5) {
+        action.subdatafunc();
+        return state;
+      }
+      GoogleAnalytics.addedIngToMyBar(action.data.Name);
+      newAdded = new Map(state.addedCheck);
+      newAdded.set(action.data.ID, !state.addedCheck.get(action.data.ID));
+      return {
+        ...state,
+        addedIngredients: state.addedIngredients.concat(action.data),
+        addedCheck: newAdded
       };
 
     case GET_INVENTORY_INGS:
@@ -104,11 +122,6 @@ const ingredientsReducer = (state = INITIAL_STATE, action) => {
         addedIngredients: mergedAddedIngs,
         addedCheck: updateAddedIngCheckMap(state.addedCheck, mergedAddedIngs)
       };
-
-    case ADDED_CHECK_MAP_UPDATE:
-      const newAdded = new Map(state.addedCheck);
-      newAdded.set(action.data, !state.addedCheck.get(action.data));
-      return { ...state, addedCheck: newAdded };
 
     case REMOVE_INGREDIENT_FROM_SEARCH_BY:
       return {

@@ -10,7 +10,7 @@ import ListItem from "../components/SearchedIngredientItem";
 import { SearchIcon } from "../components/Icons";
 import {
   ADD_INGREDIENT_TO_SEARCH_BY,
-  ADDED_CHECK_MAP_UPDATE
+  UNLOGGED_ADD_INGREDIENT_TO_SEARCH_BY
 } from "../actions/Ingredients";
 
 let typingTimeout = null;
@@ -42,15 +42,18 @@ const IngredientScreen = ({
   searchEngine,
   addIngredient,
   added,
-  setAdded
+  user,
+  unloggedAddIngredient
 }) => {
   const [inputValue, setInputValue] = React.useState("");
   const [founded, setFounded] = React.useState([]);
   const [listLengthEnd, setListLengthEnd] = React.useState(20);
 
   const addIngredientToList = (ref, item) => {
-    addIngredient(item);
-    setAdded(item.ID);
+    if (user.logged) {
+      addIngredient(item);
+    } else
+      unloggedAddIngredient(item, () => navigation.push("forceLogInModal"));
   };
 
   const openIngredient = item => {
@@ -156,20 +159,27 @@ IngredientScreen.propTypes = {
   added: PropTypes.any,
   navigation: PropTypes.any,
   searchEngine: PropTypes.any,
-  setAdded: PropTypes.any
+  user: PropTypes.any,
+  unloggedAddIngredient: PropTypes.any
 };
 
 const mapStateToProps = state => {
   return {
     added: state.ingredients.addedCheck,
-    searchEngine: state.ingredients.searchEngine
+    searchEngine: state.ingredients.searchEngine,
+    user: state.user
   };
 };
 
 const mapDispatchToProps = dispatch => ({
-  addIngredient: id =>
-    dispatch({ type: ADD_INGREDIENT_TO_SEARCH_BY, data: id }),
-  setAdded: addedID => dispatch({ type: ADDED_CHECK_MAP_UPDATE, data: addedID })
+  addIngredient: item =>
+    dispatch({ type: ADD_INGREDIENT_TO_SEARCH_BY, data: item }),
+  unloggedAddIngredient: (item, openForceLogIn) =>
+    dispatch({
+      type: UNLOGGED_ADD_INGREDIENT_TO_SEARCH_BY,
+      data: item,
+      subdatafunc: openForceLogIn
+    })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(IngredientScreen);

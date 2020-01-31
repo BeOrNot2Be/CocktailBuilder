@@ -2,17 +2,16 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { StyleSheet, ScrollView, Alert } from "react-native";
-import { SafeAreaView } from "react-navigation";
-import { Layout, Button, Text } from "@ui-kitten/components";
+import { StyleSheet, ScrollView, Alert, SafeAreaView } from "react-native";
+import { Layout, Text } from "@ui-kitten/components";
 import { connect } from "react-redux";
 import _ from "lodash";
 import ListItem from "../components/listItem";
-import { GoogleIcon } from "../components/Icons";
 import Header from "../components/Header";
 import MainSourceFetch from "../api/web";
 import GoogleApi from "../api/google";
 import GoogleAnalytics from "../api/googleAnalytics";
+import RealGoogleButton from "../components/GoogleButton";
 
 const styles = StyleSheet.create({
   backdrop: {
@@ -85,37 +84,28 @@ const FavoriteScreen = ({
 
   return (
     <Layout level="1">
-      <SafeAreaView>
-        <Header navigation={navigation} />
-        <Layout level="1" style={styles.scrollContainer}>
-          <ScrollView>
-            {user.logged ? (
-              <>
-                {_.sortBy(cocktails, [item => item.CocktailName]).map(
-                  ListItem(listConfig)
-                )}
-                <Layout level="1" style={{ height: 250 }} />
-              </>
-            ) : (
-              <Layout style={styles.textForNotSignedIn}>
-                <Layout style={styles.formContainer}>
-                  <Text appearance="hint" category="label">
-                    To unlock useful functionality like favorites list you need
-                    to have an account
-                  </Text>
-                </Layout>
-                <Button
-                  status="danger"
-                  onPress={() => googleLogin()}
-                  icon={GoogleIcon}
-                >
-                  Login with Google
-                </Button>
+      <Layout level="1" style={styles.scrollContainer}>
+        <ScrollView>
+          {user.logged ? (
+            <>
+              {_.sortBy(cocktails, [item => item.CocktailName]).map(
+                ListItem(listConfig)
+              )}
+              <Layout level="1" style={{ height: 250 }} />
+            </>
+          ) : (
+            <Layout style={styles.textForNotSignedIn}>
+              <Layout style={styles.formContainer}>
+                <Text appearance="hint" category="label">
+                  To unlock useful functionality like favorites list you need to
+                  have an account
+                </Text>
               </Layout>
-            )}
-          </ScrollView>
-        </Layout>
-      </SafeAreaView>
+              <RealGoogleButton />
+            </Layout>
+          )}
+        </ScrollView>
+      </Layout>
     </Layout>
   );
 };

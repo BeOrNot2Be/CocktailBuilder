@@ -17,16 +17,18 @@ const ConnectionIssue = () => {
   });
 };
 
+const googleSignInConfig = {
+  androidClientId:
+    "629930544514-kgpsf2jgqqnijqdscd02k8r9tdc2hqcm.apps.googleusercontent.com",
+  iosClientId:
+    "629930544514-a4sin974ddd6nispqjcsvd621fd4g6di.apps.googleusercontent.com",
+  scopes: ["profile", "email"]
+};
+
 export default class GoogleApi {
   static async signInWithGoogleAsync(dispatch) {
     try {
-      const result = await Google.logInAsync({
-        androidClientId:
-          "629930544514-kgpsf2jgqqnijqdscd02k8r9tdc2hqcm.apps.googleusercontent.com",
-        iosClientId:
-          "629930544514-a4sin974ddd6nispqjcsvd621fd4g6di.apps.googleusercontent.com",
-        scopes: ["profile", "email"]
-      });
+      const result = await Google.logInAsync(googleSignInConfig);
 
       if (result.type === "success") {
         dispatch({
@@ -41,19 +43,14 @@ export default class GoogleApi {
         console.warn({ cancelled: true });
       }
     } catch (e) {
+      console.warn(e);
       ConnectionIssue();
     }
   }
 
   static async fullSignInWithGoogleAsync(dispatch) {
     try {
-      const result = await Google.logInAsync({
-        androidClientId:
-          "629930544514-kgpsf2jgqqnijqdscd02k8r9tdc2hqcm.apps.googleusercontent.com",
-        iosClientId:
-          "629930544514-a4sin974ddd6nispqjcsvd621fd4g6di.apps.googleusercontent.com",
-        scopes: ["profile", "email"]
-      });
+      const result = await Google.logInAsync(googleSignInConfig);
 
       if (result.type === "success") {
         dispatch({
@@ -69,6 +66,7 @@ export default class GoogleApi {
         console.warn({ cancelled: true });
       }
     } catch (e) {
+      console.warn(e);
       ConnectionIssue();
     }
   }

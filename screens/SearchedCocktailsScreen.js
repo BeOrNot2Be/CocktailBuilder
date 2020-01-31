@@ -4,8 +4,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import _ from "lodash";
-import { StyleSheet, ScrollView, Alert } from "react-native";
-import { SafeAreaView } from "react-navigation";
+import { StyleSheet, ScrollView, Alert, SafeAreaView } from "react-native";
 import { Input, Layout, Text } from "@ui-kitten/components";
 import ListItem from "../components/listItem";
 import Header from "../components/Header";
@@ -90,7 +89,6 @@ const SearchedCocktailsScreen = ({
   return (
     <Layout level="1">
       <SafeAreaView>
-        <Header navigation={navigation} />
         <ScrollView style={styles.scrollContainer}>
           <Layout style={styles.container}>
             <Input
