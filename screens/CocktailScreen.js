@@ -11,6 +11,7 @@ import { SearchIcon, CrossIcon, BackIcon } from "../components/Icons";
 import MainSourceFetch from "../api/web";
 import GoogleApi from "../api/google";
 import GoogleAnalytics from "../api/googleAnalytics";
+import { TOGGLE_FAV_COCKTAIL } from "../actions/Cocktails";
 
 const styles = StyleSheet.create({
   container: {
@@ -47,7 +48,7 @@ const CocktailScreen = ({
   navigation,
   cocktails,
   search,
-  favCocktails,
+  favCocktailsIDs,
   toggle,
   user,
   googleLogin
@@ -76,7 +77,7 @@ const CocktailScreen = ({
 
   const ToggleFollow = (ref, item) => {
     if (user.logged) {
-      toggle(item, user.token, favCocktails);
+      toggle(item, user.token);
     } else {
       askForLogin();
     }
@@ -97,7 +98,7 @@ const CocktailScreen = ({
     onLongPress: openModal,
     onPress: openRecipe,
     onMainButtonPress: ToggleFollow,
-    favsID: favCocktails.map(e => e.CocktailID)
+    favsID: favCocktailsIDs
   };
 
   const onSearch = input => {
@@ -162,7 +163,7 @@ const CocktailScreen = ({
 
 CocktailScreen.propTypes = {
   cocktails: PropTypes.any,
-  favCocktails: PropTypes.any,
+  favCocktailsIDs: PropTypes.any,
   googleLogin: PropTypes.any,
   navigation: PropTypes.any,
   search: PropTypes.any,
@@ -173,22 +174,16 @@ CocktailScreen.propTypes = {
 const mapStateToProps = state => {
   return {
     cocktails: state.cocktails.cocktailsByIngredients,
-    favCocktails: state.cocktails.favCocktails,
-    user: state.user
+    user: state.user,
+    favCocktailsIDs: state.cocktails.favCocktailsIDs
   };
 };
 
 const mapDispatchToProps = dispatch => ({
   googleLogin: () => GoogleApi.fullSignInWithGoogleAsync(dispatch),
   search: input => MainSourceFetch.getCocktailsByName(input, dispatch),
-  toggle: (item, token, favs) => {
-    const favIDs = favs.map(e => e.CocktailID);
-    if (_.includes(favIDs, item.CocktailID)) {
-      MainSourceFetch.saveRemovedFav(item, favs, token, dispatch);
-    } else {
-      MainSourceFetch.saveAddedFav(item, favs, token, dispatch);
-    }
-  }
+  toggle: (item, token) =>
+    dispatch({ type: TOGGLE_FAV_COCKTAIL, data: { item, token } })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(CocktailScreen);

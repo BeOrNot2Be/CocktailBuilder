@@ -3,15 +3,14 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import _ from "lodash";
 import { StyleSheet, ScrollView, Alert, SafeAreaView } from "react-native";
 import { Input, Layout, Text } from "@ui-kitten/components";
 import ListItem from "../components/listItem";
-import Header from "../components/Header";
 import { SearchIcon, CrossIcon } from "../components/Icons";
 import MainSourceFetch from "../api/web";
 import GoogleApi from "../api/google";
 import GoogleAnalytics from "../api/googleAnalytics";
+import { TOGGLE_FAV_COCKTAIL } from "../actions/Cocktails";
 
 const styles = StyleSheet.create({
   container: {
@@ -33,7 +32,7 @@ const SearchedCocktailsScreen = ({
   navigation,
   cocktails,
   search,
-  favCocktails,
+  favCocktailsIDs,
   toggle,
   user,
   googleLogin
@@ -66,7 +65,7 @@ const SearchedCocktailsScreen = ({
 
   const ToggleFollow = (ref, item) => {
     if (user.logged) {
-      toggle(item, user.token, favCocktails);
+      toggle(item, user.token);
     } else {
       askForLogin();
     }
@@ -83,7 +82,7 @@ const SearchedCocktailsScreen = ({
     onLongPress: openModal,
     onPress: openRecipe,
     onMainButtonPress: ToggleFollow,
-    favsID: favCocktails.map(e => e.CocktailID)
+    favsID: favCocktailsIDs
   };
 
   return (
@@ -124,7 +123,7 @@ const SearchedCocktailsScreen = ({
 
 SearchedCocktailsScreen.propTypes = {
   cocktails: PropTypes.any,
-  favCocktails: PropTypes.any,
+  favCocktailsIDs: PropTypes.any,
   googleLogin: PropTypes.any,
   navigation: PropTypes.any,
   search: PropTypes.any,
@@ -135,7 +134,7 @@ SearchedCocktailsScreen.propTypes = {
 const mapStateToProps = state => {
   return {
     cocktails: state.cocktails.searchedCocktails,
-    favCocktails: state.cocktails.favCocktails,
+    favCocktailsIDs: state.cocktails.favCocktailsIDs,
     user: state.user
   };
 };
@@ -143,14 +142,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
   googleLogin: () => GoogleApi.fullSignInWithGoogleAsync(dispatch),
   search: input => MainSourceFetch.getCocktailsByName(input, dispatch),
-  toggle: (item, token, favs) => {
-    const favIDs = favs.map(e => e.CocktailID);
-    if (_.includes(favIDs, item.CocktailID)) {
-      MainSourceFetch.saveRemovedFav(item, favs, token, dispatch);
-    } else {
-      MainSourceFetch.saveAddedFav(item, favs, token, dispatch);
-    }
-  }
+  toggle: (item, token) =>
+    dispatch({ type: TOGGLE_FAV_COCKTAIL, data: { item, token } })
 });
 
 export default connect(

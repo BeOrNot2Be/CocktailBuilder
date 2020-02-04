@@ -49,19 +49,6 @@ const IngredientScreen = ({
   const [founded, setFounded] = React.useState([]);
   const [listLengthEnd, setListLengthEnd] = React.useState(20);
 
-  const addIngredientToList = (ref, item) => {
-    if (user.logged) {
-      addIngredient(item);
-    } else
-      unloggedAddIngredient(item, () => navigation.push("forceLogInModal"));
-  };
-
-  const openIngredient = item => {
-    navigation.push("Ingredient", {
-      ingredient: item
-    });
-  };
-
   const searchInput = text => {
     clearTimeout(typingTimeout);
     searching = true;
@@ -75,6 +62,21 @@ const IngredientScreen = ({
       );
     }, 400);
     setInputValue(text);
+  };
+
+  const addIngredientToList = (ref, item) => {
+    setInputValue("");
+    setFounded([item]);
+    if (user.logged) {
+      addIngredient(item);
+    } else
+      unloggedAddIngredient(item, () => navigation.push("forceLogInModal"));
+  };
+
+  const openIngredient = item => {
+    navigation.push("Ingredient", {
+      ingredient: item
+    });
   };
 
   const inputRef = React.useRef();
@@ -106,7 +108,9 @@ const IngredientScreen = ({
               onChangeText={searchInput}
               icon={SearchIcon}
               caption={
-                founded.length !== 0 ? `Found ${founded.length} results` : ""
+                founded.length !== 0 && inputValue !== ""
+                  ? `Found ${founded.length} results`
+                  : ""
               }
             />
             {founded.length !== 0 ? (

@@ -152,11 +152,11 @@ const ListItemComponent = constArgs => {
                     <Text appearance="hint" category="c2">
                       {fav
                         ? `${
-                            item.Ingredients.length != 0
-                              ? item.Ingredients.length
+                            item.TotalIngredients != 0
+                              ? item.TotalIngredients
                               : 1
                           } ${
-                            item.Ingredients.length !== 1
+                            item.TotalIngredients !== 1
                               ? "ingredients"
                               : "ingredient"
                           }`
@@ -184,7 +184,7 @@ const ListItemComponent = constArgs => {
                       appearance="ghost"
                       status="danger"
                       icon={
-                        _.includes(favsID, item.CocktailID)
+                        favsID.indexOf(item.CocktailID) !== -1
                           ? HeartIcon
                           : HeartOutlineIcon
                       }

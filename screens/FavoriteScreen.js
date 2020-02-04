@@ -2,12 +2,11 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { StyleSheet, ScrollView, Alert, SafeAreaView } from "react-native";
+import { StyleSheet, ScrollView, Alert } from "react-native";
 import { Layout, Text } from "@ui-kitten/components";
 import { connect } from "react-redux";
 import _ from "lodash";
 import ListItem from "../components/listItem";
-import Header from "../components/Header";
 import MainSourceFetch from "../api/web";
 import GoogleApi from "../api/google";
 import GoogleAnalytics from "../api/googleAnalytics";
@@ -39,7 +38,8 @@ const FavoriteScreen = ({
   cocktails,
   user,
   removeFav,
-  googleLogin
+  googleLogin,
+  cocktailsIds
 }) => {
   const openRecipe = item => {
     GoogleAnalytics.openedRecipe(item.CocktailName);
@@ -62,7 +62,7 @@ const FavoriteScreen = ({
 
   const RemoveItem = (ref, item) => {
     if (user.logged) {
-      removeFav(item, user.token, cocktails);
+      removeFav(item, user.token, cocktailsIds);
     } else {
       askForLogin();
     }
@@ -79,7 +79,7 @@ const FavoriteScreen = ({
     onLongPress: openModal,
     onPress: openRecipe,
     onMainButtonPress: RemoveItem,
-    favsID: cocktails.map(e => e.CocktailID)
+    favsID: cocktailsIds
   };
 
   return (
@@ -115,19 +115,21 @@ FavoriteScreen.propTypes = {
   googleLogin: PropTypes.any,
   navigation: PropTypes.any,
   removeFav: PropTypes.any,
-  user: PropTypes.any
+  user: PropTypes.any,
+  cocktailsIds: PropTypes.any
 };
 
 const mapStateToProps = state => {
   return {
     cocktails: state.cocktails.favCocktails,
+    cocktailsIds: state.cocktails.favCocktailsIDs,
     user: state.user
   };
 };
 
 const mapDispatchToProps = dispatch => ({
-  removeFav: (removed, token, favs) =>
-    MainSourceFetch.saveRemovedFav(removed, favs, token, dispatch),
+  removeFav: (removed, token, favsIDs) =>
+    MainSourceFetch.saveRemovedFav(removed, favsIDs, token, dispatch),
   googleLogin: () => GoogleApi.fullSignInWithGoogleAsync(dispatch)
 });
 

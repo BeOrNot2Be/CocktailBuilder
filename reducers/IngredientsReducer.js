@@ -124,11 +124,14 @@ const ingredientsReducer = (state = INITIAL_STATE, action) => {
       };
 
     case REMOVE_INGREDIENT_FROM_SEARCH_BY:
+      newAdded = new Map(state.addedCheck);
+      newAdded.set(action.data.ID, !state.addedCheck.get(action.data.ID));
       return {
         ...state,
         addedIngredients: state.addedIngredients.filter(
           item => item.ID !== action.data.ID
-        )
+        ),
+        addedCheck: newAdded
       };
 
     default:

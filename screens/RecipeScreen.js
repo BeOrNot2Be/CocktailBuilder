@@ -28,6 +28,7 @@ import NativeApi from "../api/native";
 import GoogleApi from "../api/google";
 import GoogleAnalytics from "../api/googleAnalytics";
 import { HeartIcon, ShareIcon, HeartOutlineIcon } from "../components/Icons";
+import { TOGGLE_FAV_COCKTAIL } from "../actions/Cocktails";
 
 const unitID =
   Platform.OS === "ios"
@@ -104,7 +105,7 @@ const styles = StyleSheet.create({
 
 const RecipeScreen = ({
   navigation,
-  favCocktails,
+  favCocktailsIDs,
   toggle,
   user,
   googleLogin
@@ -155,7 +156,7 @@ const RecipeScreen = ({
 
   const CardToggleFollow = () => {
     if (user.logged) {
-      toggle(recipe, user.token, favCocktails);
+      toggle(recipe, user.token);
     } else {
       askForLogin();
     }
@@ -174,10 +175,7 @@ const RecipeScreen = ({
         status="danger"
         appearance="ghost"
         icon={
-          _.includes(
-            favCocktails.map(e => e.CocktailID),
-            recipe.CocktailID
-          )
+          favCocktailsIDs.indexOf(recipe.CocktailID) !== -1
             ? HeartIcon
             : HeartOutlineIcon
         }
@@ -188,7 +186,7 @@ const RecipeScreen = ({
 
   const ToggleFollow = (ref, item) => {
     if (user.logged) {
-      toggle(item, user.token, favCocktails);
+      toggle(item, user.token, favCocktailsIDs);
     } else {
       askForLogin();
     }
@@ -205,7 +203,7 @@ const RecipeScreen = ({
     onLongPress: openModal,
     onPress: openRecipe,
     onMainButtonPress: ToggleFollow,
-    favsID: favCocktails.map(e => e.CocktailID)
+    favsID: favCocktailsIDs
   };
 
   const openIngredient = item => {
@@ -307,32 +305,24 @@ const RecipeScreen = ({
 };
 
 RecipeScreen.propTypes = {
-  favCocktails: PropTypes.any,
+  favCocktailsIDs: PropTypes.any,
   googleLogin: PropTypes.any,
   navigation: PropTypes.any,
   toggle: PropTypes.any,
   user: PropTypes.any
 };
 
-//RecipeScreen.navigationOptions = { title: "Home" };
-
 const mapStateToProps = state => {
   return {
-    favCocktails: state.cocktails.favCocktails,
+    favCocktailsIDs: state.cocktails.favCocktailsIDs,
     user: state.user
   };
 };
 
 const mapDispatchToProps = dispatch => ({
   googleLogin: () => GoogleApi.fullSignInWithGoogleAsync(dispatch),
-  toggle: (item, token, favs) => {
-    const favIDs = favs.map(e => e.CocktailID);
-    if (_.includes(favIDs, item.CocktailID)) {
-      MainSourceFetch.saveRemovedFav(item, favs, token, dispatch);
-    } else {
-      MainSourceFetch.saveAddedFav(item, favs, token, dispatch);
-    }
-  }
+  toggle: (item, token) =>
+    dispatch({ type: TOGGLE_FAV_COCKTAIL, data: { item, token } })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(RecipeScreen);

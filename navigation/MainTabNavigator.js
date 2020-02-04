@@ -13,6 +13,7 @@ import {
 } from "@ui-kitten/components";
 import IconBadge from "react-native-icon-badge";
 import { connect } from "react-redux";
+import { NavigationActions } from "react-navigation";
 import _ from "lodash";
 import FavoriteScreen from "../screens/FavoriteScreen";
 import CocktailScreen from "../screens/CocktailScreen";
@@ -25,17 +26,12 @@ import GoogleAnalytics from "../api/googleAnalytics";
 import Header from "../components/Header";
 
 const config = {
-  navigationOptions: {},
   defaultNavigationOptions: {
+    // eslint-disable-next-line react/prop-types
     header: ({ scene, previous, navigation }) => (
       <Header scene={scene} previous={previous} navigation={navigation} />
     )
   }
-};
-
-FavoriteScreen.navigationOptions = ({ navigation }) => {
-  const header = null;
-  return header;
 };
 
 const styles = StyleSheet.create({
@@ -72,7 +68,15 @@ const TabBarComponent = ({
 }) => {
   const onSelect = index => {
     const selectedTabRoute = navigation.state.routes[index];
-    navigation.navigate(selectedTabRoute.routeName);
+    if (index > 0) {
+      const navigateAction = NavigationActions.navigate({
+        routeName: selectedTabRoute.routeName,
+        action: navigation.popToTop({ immediate: true })
+      });
+      navigation.dispatch(navigateAction);
+    } else {
+      navigation.navigate(selectedTabRoute.routeName);
+    }
     GoogleAnalytics.sendMainPagesAnalytics(selectedTabRoute.routeName);
   };
 
@@ -98,7 +102,7 @@ const TabBarComponent = ({
                   ...styles.badge,
                   minWidth: numDigits(num) * 10,
                   backgroundColor: theme ? "#DB3B29" : "#FF4463"
-                }} // make adjustable banner
+                }} // makes adjustable banner
               >
                 <Text style={{ color: "#FFFFFF" }} category="label">
                   {num == 10000 ? `${9999}+` : num}
@@ -150,10 +154,11 @@ const getAmountWithoutAdds = num => {
 const getAmountThatCanBeMade = cocktails => {
   return _.filter(cocktails, item => {
     if (item.MissingIngr === undefined) {
+      // excludes added ads
       return false;
     }
     return !item.MissingIngr;
-  }).length; // true to exclude added ads
+  }).length;
 };
 
 const mapStateToProps = state => {
@@ -195,7 +200,8 @@ const TabNavigator = createBottomTabNavigator(
   },
   {
     tabBarComponent: connect(mapStateToProps)(TabBarComponent),
-    resetOnBlur: true
+    resetOnBlur: false,
+    lazy: false
   }
 );
 

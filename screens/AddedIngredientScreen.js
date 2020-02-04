@@ -8,10 +8,7 @@ import { connect } from "react-redux";
 import _ from "lodash";
 import ListItem from "../components/listItem";
 import MainSourceFetch from "../api/web";
-import {
-  REMOVE_INGREDIENT_FROM_SEARCH_BY,
-  ADDED_CHECK_MAP_UPDATE
-} from "../actions/Ingredients";
+import { REMOVE_INGREDIENT_FROM_SEARCH_BY } from "../actions/Ingredients";
 import { ForwardIcon } from "../components/Icons";
 import RealGoogleButton from "../components/GoogleButton";
 
@@ -33,7 +30,6 @@ const AddedIngredients = ({
   addedIngredients,
   getCocktailsByIngredients,
   removeIngredient,
-  setAdded,
   user
 }) => {
   const openIngredient = () => {
@@ -44,7 +40,6 @@ const AddedIngredients = ({
 
   const removeIngredientToList = (ref, item) => {
     removeIngredient(item);
-    setAdded(item.ID);
   };
 
   const listConfig = {
@@ -93,7 +88,6 @@ AddedIngredients.propTypes = {
   getCocktailsByIngredients: PropTypes.any,
   navigation: PropTypes.any,
   removeIngredient: PropTypes.any,
-  setAdded: PropTypes.any,
   user: PropTypes.any
 };
 
@@ -112,8 +106,7 @@ const mapDispatchToProps = dispatch => ({
       token
     ),
   removeIngredient: item =>
-    dispatch({ type: REMOVE_INGREDIENT_FROM_SEARCH_BY, data: item }),
-  setAdded: addedID => dispatch({ type: ADDED_CHECK_MAP_UPDATE, data: addedID })
+    dispatch({ type: REMOVE_INGREDIENT_FROM_SEARCH_BY, data: item })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddedIngredients);
