@@ -5,7 +5,6 @@ import PropTypes from "prop-types";
 import { StyleSheet, ScrollView, Alert } from "react-native";
 import { Input, Layout, Button } from "@ui-kitten/components";
 import { connect } from "react-redux";
-import _ from "lodash";
 import ListItem from "../components/listItem";
 import { SearchIcon, CrossIcon, BackIcon } from "../components/Icons";
 import MainSourceFetch from "../api/web";

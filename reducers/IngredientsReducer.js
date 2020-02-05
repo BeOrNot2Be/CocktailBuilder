@@ -37,7 +37,6 @@ const INITIAL_STATE = loop(
 const mergeWithBackEnd = (clientInventory, backendInventoryIds, fullList) => {
   let exist;
   const newFetchedItems = [...clientInventory];
-  // check
   backendInventoryIds.forEach(ingID => {
     exist = false;
     try {
@@ -54,26 +53,12 @@ const mergeWithBackEnd = (clientInventory, backendInventoryIds, fullList) => {
       newFetchedItems.push(_.find(fullList, ing => ing.ID === ingID));
     }
   });
-  /*
-  for (const ingID of backendInventoryIds) {
-    exist = false;
-    for (const clientIng of clientInventory) {
-      if (ingID == clientIng.ID) {
-        exist = true;
-        break;
-      }
-    }
-    if (!exist) {
-      newFetchedItems.push(_.find(fullList, ing => ing.ID === ingID));
-    }
-  }
-  */
   return newFetchedItems;
 };
 
 const updateAddedIngCheckMap = (oldMap, newAddedIngs) => {
   const newAdded = new Map(oldMap);
-  newAddedIngs.forEach(ing => newAdded.set(ing.ID, true)); // check
+  newAddedIngs.forEach(ing => newAdded.set(ing.ID, true));
   return newAdded;
 };
 

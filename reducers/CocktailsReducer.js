@@ -87,8 +87,7 @@ const cocktailsReducer = (state = INITIAL_STATE, action) => {
         const newFavCocktailsIDs = state.favCocktailsIDs.concat(
           action.data.item.CocktailID
         );
-        action.data.item.TotalIngredients =
-          action.data.item.MissingIngr + action.data.item.PresentIngr;
+
         const newState = {
           ...state,
           favCocktailsIDs: newFavCocktailsIDs,

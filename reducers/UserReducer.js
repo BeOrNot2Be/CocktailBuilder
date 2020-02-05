@@ -103,7 +103,9 @@ const userReducer = (state = INITIAL_STATE, action) => {
 
     case TOGGLE_THEME:
       user = { ...state, theme: state.theme == 1 ? 0 : 1 };
-      NativeApi.SaveUser(user);
+      if (user.logged) {
+        NativeApi.SaveUser(user);
+      }
       return user;
 
     default:
