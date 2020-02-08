@@ -43,7 +43,7 @@ export default class GoogleApi {
     }
   }
 
-  static async fullSignInWithGoogleAsync(dispatch) {
+  static async fullSignInWithGoogleAsync(dispatch, callback = null) {
     try {
       const result = await Google.logInAsync(googleSignInConfig);
 
@@ -57,6 +57,7 @@ export default class GoogleApi {
           }
         });
         MainSourceFetch.getToken(result.user.email, dispatch);
+        if (callback) callback();
       } else {
         console.warn({ cancelled: true });
       }

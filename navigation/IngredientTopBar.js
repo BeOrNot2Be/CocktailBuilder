@@ -10,7 +10,7 @@ import { connect } from "react-redux";
 import SearchedIngredientsScreen from "../screens/SearchedIngredientScreen";
 import AddedIngredientScreen from "../screens/AddedIngredientScreen";
 import ForcedLogInModal from "../screens/ForcedLogIn";
-import { SearchIcon, AddedSquareIcon } from "../components/Icons";
+import { SearchIcon, ListIcon } from "../components/Icons";
 import GoogleAnalytics from "../api/googleAnalytics";
 
 const TabBarComponent = ({ navigation, addedIngredientNumber }) => {
@@ -23,10 +23,7 @@ const TabBarComponent = ({ navigation, addedIngredientNumber }) => {
   return (
     <Layout level="1">
       <TabBar selectedIndex={navigation.state.index} onSelect={onSelect}>
-        <Tab
-          title={`In My Bar (${addedIngredientNumber})`}
-          icon={AddedSquareIcon}
-        />
+        <Tab title={`In My Bar (${addedIngredientNumber})`} icon={ListIcon} />
         <Tab title="Search" icon={SearchIcon} />
       </TabBar>
     </Layout>

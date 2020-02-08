@@ -8,6 +8,7 @@ import { mapping, dark, light } from "@eva-design/eva";
 import { EvaIconsPack } from "@ui-kitten/eva-icons";
 import { AppearanceProvider } from "react-native-appearance";
 import { IonicIconsPack } from "./ionic-icons";
+import { MaterialCommunityIconsPack } from "./material-icons";
 import AppNavigator from "./navigation/Drawer";
 import { default as lightTheme } from "./themes/custom-theme.json";
 import { default as darkTheme } from "./themes/night-theme.json";
@@ -18,7 +19,9 @@ const themes = { 1: { ...light, ...lightTheme }, 0: { ...dark, ...darkTheme } };
 const AppComponent = ({ theme }) => {
   return (
     <>
-      <IconRegistry icons={[EvaIconsPack, IonicIconsPack]} />
+      <IconRegistry
+        icons={[EvaIconsPack, IonicIconsPack, MaterialCommunityIconsPack]}
+      />
       <AppearanceProvider>
         <ApplicationProvider
           mapping={mapping}

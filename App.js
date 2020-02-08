@@ -5,7 +5,7 @@ import { AppLoading } from "expo";
 import { Asset } from "expo-asset";
 import * as Font from "expo-font";
 import React, { useState } from "react";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Provider } from "react-redux";
 import * as firebase from "firebase";
 import AppComponent from "./AppComponent";
@@ -31,6 +31,7 @@ async function loadResourcesAsync() {
     Asset.loadAsync([require("./assets/images/icon.png")]),
     Font.loadAsync({
       ...Ionicons.font,
+      ...MaterialCommunityIcons.font,
       roboto: require("./assets/fonts/Roboto-Regular.ttf")
     })
   ]);

@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
 const ForceLogInModal = ({ navigation }) => {
   const Footer = () => (
     <View style={styles.footerContainer}>
-      <RealGoogleButton />
+      <RealGoogleButton callback={navigation.goBack} />
     </View>
   );
 

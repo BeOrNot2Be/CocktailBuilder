@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { StyleSheet, FlatList } from "react-native";
 import { Layout, Text, Button, Input } from "@ui-kitten/components";
 import { connect } from "react-redux";
-import { NavigationEvents } from "react-navigation";
+import { NavigationEvents, NavigationActions } from "react-navigation";
 import ListItem from "../components/SearchedIngredientItem";
 import { SearchIcon } from "../components/Icons";
 import {
@@ -48,8 +48,10 @@ const IngredientScreen = ({
   const [inputValue, setInputValue] = React.useState("");
   const [founded, setFounded] = React.useState([]);
   const [listLengthEnd, setListLengthEnd] = React.useState(20);
+  const [justAdded, setJustAdded] = React.useState(false);
 
   const searchInput = text => {
+    setJustAdded(false);
     clearTimeout(typingTimeout);
     searching = true;
     typingTimeout = setTimeout(() => {
@@ -67,6 +69,7 @@ const IngredientScreen = ({
   const addIngredientToList = (ref, item) => {
     setInputValue("");
     setFounded([item]);
+    setJustAdded(true);
     if (user.logged) {
       addIngredient(item);
     } else
@@ -81,6 +84,11 @@ const IngredientScreen = ({
 
   const inputRef = React.useRef();
 
+  const navigateAction = NavigationActions.navigate({
+    routeName: "Cocktails",
+    action: navigation.popToTop({ immediate: true })
+  });
+
   return (
     <Layout level="2" style={styles.scrollContainer}>
       <NavigationEvents
@@ -91,6 +99,7 @@ const IngredientScreen = ({
         }}
         onWillBlur={() => {
           navigation.setParams({ focus: false });
+          searchInput("");
           inputRef.current.blur();
         }}
       />
@@ -115,7 +124,7 @@ const IngredientScreen = ({
             />
             {founded.length !== 0 ? (
               <></>
-            ) : inputValue !== "" && !searching ? (
+            ) : inputValue !== "" && !searching && founded.length > 1 ? (
               <Layout style={styles.textContainer} level="2">
                 <Text category="p2" status="basic">
                   No results found for search: {inputValue}
@@ -136,6 +145,13 @@ const IngredientScreen = ({
                   }}
                 >
                   Load More
+                </Button>
+              ) : (
+                <></>
+              )}
+              {justAdded ? (
+                <Button onPress={() => navigation.dispatch(navigateAction)}>
+                  See cocktails you can make
                 </Button>
               ) : (
                 <></>

@@ -22,10 +22,10 @@ const styles = StyleSheet.create({
   }
 });
 
-const GoogleButton = ({ theme, googleLogin }) => {
+const GoogleButton = ({ theme, googleLogin, callback }) => {
   return (
     <Layout style={styles.buttonLayout}>
-      <TouchableOpacity onPress={() => googleLogin()}>
+      <TouchableOpacity onPress={() => googleLogin(callback)}>
         {theme ? (
           <Image
             style={styles.button}
@@ -44,17 +44,20 @@ const GoogleButton = ({ theme, googleLogin }) => {
 
 GoogleButton.propTypes = {
   theme: PropTypes.any,
-  googleLogin: PropTypes.any
+  googleLogin: PropTypes.any,
+  callback: PropTypes.any
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state, ownProps) => {
   return {
-    theme: !!state.user.theme
+    theme: !!state.user.theme,
+    callback: ownProps.callback || null
   };
 };
 
 const mapDispatchToProps = dispatch => ({
-  googleLogin: () => GoogleApi.fullSignInWithGoogleAsync(dispatch)
+  googleLogin: callback =>
+    GoogleApi.fullSignInWithGoogleAsync(dispatch, callback)
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GoogleButton);

@@ -72,7 +72,9 @@ const AddedIngredients = ({
           <Button
             style={styles.button}
             icon={ForwardIcon}
-            onPress={() => navigation.navigate("Searched", { focus: true })}
+            onPress={() => {
+              navigation.navigate("ingredientContent", { focus: true });
+            }}
           >
             Add my ingredients
           </Button>

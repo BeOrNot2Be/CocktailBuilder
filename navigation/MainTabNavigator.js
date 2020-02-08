@@ -21,7 +21,7 @@ import RecipeScreen from "../screens/RecipeScreen";
 import IngredientScreen from "../screens/IngredientScreen";
 import SearchedCocktailsScreen from "../screens/SearchedCocktailsScreen";
 import IngredientTabNavigator from "./IngredientTopBar";
-import { ListIcon, CocktailIcon, HeartMenuIcon } from "../components/Icons";
+import { BottleIcon, CocktailIcon, HeartMenuIcon } from "../components/Icons";
 import GoogleAnalytics from "../api/googleAnalytics";
 import Header from "../components/Header";
 
@@ -36,9 +36,8 @@ const config = {
 
 const styles = StyleSheet.create({
   bottomNavigation: {
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-    position: "absolute",
+    //borderTopLeftRadius: 15,
+    //borderTopRightRadius: 15,
     bottom: 0,
     padding: 10,
     zIndex: 8,
@@ -75,7 +74,7 @@ const TabBarComponent = ({
       });
       navigation.dispatch(navigateAction);
     } else {
-      navigation.navigate(selectedTabRoute.routeName);
+      navigation.navigate("Added");
     }
     GoogleAnalytics.sendMainPagesAnalytics(selectedTabRoute.routeName);
   };
@@ -95,7 +94,7 @@ const TabBarComponent = ({
           }}
         >
           <IconBadge
-            MainElement={icon(style)}
+            MainElement={icon({ ...style, height: 23 })}
             BadgeElement={
               <Layout
                 style={{
@@ -126,14 +125,29 @@ const TabBarComponent = ({
         onSelect={onSelect}
         appearance="noIndicator"
       >
-        <BottomNavigationTab title="Ingredients" icon={ListIcon} />
+        <BottomNavigationTab
+          title="Ingredients"
+          icon={style => BottleIcon({ ...style, marginVertical: 0 })}
+        />
         <BottomNavigationTab
           title="Cocktails"
-          icon={style => getBadge(style, CocktailIcon, foundCocktailsNumber)}
+          icon={style =>
+            getBadge(
+              { ...style, marginVertical: 0 },
+              CocktailIcon,
+              foundCocktailsNumber
+            )
+          }
         />
         <BottomNavigationTab
           title="Favorites"
-          icon={style => getBadge(style, HeartMenuIcon, favCocktailsNumber)}
+          icon={style =>
+            getBadge(
+              { ...style, marginVertical: 0 },
+              HeartMenuIcon,
+              favCocktailsNumber
+            )
+          }
         />
       </BottomNavigation>
     </SafeAreaView>

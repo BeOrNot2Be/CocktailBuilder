@@ -53,7 +53,11 @@ export const AlertIcon = style => (
 export const ListIcon = style => <Icon {...style} name="list-outline" />;
 
 export const CocktailIcon = style => (
-  <Icon {...style} name="ios-beer" pack="ionic" />
+  <Icon {...style} name="md-wine" pack="ionic" />
+);
+
+export const BottleIcon = style => (
+  <Icon {...style} name="bottle-wine" pack="material" />
 );
 
 export const CrossIcon = style => <Icon {...style} name="close-outline" />;

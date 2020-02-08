@@ -42,10 +42,12 @@ const Header = ({ scene, previous, navigation }) => {
           alignment="center"
           rightControls={DrawerToggle()}
           leftControl={
-            <TopNavigationAction
-              icon={BackIcon}
-              onPress={() => navigation.goBack(null)}
-            />
+            ["Ingredients", "Cocktails", "Favorites"].indexOf(title) === -1 ? (
+              <TopNavigationAction
+                icon={BackIcon}
+                onPress={() => navigation.goBack(null)}
+              />
+            ) : null
           }
           titleStyle={styles.title}
         />

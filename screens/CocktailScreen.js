@@ -124,7 +124,9 @@ const CocktailScreen = ({
             <Button
               style={styles.button}
               icon={BackIcon}
-              onPress={() => navigation.navigate("Searched", { focus: true })}
+              onPress={() =>
+                navigation.navigate("ingredientContent", { focus: true })
+              }
             >
               Add my ingredients
             </Button>
