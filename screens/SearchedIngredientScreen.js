@@ -84,11 +84,6 @@ const IngredientScreen = ({
 
   const inputRef = React.useRef();
 
-  const navigateAction = NavigationActions.navigate({
-    routeName: "Cocktails",
-    action: navigation.popToTop({ immediate: true })
-  });
-
   return (
     <Layout level="2" style={styles.scrollContainer}>
       <NavigationEvents
@@ -124,7 +119,7 @@ const IngredientScreen = ({
             />
             {founded.length !== 0 ? (
               <></>
-            ) : inputValue !== "" && !searching && founded.length > 1 ? (
+            ) : inputValue !== "" && !searching ? (
               <Layout style={styles.textContainer} level="2">
                 <Text category="p2" status="basic">
                   No results found for search: {inputValue}
@@ -150,7 +145,16 @@ const IngredientScreen = ({
                 <></>
               )}
               {justAdded ? (
-                <Button onPress={() => navigation.dispatch(navigateAction)}>
+                <Button
+                  onPress={() => {
+                    navigation.dispatch(
+                      NavigationActions.navigate({
+                        routeName: "Cocktails",
+                        action: navigation.popToTop({ immediate: true })
+                      })
+                    );
+                  }}
+                >
                   See cocktails you can make
                 </Button>
               ) : (
