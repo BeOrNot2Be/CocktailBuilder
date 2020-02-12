@@ -36,19 +36,7 @@ const config = {
 
 const styles = StyleSheet.create({
   bottomNavigation: {
-    //borderTopLeftRadius: 15,
-    //borderTopRightRadius: 15,
-    bottom: 0,
-    padding: 10,
-    zIndex: 8,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3
-    },
-    shadowOpacity: 0.29,
-    shadowRadius: 4.65,
-    elevation: 7
+    bottom: 0
   },
   badge: {
     marginLeft: 10,
@@ -118,39 +106,41 @@ const TabBarComponent = ({
   };
 
   return (
-    <SafeAreaView>
-      <BottomNavigation
-        style={styles.bottomNavigation}
-        selectedIndex={navigation.state.index}
-        onSelect={onSelect}
-        appearance="noIndicator"
-      >
-        <BottomNavigationTab
-          title="Ingredients"
-          icon={style => BottleIcon({ ...style, marginVertical: 0 })}
-        />
-        <BottomNavigationTab
-          title="Cocktails"
-          icon={style =>
-            getBadge(
-              { ...style, marginVertical: 0 },
-              CocktailIcon,
-              foundCocktailsNumber
-            )
-          }
-        />
-        <BottomNavigationTab
-          title="Favorites"
-          icon={style =>
-            getBadge(
-              { ...style, marginVertical: 0 },
-              HeartMenuIcon,
-              favCocktailsNumber
-            )
-          }
-        />
-      </BottomNavigation>
-    </SafeAreaView>
+    <Layout>
+      <SafeAreaView>
+        <BottomNavigation
+          style={styles.bottomNavigation}
+          selectedIndex={navigation.state.index}
+          onSelect={onSelect}
+          appearance="noIndicator"
+        >
+          <BottomNavigationTab
+            title="Ingredients"
+            icon={style => BottleIcon({ ...style, marginVertical: 0 })}
+          />
+          <BottomNavigationTab
+            title="Cocktails"
+            icon={style =>
+              getBadge(
+                { ...style, marginVertical: 0 },
+                CocktailIcon,
+                foundCocktailsNumber
+              )
+            }
+          />
+          <BottomNavigationTab
+            title="Favorites"
+            icon={style =>
+              getBadge(
+                { ...style, marginVertical: 0 },
+                HeartMenuIcon,
+                favCocktailsNumber
+              )
+            }
+          />
+        </BottomNavigation>
+      </SafeAreaView>
+    </Layout>
   );
 };
 

@@ -83,7 +83,7 @@ const ingredientsReducer = (state = INITIAL_STATE, action) => {
       };
 
     case UNLOGGED_ADD_INGREDIENT_TO_SEARCH_BY:
-      if (state.addedIngredients.length === 5) {
+      if (state.addedIngredients.length > 4) {
         action.subdatafunc();
         return state;
       }

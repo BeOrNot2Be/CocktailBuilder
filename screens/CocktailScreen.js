@@ -124,9 +124,10 @@ const CocktailScreen = ({
             <Button
               style={styles.button}
               icon={BackIcon}
-              onPress={() =>
-                navigation.navigate("ingredientContent", { focus: true })
-              }
+              onPress={() => {
+                navigation.setParams({ focus: true }); // need to set param twice due to weird bug
+                navigation.navigate("ingredientContent", { focus: true });
+              }}
             >
               Add my ingredients
             </Button>

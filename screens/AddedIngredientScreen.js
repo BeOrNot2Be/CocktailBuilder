@@ -73,6 +73,7 @@ const AddedIngredients = ({
             style={styles.button}
             icon={ForwardIcon}
             onPress={() => {
+              navigation.setParams({ focus: true }); // need to set param twice due to weird bug
               navigation.navigate("ingredientContent", { focus: true });
             }}
           >
