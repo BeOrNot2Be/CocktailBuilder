@@ -49,6 +49,7 @@ const IngredientScreen = ({
   const [founded, setFounded] = React.useState([]);
   const [listLengthEnd, setListLengthEnd] = React.useState(20);
   const [justAdded, setJustAdded] = React.useState(false);
+  const [modalOpen, setModalOpen] = React.useState(false);
 
   const searchInput = text => {
     setJustAdded(false);
@@ -73,7 +74,10 @@ const IngredientScreen = ({
     if (user.logged) {
       addIngredient(item);
     } else
-      unloggedAddIngredient(item, () => navigation.push("forceLogInModal"));
+      unloggedAddIngredient(item, () => {
+        navigation.push("forceLogInModal");
+        setModalOpen(true);
+      });
   };
 
   const openIngredient = item => {
@@ -88,14 +92,17 @@ const IngredientScreen = ({
     <Layout level="2" style={styles.scrollContainer}>
       <NavigationEvents
         onDidFocus={() => {
+          setModalOpen(false);
           if (navigation.getParam("focus", false)) {
             inputRef.current.focus();
           }
         }}
         onWillBlur={() => {
-          navigation.setParams({ focus: false });
-          searchInput("");
-          inputRef.current.blur();
+          if (!modalOpen) {
+            navigation.setParams({ focus: false });
+            searchInput("");
+            inputRef.current.blur();
+          }
         }}
       />
       <FlatList
