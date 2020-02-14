@@ -4,11 +4,7 @@
     "slug": "cocktailbuilderApp",
     "privacy": "public",
     "sdkVersion": "36.0.0",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
+    "platforms": ["ios", "android", "web"],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -20,20 +16,20 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
+      "bundleIdentifier": "com.cocktailbuilder",
+      "buildNumber": "1.0.0",
       "supportsTablet": true,
       "userInterfaceStyle": "light",
-      "config":{
-        "googleMobileAdsAppId":"ca-app-pub-4338763897925627~3998005828"
+      "config": {
+        "googleMobileAdsAppId": "ca-app-pub-4338763897925627~3998005828"
       }
     },
     "android": {
       "userInterfaceStyle": "light",
-      "config":{
-        "googleMobileAdsAppId":"ca-app-pub-4338763897925627~5301927751"
+      "config": {
+        "googleMobileAdsAppId": "ca-app-pub-4338763897925627~5301927751"
       }
     }
   }

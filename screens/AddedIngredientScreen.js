@@ -2,11 +2,11 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { StyleSheet, ScrollView } from "react-native";
+import { StyleSheet, FlatList } from "react-native";
 import { Button, Layout } from "@ui-kitten/components";
 import { connect } from "react-redux";
 import _ from "lodash";
-import ListItem from "../components/listItem";
+import ListItem from "../components/AddedIngListItem";
 import MainSourceFetch from "../api/web";
 import { REMOVE_INGREDIENT_FROM_SEARCH_BY } from "../actions/Ingredients";
 import { ForwardIcon } from "../components/Icons";
@@ -42,46 +42,43 @@ const AddedIngredients = ({
     removeIngredient(item);
   };
 
-  const listConfig = {
-    ingredients: true,
-    added: true,
-    onPress: openIngredient,
-    onMainButtonPress: removeIngredientToList
-  };
-
   return (
     <Layout level="2" style={styles.scrollContainer}>
-      <ScrollView>
-        {addedIngredients.length === 0 ? (
-          <></>
-        ) : (
+      <FlatList
+        data={_.sortBy(addedIngredients, [item => item.Name])}
+        keyExtractor={item => item.ID.toString()}
+        ListFooterComponent={
           <>
-            {_.sortBy(addedIngredients, [item => item.Name]).map(
-              ListItem(listConfig)
+            {user.logged ? (
+              <></>
+            ) : (
+              <Layout level="2" style={styles.buttonContainer}>
+                <RealGoogleButton />
+              </Layout>
             )}
+            <Layout level="2" style={styles.buttonContainer}>
+              <Button
+                style={styles.button}
+                icon={ForwardIcon}
+                onPress={() => {
+                  navigation.setParams({ focus: true }); // need to set param twice due to weird bug
+                  navigation.navigate("ingredientContent", { focus: true });
+                }}
+              >
+                Add my ingredients
+              </Button>
+            </Layout>
+            <Layout level="2" style={{ height: 80 }} />
           </>
+        }
+        renderItem={({ item }) => (
+          <ListItem
+            item={item}
+            onMainButtonPress={removeIngredientToList}
+            onPress={openIngredient}
+          />
         )}
-        {user.logged ? (
-          <></>
-        ) : (
-          <Layout level="2" style={styles.buttonContainer}>
-            <RealGoogleButton />
-          </Layout>
-        )}
-        <Layout level="2" style={styles.buttonContainer}>
-          <Button
-            style={styles.button}
-            icon={ForwardIcon}
-            onPress={() => {
-              navigation.setParams({ focus: true }); // need to set param twice due to weird bug
-              navigation.navigate("ingredientContent", { focus: true });
-            }}
-          >
-            Add my ingredients
-          </Button>
-        </Layout>
-        <Layout level="2" style={{ height: 80 }} />
-      </ScrollView>
+      />
     </Layout>
   );
 };

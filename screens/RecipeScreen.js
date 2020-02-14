@@ -2,14 +2,7 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import {
-  StyleSheet,
-  ScrollView,
-  View,
-  Alert,
-  Platform,
-  SafeAreaView
-} from "react-native";
+import { StyleSheet, FlatList, View, Alert, Platform } from "react-native";
 import {
   Layout,
   Divider,
@@ -22,7 +15,7 @@ import {
 import { connect } from "react-redux";
 import _ from "lodash";
 import { AdMobBanner } from "expo-ads-admob";
-import ListItem from "../components/listItem";
+import ListItem from "../components/CocktailListItem";
 import MainSourceFetch from "../api/web";
 import NativeApi from "../api/native";
 import GoogleApi from "../api/google";
@@ -196,16 +189,6 @@ const RecipeScreen = ({
     navigation.push("modal", { recipe: item });
   };
 
-  const listConfig = {
-    ingredients: false,
-    added: false,
-    fav: false,
-    onLongPress: openModal,
-    onPress: openRecipe,
-    onMainButtonPress: ToggleFollow,
-    favsID: favCocktailsIDs
-  };
-
   const openIngredient = item => {
     navigation.push("Ingredient", { ingredient: item });
   };
@@ -220,86 +203,98 @@ const RecipeScreen = ({
 
   return (
     <Layout level="1">
-      <SafeAreaView>
-        <Layout level="1">
-          <ScrollView style={styles.scrollContainer}>
-            {_.isEmpty(recipeData) ? (
-              <Layout style={styles.spinner}>
-                <Spinner size="giant" />
-              </Layout>
-            ) : (
-              <>
-                <Layout style={styles.card}>
-                  <Card
-                    header={CardsHeader}
-                    footer={CardsFooter}
-                    style={styles.card}
-                  >
-                    <Layout>
-                      {recipeData.Ingredients.map(ingredient => (
-                        <Text category="s1" key={ingredient.ID}>
-                          {ingredient.Amount != "" &&
-                          ingredient.Measurement != ""
-                            ? `${ingredient.Amount} ${ingredient.Measurement} of`
-                            : ""}{" "}
-                          <Text
-                            style={styles.link}
-                            status="primary"
-                            category="s1"
-                            onPress={() => openIngredient(ingredient)}
-                          >
-                            {ingredient.Name}
-                          </Text>
+      <FlatList
+        data={cocktailsList.slice(0, listLength)}
+        keyExtractor={(item, index) =>
+          item.ad ? index.toString() : item.CocktailID.toString()
+        }
+        ListHeaderComponent={
+          _.isEmpty(recipeData) ? (
+            <Layout style={styles.spinner}>
+              <Spinner size="giant" />
+            </Layout>
+          ) : (
+            <>
+              <Layout style={styles.card}>
+                <Card
+                  header={CardsHeader}
+                  footer={CardsFooter}
+                  style={styles.card}
+                >
+                  <Layout>
+                    {recipeData.Ingredients.map(ingredient => (
+                      <Text category="s1" key={ingredient.ID}>
+                        {ingredient.Amount != "" && ingredient.Measurement != ""
+                          ? `${ingredient.Amount} ${ingredient.Measurement} of`
+                          : ""}{" "}
+                        <Text
+                          style={styles.link}
+                          status="primary"
+                          category="s1"
+                          onPress={() => openIngredient(ingredient)}
+                        >
+                          {ingredient.Name}
                         </Text>
-                      ))}
-                    </Layout>
-                    <Divider style={styles.cardDivider} />
-                    <Layout>
-                      <Text>
-                        {recipeData.Instructions.replace(/<[^>]+>/g, "")}
                       </Text>
-                    </Layout>
-                  </Card>
-                </Layout>
-                <Divider style={styles.divider} />
-                <Layout style={styles.ads}>
-                  <AdMobBanner
-                    bannerSize="mediumRectangle"
-                    adUnitID={unitID}
-                    servePersonalizedAds
-                    testDevices={[AdMobBanner.simulatorId]}
-                    onAdFailedToLoad={error => console.error(error)}
-                  />
-                </Layout>
-                <Divider style={styles.divider} />
-                <Text category="h6" style={styles.textHeader}>
-                  More cocktails with {recipeData.Ingredients[0].Name}
-                </Text>
-              </>
-            )}
-            {cocktailsList.length !== 0 ? (
-              <>
-                {cocktailsList.slice(0, listLength).map(ListItem(listConfig))}
-                {cocktailsList.length > listLength ? (
-                  <Layout style={styles.buttonContainer}>
-                    <Button onPress={getMore} style={styles.button}>
-                      {" "}
-                      More{" "}
-                    </Button>
+                    ))}
                   </Layout>
-                ) : (
-                  <></>
-                )}
-              </>
+                  <Divider style={styles.cardDivider} />
+                  <Layout>
+                    <Text>
+                      {recipeData.Instructions.replace(/<[^>]+>/g, "")}
+                    </Text>
+                  </Layout>
+                </Card>
+              </Layout>
+              <Divider style={styles.divider} />
+              <Layout style={styles.ads}>
+                <AdMobBanner
+                  bannerSize="mediumRectangle"
+                  adUnitID={unitID}
+                  servePersonalizedAds
+                  testDevices={[AdMobBanner.simulatorId]}
+                  onAdFailedToLoad={error => console.error(error)}
+                />
+              </Layout>
+              <Divider style={styles.divider} />
+              <Text category="h6" style={styles.textHeader}>
+                More cocktails with {recipeData.Ingredients[0].Name}
+              </Text>
+            </>
+          )
+        }
+        ListFooterComponent={
+          <>
+            {cocktailsList.length !== 0 ? (
+              cocktailsList.length > listLength ? (
+                <Layout style={styles.buttonContainer}>
+                  <Button onPress={getMore} style={styles.button}>
+                    {" "}
+                    More{" "}
+                  </Button>
+                </Layout>
+              ) : (
+                <></>
+              )
             ) : (
               <Layout style={styles.spinner}>
                 <Spinner size="giant" />
               </Layout>
             )}
             <Layout level="1" style={{ height: 250 }} />
-          </ScrollView>
-        </Layout>
-      </SafeAreaView>
+          </>
+        }
+        renderItem={({ item }) => (
+          <ListItem
+            item={item}
+            onMainButtonPress={ToggleFollow}
+            onPress={openRecipe}
+            onLongPress={openModal}
+            favsID={favCocktailsIDs}
+          />
+        )}
+        extraData={favCocktailsIDs}
+      />
     </Layout>
   );
 };

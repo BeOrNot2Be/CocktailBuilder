@@ -2,10 +2,10 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { StyleSheet, ScrollView, Alert, SafeAreaView } from "react-native";
+import { StyleSheet, FlatList, Alert } from "react-native";
 import { Layout, Text, Spinner, Button } from "@ui-kitten/components";
 import { connect } from "react-redux";
-import ListItem from "../components/listItem";
+import ListItem from "../components/CocktailListItem";
 import MainSourceFetch from "../api/web";
 import GoogleApi from "../api/google";
 import GoogleAnalytics from "../api/googleAnalytics";
@@ -98,34 +98,33 @@ const IngredientScreen = ({
     navigation.push("modal", { recipe: item });
   };
 
-  const listConfig = {
-    ingredients: false,
-    added: false,
-    fav: false,
-    onLongPress: openModal,
-    onPress: openRecipe,
-    onMainButtonPress: ToggleFollow,
-    favsID: favCocktailsIDs
-  };
-
   return (
     <Layout level="1">
-      <SafeAreaView>
-        <Layout level="1">
-          <ScrollView style={styles.scrollContainer}>
-            <Text category="h6" style={styles.textHeader}>
-              More cocktails with {ingredient.Name}
-            </Text>
-            {ingredient.Popularity !== undefined ? (
+      <FlatList
+        data={cocktailsList.slice(0, listLength)}
+        keyExtractor={(item, index) =>
+          item.ad ? index.toString() : item.CocktailID.toString()
+        }
+        ListHeaderComponent={
+          ingredient.Popularity !== undefined ? (
+            <>
+              <Text category="h6" style={styles.textHeader}>
+                More cocktails with {ingredient.Name}
+              </Text>
               <Text appearance="hint" category="c2" style={styles.textHeader}>
                 {ingredient.Popularity} results
               </Text>
-            ) : (
-              <></>
-            )}
+            </>
+          ) : (
+            <Text category="h6" style={styles.textHeader}>
+              More cocktails with {ingredient.Name}
+            </Text>
+          )
+        }
+        ListFooterComponent={
+          <>
             {cocktailsList.length !== 0 ? (
               <>
-                {cocktailsList.slice(0, listLength).map(ListItem(listConfig))}
                 {cocktailsList.length > listLength ? (
                   <Layout style={styles.buttonContainer}>
                     <Button onPress={getMore} style={styles.button}>
@@ -143,9 +142,19 @@ const IngredientScreen = ({
               </Layout>
             )}
             <Layout level="1" style={{ height: 250 }} />
-          </ScrollView>
-        </Layout>
-      </SafeAreaView>
+          </>
+        }
+        renderItem={({ item }) => (
+          <ListItem
+            item={item}
+            onMainButtonPress={ToggleFollow}
+            onPress={openRecipe}
+            onLongPress={openModal}
+            favsID={favCocktailsIDs}
+          />
+        )}
+        extraData={favCocktailsIDs}
+      />
     </Layout>
   );
 };

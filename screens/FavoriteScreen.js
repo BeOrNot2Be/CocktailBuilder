@@ -2,11 +2,11 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { StyleSheet, ScrollView, Alert } from "react-native";
+import { StyleSheet, Alert, FlatList } from "react-native";
 import { Layout, Text } from "@ui-kitten/components";
 import { connect } from "react-redux";
 import _ from "lodash";
-import ListItem from "../components/listItem";
+import ListItem from "../components/CocktailListItem";
 import MainSourceFetch from "../api/web";
 import GoogleApi from "../api/google";
 import GoogleAnalytics from "../api/googleAnalytics";
@@ -72,27 +72,14 @@ const FavoriteScreen = ({
     navigation.push("modal", { recipe: item });
   };
 
-  const listConfig = {
-    ingredients: false,
-    added: false,
-    fav: true,
-    onLongPress: openModal,
-    onPress: openRecipe,
-    onMainButtonPress: RemoveItem,
-    favsID: cocktailsIds
-  };
-
   return (
     <Layout level="1">
-      <Layout level="1" style={styles.scrollContainer}>
-        <ScrollView>
-          {user.logged ? (
-            <>
-              {_.sortBy(cocktails, [item => item.CocktailName]).map(
-                ListItem(listConfig)
-              )}
-              <Layout level="1" style={{ height: 250 }} />
-            </>
+      <FlatList
+        data={_.sortBy(cocktails, [item => item.CocktailName])}
+        keyExtractor={item => item.CocktailID.toString()}
+        ListFooterComponent={
+          user.logged ? (
+            <Layout level="1" style={{ height: 250 }} />
           ) : (
             <Layout style={styles.textForNotSignedIn}>
               <Layout style={styles.formContainer}>
@@ -103,9 +90,19 @@ const FavoriteScreen = ({
               </Layout>
               <RealGoogleButton />
             </Layout>
-          )}
-        </ScrollView>
-      </Layout>
+          )
+        }
+        renderItem={({ item }) => (
+          <ListItem
+            item={item}
+            onMainButtonPress={RemoveItem}
+            onPress={openRecipe}
+            onLongPress={openModal}
+            favsID={cocktailsIds}
+          />
+        )}
+        extraData={cocktailsIds}
+      />
     </Layout>
   );
 };

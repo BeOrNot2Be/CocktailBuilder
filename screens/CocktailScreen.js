@@ -2,11 +2,11 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { StyleSheet, ScrollView, Alert } from "react-native";
+import { StyleSheet, Alert, FlatList } from "react-native";
 import { Input, Layout, Button } from "@ui-kitten/components";
 import { connect } from "react-redux";
-import ListItem from "../components/listItem";
 import { SearchIcon, CrossIcon, BackIcon } from "../components/Icons";
+import ListItem from "../components/CocktailListItem";
 import MainSourceFetch from "../api/web";
 import GoogleApi from "../api/google";
 import GoogleAnalytics from "../api/googleAnalytics";
@@ -90,16 +90,6 @@ const CocktailScreen = ({
     navigation.push("modal", { recipe: item });
   };
 
-  const listConfig = {
-    ingredients: false,
-    added: false,
-    fav: false,
-    onLongPress: openModal,
-    onPress: openRecipe,
-    onMainButtonPress: ToggleFollow,
-    favsID: favCocktailsIDs
-  };
-
   const onSearch = input => {
     navigation.push("SearchedCocktails", { inputSearch: input });
     search(input);
@@ -107,58 +97,76 @@ const CocktailScreen = ({
 
   return (
     <Layout level="1">
-      <ScrollView style={styles.scrollContainer}>
-        <Layout style={styles.container}>
-          <Input
-            placeholder="Search"
-            value={inputValue}
-            onChangeText={setInputValue}
-            icon={inputValue ? CrossIcon : SearchIcon}
-            onIconPress={() => setInputValue("")}
-            autoCorrect={false}
-            onSubmitEditing={() => onSearch(inputValue)}
-          />
-        </Layout>
-        {cocktails.length === 0 ? (
-          <Layout style={styles.addIngsButtonContainer}>
-            <Button
-              style={styles.button}
-              icon={BackIcon}
-              onPress={() => {
-                navigation.setParams({ focus: true }); // need to set param twice due to weird bug
-                navigation.navigate("ingredientContent", { focus: true });
-              }}
-            >
-              Add my ingredients
-            </Button>
+      <FlatList
+        data={cocktails.slice(0, listLengthEnd)}
+        keyExtractor={(item, index) =>
+          item.ad ? index.toString() : item.CocktailID.toString()
+        }
+        keyboardShouldPersistTaps="handled"
+        ListHeaderComponent={
+          <Layout style={styles.container}>
+            <Input
+              placeholder="Search"
+              value={inputValue}
+              onChangeText={setInputValue}
+              icon={inputValue ? CrossIcon : SearchIcon}
+              onIconPress={() => setInputValue("")}
+              autoCorrect={false}
+              onSubmitEditing={() => onSearch(inputValue)}
+            />
           </Layout>
-        ) : (
-          <>
-            {cocktails.slice(0, listLengthEnd).map(ListItem(listConfig))}
-            <Layout style={styles.buttonContainer}>
-              {user.logged ? (
-                cocktails.length > listLengthEnd ? (
-                  <Button
-                    onPress={() => {
-                      setListLengthEnd(listLengthEnd + 20);
-                    }}
-                    style={styles.button}
-                  >
+        }
+        ListFooterComponent={
+          cocktails.length === 0 ? (
+            <Layout style={styles.addIngsButtonContainer}>
+              <Button
+                style={styles.button}
+                icon={BackIcon}
+                onPress={() => {
+                  navigation.setParams({ focus: true }); // need to set param twice due to weird bug
+                  navigation.navigate("ingredientContent", { focus: true });
+                }}
+              >
+                Add my ingredients
+              </Button>
+            </Layout>
+          ) : (
+            <>
+              <Layout style={styles.buttonContainer}>
+                {user.logged ? (
+                  cocktails.length > listLengthEnd ? (
+                    <Button
+                      onPress={() => {
+                        setListLengthEnd(listLengthEnd + 20);
+                      }}
+                      style={styles.button}
+                    >
+                      Load More
+                    </Button>
+                  ) : (
+                    <></>
+                  )
+                ) : (
+                  <Button onPress={getMore} style={styles.button}>
                     Load More
                   </Button>
-                ) : (
-                  <></>
-                )
-              ) : (
-                <Button onPress={getMore} style={styles.button}>
-                  Load More
-                </Button>
-              )}
-            </Layout>
-            <Layout level="1" style={{ height: 200 }} />
-          </>
+                )}
+              </Layout>
+              <Layout level="1" style={{ height: 200 }} />
+            </>
+          )
+        }
+        renderItem={({ item }) => (
+          <ListItem
+            item={item}
+            onMainButtonPress={ToggleFollow}
+            onPress={openRecipe}
+            onLongPress={openModal}
+            favsID={favCocktailsIDs}
+          />
         )}
-      </ScrollView>
+        extraData={favCocktailsIDs}
+      />
     </Layout>
   );
 };

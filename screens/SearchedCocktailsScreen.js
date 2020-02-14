@@ -3,9 +3,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { StyleSheet, ScrollView, Alert, SafeAreaView } from "react-native";
+import { StyleSheet, Alert, FlatList } from "react-native";
 import { Input, Layout, Text } from "@ui-kitten/components";
-import ListItem from "../components/listItem";
+import ListItem from "../components/CocktailListItem";
 import { SearchIcon, CrossIcon } from "../components/Icons";
 import MainSourceFetch from "../api/web";
 import GoogleApi from "../api/google";
@@ -75,20 +75,15 @@ const SearchedCocktailsScreen = ({
     navigation.push("modal", { recipe: item });
   };
 
-  const listConfig = {
-    ingredients: false,
-    added: false,
-    fav: false,
-    onLongPress: openModal,
-    onPress: openRecipe,
-    onMainButtonPress: ToggleFollow,
-    favsID: favCocktailsIDs
-  };
-
   return (
     <Layout level="1">
-      <SafeAreaView>
-        <ScrollView style={styles.scrollContainer}>
+      <FlatList
+        data={cocktails}
+        keyExtractor={(item, index) =>
+          item.ad ? index.toString() : item.CocktailID.toString()
+        }
+        keyboardShouldPersistTaps="handled"
+        ListHeaderComponent={
           <Layout style={styles.container}>
             <Input
               placeholder="Search"
@@ -103,20 +98,29 @@ const SearchedCocktailsScreen = ({
               }}
             />
           </Layout>
-          {cocktails.length === 0 ? (
+        }
+        ListFooterComponent={
+          cocktails.length === 0 ? (
             <Layout style={styles.textContainer}>
               <Text category="p2" status="basic">
                 No results found for search: {lastSearch}
               </Text>
             </Layout>
           ) : (
-            <>
-              {cocktails.map(ListItem(listConfig))}
-              <Layout level="1" style={{ height: 200 }} />
-            </>
-          )}
-        </ScrollView>
-      </SafeAreaView>
+            <Layout level="1" style={{ height: 200 }} />
+          )
+        }
+        renderItem={({ item }) => (
+          <ListItem
+            item={item}
+            onMainButtonPress={ToggleFollow}
+            onPress={openRecipe}
+            onLongPress={openModal}
+            favsID={favCocktailsIDs}
+          />
+        )}
+        extraData={favCocktailsIDs}
+      />
     </Layout>
   );
 };
