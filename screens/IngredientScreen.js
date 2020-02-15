@@ -31,6 +31,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     textAlign: "center",
     alignItems: "center"
+  },
+  background: {
+    height: "100%"
   }
 });
 
@@ -99,7 +102,7 @@ const IngredientScreen = ({
   };
 
   return (
-    <Layout level="1">
+    <Layout level="1" style={styles.background}>
       <FlatList
         data={cocktailsList.slice(0, listLength)}
         keyExtractor={(item, index) =>
@@ -141,7 +144,7 @@ const IngredientScreen = ({
                 <Spinner size="giant" />
               </Layout>
             )}
-            <Layout level="1" style={{ height: 250 }} />
+            <Layout level="1" style={{ height: 80 }} />
           </>
         }
         renderItem={({ item }) => (

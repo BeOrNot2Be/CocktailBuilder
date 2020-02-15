@@ -179,7 +179,11 @@ const RecipeModal = ({
                   </Layout>
                   <Divider style={styles.cardDivider} />
                   <Layout>
-                    <Text>{recipeData.Instructions}</Text>
+                    <Text>
+                      {recipeData.Instructions.replace(/<[^>]+>/g, "")
+                        .replace(/(\\r\\n|\\n|\\r)/gm, " ")
+                        .replace(/(\r\n|\n|\r)/gm, "")}
+                    </Text>
                   </Layout>
                 </>
               )}

@@ -60,7 +60,7 @@ const cocktailsReducer = (state = INITIAL_STATE, action) => {
       );
 
     case LOG_OUT:
-      return { ...state, favCocktails: [] };
+      return { ...state, favCocktails: [], favCocktailsIDs: [] };
 
     case TOGGLE_FAV_COCKTAIL:
       const isInFavs =

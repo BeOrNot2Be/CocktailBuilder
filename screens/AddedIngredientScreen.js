@@ -13,7 +13,7 @@ import { ForwardIcon } from "../components/Icons";
 import RealGoogleButton from "../components/GoogleButton";
 
 const styles = StyleSheet.create({
-  scrollContainer: {
+  background: {
     height: "100%"
   },
   button: {},
@@ -43,12 +43,13 @@ const AddedIngredients = ({
   };
 
   return (
-    <Layout level="2" style={styles.scrollContainer}>
+    <Layout level="2" style={styles.background}>
       <FlatList
         data={_.sortBy(addedIngredients, [item => item.Name])}
         keyExtractor={item => item.ID.toString()}
         ListFooterComponent={
           <>
+            {/* can't make code make more efficient because of the weird bug after compilation (update in state doesn't update the view ) */}
             {user.logged ? (
               <></>
             ) : (

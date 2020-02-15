@@ -18,11 +18,16 @@ const googleSignInConfig = {
     "629930544514-kgpsf2jgqqnijqdscd02k8r9tdc2hqcm.apps.googleusercontent.com",
   iosClientId:
     "629930544514-a4sin974ddd6nispqjcsvd621fd4g6di.apps.googleusercontent.com",
+  androidStandaloneAppClientId:
+    "629930544514-18gq8qeqe7kaim1eeh5mj4od7nkkam9r.apps.googleusercontent.com",
+  iosStandaloneAppClientId:
+    "629930544514-v103mmj4n0v86mg6sv448etsvfgc9v01.apps.googleusercontent.com",
   scopes: ["profile", "email"]
 };
 
 export default class GoogleApi {
   static async signInWithGoogleAsync(dispatch) {
+    // for further development
     try {
       const result = await Google.logInAsync(googleSignInConfig);
 

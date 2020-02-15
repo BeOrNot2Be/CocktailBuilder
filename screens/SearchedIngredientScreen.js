@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 5
   },
-  scrollContainer: {
+  background: {
     height: "100%"
   },
   buttonContainer: {
@@ -89,7 +89,7 @@ const IngredientScreen = ({
   const inputRef = React.useRef();
 
   return (
-    <Layout level="2" style={styles.scrollContainer}>
+    <Layout level="2" style={styles.background}>
       <NavigationEvents
         onDidFocus={() => {
           setModalOpen(false);

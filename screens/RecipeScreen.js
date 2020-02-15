@@ -93,6 +93,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     textAlign: "center",
     alignItems: "center"
+  },
+  background: {
+    height: "100%"
   }
 });
 
@@ -202,7 +205,7 @@ const RecipeScreen = ({
   };
 
   return (
-    <Layout level="1">
+    <Layout level="1" style={styles.background}>
       <FlatList
         data={cocktailsList.slice(0, listLength)}
         keyExtractor={(item, index) =>
@@ -241,7 +244,9 @@ const RecipeScreen = ({
                   <Divider style={styles.cardDivider} />
                   <Layout>
                     <Text>
-                      {recipeData.Instructions.replace(/<[^>]+>/g, "")}
+                      {recipeData.Instructions.replace(/<[^>]+>/g, "")
+                        .replace(/(\\r\\n|\\n|\\r)/gm, " ")
+                        .replace(/(\r\n|\n|\r)/gm, "")}
                     </Text>
                   </Layout>
                 </Card>
@@ -281,7 +286,7 @@ const RecipeScreen = ({
                 <Spinner size="giant" />
               </Layout>
             )}
-            <Layout level="1" style={{ height: 250 }} />
+            <Layout level="1" style={{ height: 80 }} />
           </>
         }
         renderItem={({ item }) => (

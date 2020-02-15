@@ -122,7 +122,7 @@ const TabBarComponent = ({
             title="Cocktails"
             icon={style =>
               getBadge(
-                { ...style, marginVertical: 0 },
+                { ...style, marginVertical: 0, width: 19 },
                 CocktailIcon,
                 foundCocktailsNumber
               )

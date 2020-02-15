@@ -27,6 +27,8 @@
       }
     },
     "android": {
+      "package": "davanna.ca.cocktailbuilder",
+      "versionCode": 1,
       "userInterfaceStyle": "light",
       "config": {
         "googleMobileAdsAppId": "ca-app-pub-4338763897925627~5301927751"

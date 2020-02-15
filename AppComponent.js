@@ -7,6 +7,7 @@ import { ApplicationProvider, IconRegistry } from "@ui-kitten/components";
 import { mapping, dark, light } from "@eva-design/eva";
 import { EvaIconsPack } from "@ui-kitten/eva-icons";
 import { AppearanceProvider } from "react-native-appearance";
+import { StatusBar } from "react-native";
 import { IonicIconsPack } from "./ionic-icons";
 import { MaterialCommunityIconsPack } from "./material-icons";
 import AppNavigator from "./navigation/Drawer";
@@ -19,6 +20,7 @@ const themes = { 1: { ...light, ...lightTheme }, 0: { ...dark, ...darkTheme } };
 const AppComponent = ({ theme }) => {
   return (
     <>
+      <StatusBar barStyle={theme ? "dark-content" : "light-content"} />
       <IconRegistry
         icons={[EvaIconsPack, IonicIconsPack, MaterialCommunityIconsPack]}
       />

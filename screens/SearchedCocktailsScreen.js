@@ -25,6 +25,9 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     paddingLeft: 24
+  },
+  background: {
+    height: "100%"
   }
 });
 
@@ -76,7 +79,7 @@ const SearchedCocktailsScreen = ({
   };
 
   return (
-    <Layout level="1">
+    <Layout level="1" style={styles.background}>
       <FlatList
         data={cocktails}
         keyExtractor={(item, index) =>
@@ -107,7 +110,7 @@ const SearchedCocktailsScreen = ({
               </Text>
             </Layout>
           ) : (
-            <Layout level="1" style={{ height: 200 }} />
+            <Layout level="1" style={{ height: 80 }} />
           )
         }
         renderItem={({ item }) => (

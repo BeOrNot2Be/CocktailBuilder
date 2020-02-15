@@ -30,6 +30,9 @@ const styles = StyleSheet.create({
     maxWidth: "70%",
     textAlign: "center",
     marginBottom: 24
+  },
+  background: {
+    height: "100%"
   }
 });
 
@@ -73,24 +76,27 @@ const FavoriteScreen = ({
   };
 
   return (
-    <Layout level="1">
+    <Layout level="1" style={styles.background}>
       <FlatList
         data={_.sortBy(cocktails, [item => item.CocktailName])}
         keyExtractor={item => item.CocktailID.toString()}
         ListFooterComponent={
-          user.logged ? (
-            <Layout level="1" style={{ height: 250 }} />
-          ) : (
-            <Layout style={styles.textForNotSignedIn}>
-              <Layout style={styles.formContainer}>
-                <Text appearance="hint" category="label">
-                  To unlock useful functionality like favorites list you need to
-                  have an account
-                </Text>
+          <>
+            {/* can't make code make more efficient because of the weird bug after compilation (update in state doesn't update the view ) */}
+            {user.logged ? (
+              <Layout level="1" style={{ height: 80 }} />
+            ) : (
+              <Layout style={styles.textForNotSignedIn}>
+                <Layout style={styles.formContainer}>
+                  <Text appearance="hint" category="label">
+                    To unlock useful functionality like favorites list you need
+                    to have an account
+                  </Text>
+                </Layout>
+                <RealGoogleButton />
               </Layout>
-              <RealGoogleButton />
-            </Layout>
-          )
+            )}
+          </>
         }
         renderItem={({ item }) => (
           <ListItem
