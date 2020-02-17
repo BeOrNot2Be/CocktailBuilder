@@ -19,7 +19,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "bundleIdentifier": "com.cocktailbuilder",
-      "buildNumber": "1.0.0",
+      "buildNumber": "1.0.1",
       "supportsTablet": true,
       "userInterfaceStyle": "light",
       "config": {
@@ -28,7 +28,7 @@
     },
     "android": {
       "package": "davanna.ca.cocktailbuilder",
-      "versionCode": 1,
+      "versionCode": 11,
       "userInterfaceStyle": "light",
       "config": {
         "googleMobileAdsAppId": "ca-app-pub-4338763897925627~5301927751"

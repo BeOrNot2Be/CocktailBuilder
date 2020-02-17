@@ -281,7 +281,7 @@ export default class MainSourceFetch {
         "Content-Type": "application/x-www-form-urlencoded"
       },
       body: favsIDs
-        .filter(favID => favID !== removed.CocktailID) //double loop
+        .filter(favID => favID !== removed.CocktailID)
         .map(favID => `cocktails[]=${favID}`)
         .join("&")
     })
