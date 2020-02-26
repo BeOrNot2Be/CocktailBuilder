@@ -5,6 +5,7 @@ import NetInfo from "@react-native-community/netinfo";
 
 const analytics = new Analytics("UA-759662-3");
 
+// eslint-disable-next-line no-unused-vars
 const ConnectionIssue = () => {
   NetInfo.fetch().then(state => {
     if (!state.isConnected) {

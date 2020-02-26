@@ -6,7 +6,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "eslint:github-action": "eslint ."
   },
   "jest": {
     "preset": "jest-expo"
@@ -54,7 +55,7 @@
   },
   "devDependencies": {
     "babel-preset-expo": "~8.0.0",
-    "eslint": "^6.1.0",
+    "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-config-node": "^4.0.0",
     "eslint-config-prettier": "^6.9.0",
