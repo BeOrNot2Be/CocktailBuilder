@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: Running ESlint and building
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
 
