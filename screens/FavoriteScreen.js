@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     height: "100%"
   },
   textForNotSignedIn: {
-    marginTop: "30%",
+    marginTop: "15%",
     height: "100%",
     justifyContent: "center",
     textAlign: "center",
@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
   formContainer: {
     maxWidth: "70%",
     textAlign: "center",
+    height: "100%",
     marginBottom: 24
   },
   background: {
@@ -84,7 +85,18 @@ const FavoriteScreen = ({
           <>
             {/* can't make code make more efficient because of the weird bug after compilation (update in state doesn't update the view ) */}
             {user.logged ? (
-              <Layout level="1" style={{ height: 80 }} />
+              cocktails.length !== 0 ? (
+                <></>
+              ) : (
+                <Layout style={styles.textForNotSignedIn}>
+                  <Layout style={styles.formContainer}>
+                    <Text appearance="hint" category="label">
+                      Pick some cocktails as favorites on the Cocktail tab -
+                      they will show up here
+                    </Text>
+                  </Layout>
+                </Layout>
+              )
             ) : (
               <Layout style={styles.textForNotSignedIn}>
                 <Layout style={styles.formContainer}>
@@ -92,10 +104,11 @@ const FavoriteScreen = ({
                     To unlock useful functionality like favorites list you need
                     to have an account
                   </Text>
+                  <RealGoogleButton />
                 </Layout>
-                <RealGoogleButton />
               </Layout>
             )}
+            <Layout level="1" style={{ height: 80 }} />
           </>
         }
         renderItem={({ item }) => (

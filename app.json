@@ -5,7 +5,7 @@
     "privacy": "public",
     "sdkVersion": "36.0.0",
     "platforms": ["ios", "android", "web"],
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -28,11 +28,14 @@
     },
     "android": {
       "package": "davanna.ca.cocktailbuilder",
-      "versionCode": 11,
+      "versionCode": 13,
       "userInterfaceStyle": "light",
       "config": {
         "googleMobileAdsAppId": "ca-app-pub-4338763897925627~5301927751"
       }
+    },
+    "androidStatusBar": {
+      "backgroundColor": "#FFFFFF"
     }
   }
 }

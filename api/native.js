@@ -1,6 +1,5 @@
 /** @format */
 
-import _ from "lodash";
 import { Share, AsyncStorage } from "react-native";
 import {
   CACHE_SIGN_IN,

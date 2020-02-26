@@ -12,3 +12,9 @@ web-report/
 
 # macOS
 .DS_Store
+
+cocktailbuilderApp_private_sign_key
+cocktailbuilderApp_sign.jks.bak
+cocktailbuilderApp_upload_cert.pem
+cocktailbuilderApp_upload.jks.tmp
+cocktailbuilderApp.jks

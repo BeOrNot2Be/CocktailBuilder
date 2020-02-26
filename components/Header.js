@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
   }
 });
 
-const Header = ({ scene, previous, navigation }) => {
+const Header = ({ scene, navigation }) => {
   const { options } = scene.descriptor;
   const title =
     options.headerTitle !== undefined
@@ -58,8 +58,7 @@ const Header = ({ scene, previous, navigation }) => {
 
 Header.propTypes = {
   scene: PropTypes.any,
-  navigation: PropTypes.any,
-  previous: PropTypes.any
+  navigation: PropTypes.any
 };
 
 export default Header;
