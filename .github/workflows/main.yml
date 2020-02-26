@@ -1,9 +1,7 @@
 name: Build
 on:
-  push:
-    branches:
-      - master
-
+  - push
+  - pull_request
 
 jobs:
   build:
@@ -25,16 +23,15 @@ jobs:
           expo-cache: true
           
       - name: Install
-        run: npm i
+        run: npm ci
 
       - name: Lint
-        run: eslint .
+        uses: eslint/github-action@v0
       
-      - name: JS Test
-        run: npm test
-        
-      - name: Expo Test
-        run: expo doctor
+      - name: Test
+        run: |
+          npm test
+          expo doctor
 
       - name: Build
         run: expo publish
