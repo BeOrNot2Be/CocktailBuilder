@@ -25,15 +25,17 @@ jobs:
           expo-cache: true
           
       - name: Install
-      - run: npm i
+        run: npm i
 
       - name: Lint
-      - run: eslint .
+        run: eslint .
       
-      - name: Test
-      - run: npm test
-      - run: expo doctor
+      - name: JS Test
+        run: npm test
+        
+      - name: Expo Test
+        run: expo doctor
 
       - name: Build
-      - run: expo publish
+        run: expo publish
       
