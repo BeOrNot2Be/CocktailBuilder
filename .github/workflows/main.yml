@@ -37,12 +37,13 @@ jobs:
       - name: Publish Expo App
         run: expo publish --release-channel=pr-${{ github.event.number }}
 
-      - name: Build binaries for IOS and Android
-        run: |
-          expo build:ios --release-channel pr-${{ github.event.number }}
-          expo build:android --release-channel pr-${{ github.event.number }}
+      - name: Build binaries for IOS
+        run: expo build:ios --release-channel pr-${{ github.event.number }}
 
-       - name: Get Expo App link
+      - name: Build binaries for Android
+        run: expo build:android --release-channel pr-${{ github.event.number }}
+
+      - name: Get Expo App link
         id: expo
         run: echo "::set-output name=path::@beornot2be/cocktailbuilderApp?release-channel=pr-${{ github.event.number }}"
 
@@ -52,4 +53,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           msg: Try running it on [Mobile](https://expo.io/${{ steps.expo.outputs.path }})<br><br><a href="https://exp.host/${{ steps.expo.outputs.path }}"><img src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=exp://exp.host/${{ steps.expo.outputs.path }}" height="200px" width="200px"></a>.
-
