@@ -1,6 +1,6 @@
 # @format
 
-name: Build and publish preview
+name: Build
 on:
   - pull_request
 
