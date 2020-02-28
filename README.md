@@ -1,6 +1,6 @@
 <!-- @format -->
 
-# CocktailBuilder [![Build Status][badge:github-actions]][link:github-actions] [![runs with expo][badge:expo]][link:cocktailbuilder-expo]
+# CocktailBuilder [![Build Status][badge:github-actions]][link:github-actions] [![runs with expo][badge:expo]][link:cocktailbuilder-expo] [![Known Vulnerabilities][badge:repo-vulnerabilities]][link:repo-vulnerabilities] [![HitCount][badge:hit]][link:hit] [![Dependencies][badge:dependencies]][link:dependencies] [![Maintainability][badge: maintainability]][link: maintainability]
 
 This Expo - React Native app based on app companion for [cocktailbuilder.com][link:cocktailbuilder-web] with Light and Dark themes support.
 Compose the application from available screens, add backend integration and you will end up with A-grade cross-platform mobile application.
@@ -38,8 +38,16 @@ or simply run it yourself by cloning a GitHub repo as regular expo project.
 
 Made with ❤️ by [BeOrNot2Be][link:beornot2be]. I always happy to receive your feedback!
 
+[badge: maintainability]: https://api.codeclimate.com/v1/badges/af6bba58e61fba7aa45b/maintainability
+[badge:dependencies]: https://david-dm.org/BeOrNot2Be/CocktailBuilder.svg
+[badge:hit]: https://hits.dwyl.com/BeOrNot2Be/CocktailBuilder.svg
+[badge:repo-vulnerabilities]: https://snyk.io/test/github/BeOrNot2Be/CocktailBuilder/badge.svg
 [badge:github-actions]: https://github.com/BeOrNot2Be/CocktailBuilder/workflows/Build/badge.svg
 [badge:expo]: https://img.shields.io/badge/Runs%20with%20Expo-4630EB.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000
+[link:repo-vulnerabilities]: https://snyk.io/test/github/BeOrNot2Be/CocktailBuilder
+[link: maintainability]: https://codeclimate.com/github/BeOrNot2Be/CocktailBuilder/maintainability
+[link:dependencies]: https://david-dm.org/BeOrNot2Be/CocktailBuilder
+[link:hit]: http://hits.dwyl.com/BeOrNot2Be/CocktailBuilder
 [link:github-actions]: https://github.com/BeOrNot2Be/CocktailBuilder/workflows/Build/badge.svg
 [link:cocktailbuilder-expo]: https://expo.io/@beornot2be/cocktailbuilderApp
 [link:cocktailbuilder-android]: https://play.google.com/store/apps/details?id=davanna.ca.cocktailbuilder

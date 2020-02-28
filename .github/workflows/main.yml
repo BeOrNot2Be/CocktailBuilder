@@ -38,10 +38,10 @@ jobs:
         run: expo publish --release-channel=pr-${{ github.event.number }}
 
       - name: Build binaries for IOS
-        run: expo build:ios --release-channel pr-${{ github.event.number }}
+        run: expo build:ios  --no-wait --release-channel pr-${{ github.event.number }}
 
       - name: Build binaries for Android
-        run: expo build:android --release-channel pr-${{ github.event.number }}
+        run: expo build:android  --no-wait --release-channel pr-${{ github.event.number }}
 
       - name: Get Expo App link
         id: expo
