@@ -1,11 +1,12 @@
 {
   "expo": {
     "name": "CocktailBuilder",
+    "description": "This companion app for http://www.cocktailbuilder.com allows you to find which mixed drinks you can make from the ingredients from your bar. Thousands of cocktail recipes at your finger tips!",
     "slug": "cocktailbuilderApp",
     "privacy": "public",
     "sdkVersion": "36.0.0",
     "platforms": ["ios", "android", "web"],
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -24,15 +25,21 @@
       "userInterfaceStyle": "light",
       "config": {
         "googleMobileAdsAppId": "ca-app-pub-4338763897925627~3998005828"
-      }
+      },
+      "appStoreUrl": "https://apps.apple.com/app/id1498866934"
     },
     "android": {
       "package": "davanna.ca.cocktailbuilder",
-      "versionCode": 11,
+      "versionCode": 13,
       "userInterfaceStyle": "light",
       "config": {
         "googleMobileAdsAppId": "ca-app-pub-4338763897925627~5301927751"
-      }
-    }
+      },
+      "playStoreUrl": "https://play.google.com/store/apps/details?id=davanna.ca.cocktailbuilder"
+    },
+    "androidStatusBar": {
+      "backgroundColor": "#FFFFFF"
+    },
+    "githubUrl": "https://github.com/BeOrNot2Be/CocktailBuilder"
   }
 }

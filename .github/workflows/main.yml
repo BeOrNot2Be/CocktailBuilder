@@ -1,21 +1,20 @@
+# @format
+
 name: Build
 on:
-  push:
-    branches:
-      - master
-
+  - pull_request
 
 jobs:
   build:
-    name: Running ESlint and building
-    runs-on: macos-latest
+    name: Install, publish and build
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
 
       - name: Set up Node
         uses: actions/setup-node@v1
         with:
-          node-version: '13.x'
+          node-version: "13.x"
 
       - uses: expo/expo-github-action@v5
         with:
@@ -23,19 +22,34 @@ jobs:
           expo-username: ${{ secrets.EXPO_CLI_USERNAME }}
           expo-password: ${{ secrets.EXPO_CLI_PASSWORD }}
           expo-cache: true
-          
+
       - name: Install
-        run: npm i
+        run: npm ci
 
-      - name: Lint
-        run: eslint .
-      
-      - name: JS Test
-        run: npm test
-        
-      - name: Expo Test
-        run: expo doctor
+      - name: Run ESLint
+        uses: stefanoeb/eslint-action@1.0.2
 
-      - name: Build
-        run: expo publish
-      
+      - name: Test
+        run: |
+          npm test
+          expo doctor
+
+      - name: Publish Expo App
+        run: expo publish --release-channel=pr-${{ github.event.number }}
+
+      - name: Build binaries for IOS
+        run: expo build:ios  --no-wait --release-channel pr-${{ github.event.number }}
+
+      - name: Build binaries for Android
+        run: expo build:android  --no-wait --release-channel pr-${{ github.event.number }}
+
+      - name: Get Expo App link
+        id: expo
+        run: echo "::set-output name=path::@beornot2be/cocktailbuilderApp?release-channel=pr-${{ github.event.number }}"
+
+      - name: Comment on PR
+        uses: unsplash/comment-on-pr@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          msg: Try running it on [Mobile](https://expo.io/${{ steps.expo.outputs.path }})<br><br><a href="https://exp.host/${{ steps.expo.outputs.path }}"><img src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=exp://exp.host/${{ steps.expo.outputs.path }}" height="200px" width="200px"></a>.

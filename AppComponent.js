@@ -7,7 +7,7 @@ import { ApplicationProvider, IconRegistry } from "@ui-kitten/components";
 import { mapping, dark, light } from "@eva-design/eva";
 import { EvaIconsPack } from "@ui-kitten/eva-icons";
 import { AppearanceProvider } from "react-native-appearance";
-import { StatusBar } from "react-native";
+import { StatusBar, Platform } from "react-native";
 import { IonicIconsPack } from "./ionic-icons";
 import { MaterialCommunityIconsPack } from "./material-icons";
 import AppNavigator from "./navigation/Drawer";
@@ -17,10 +17,17 @@ import { default as customMapping } from "./themes/custom-mapping.json";
 
 const themes = { 1: { ...light, ...lightTheme }, 0: { ...dark, ...darkTheme } };
 
+if (Platform.OS !== "ios") {
+  StatusBar.setHidden(true);
+}
+
 const AppComponent = ({ theme }) => {
   return (
     <>
-      <StatusBar barStyle={theme ? "dark-content" : "light-content"} />
+      <StatusBar
+        backgroundColor={theme ? "#ffffff" : "#383838"}
+        barStyle={theme ? "dark-content" : "light-content"}
+      />
       <IconRegistry
         icons={[EvaIconsPack, IonicIconsPack, MaterialCommunityIconsPack]}
       />
