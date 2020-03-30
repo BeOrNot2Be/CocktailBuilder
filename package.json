@@ -20,7 +20,7 @@
     "@react-navigation/web": "^1.0.0-alpha.9",
     "@ui-kitten/components": "^4.3.2",
     "@ui-kitten/eva-icons": "^4.3.2",
-    "expo": "~36.0.0",
+    "expo": "~36.0.2",
     "expo-ads-admob": "~8.0.0",
     "expo-analytics": "^1.0.14",
     "expo-asset": "~8.0.0",
