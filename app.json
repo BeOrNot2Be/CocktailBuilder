@@ -4,8 +4,11 @@
     "description": "This companion app for http://www.cocktailbuilder.com allows you to find which mixed drinks you can make from the ingredients from your bar. Thousands of cocktail recipes at your finger tips!",
     "slug": "cocktailbuilderApp",
     "privacy": "public",
-    "sdkVersion": "36.0.0",
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -17,7 +20,9 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "bundleIdentifier": "com.cocktailbuilder",
       "buildNumber": "1.0.1",
