@@ -175,7 +175,13 @@ const IngredientScreen = ({
           <ListItem
             item={item}
             onMainButtonPress={addIngredientToList}
-            onPress={openIngredient}
+            onPress={() =>
+              openIngredient({
+                ...item,
+                added: !!added.get(item.ID),
+                action: () => addIngredientToList(null, item)
+              })
+            }
             added={!!added.get(item.ID)}
           />
         )}

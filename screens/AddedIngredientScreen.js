@@ -32,8 +32,8 @@ const AddedIngredients = ({
   removeIngredient,
   user
 }) => {
-  const openIngredient = () => {
-    navigation.push("Ingredient");
+  const openIngredient = item => {
+    navigation.push("Ingredient", { ingredient: item });
   };
 
   getCocktailsByIngredients(addedIngredients);
@@ -76,7 +76,13 @@ const AddedIngredients = ({
           <ListItem
             item={item}
             onMainButtonPress={removeIngredientToList}
-            onPress={openIngredient}
+            onPress={() =>
+              openIngredient({
+                ...item,
+                added: true,
+                action: () => removeIngredientToList(null, item)
+              })
+            }
           />
         )}
       />

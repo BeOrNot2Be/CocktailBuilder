@@ -8,7 +8,10 @@ import {
   Alert,
   Easing,
   Animated,
-  Dimensions
+  Dimensions,
+  ScrollView,
+  Linking,
+  Platform
 } from "react-native";
 import { createDrawerNavigator } from "react-navigation-drawer";
 import {
@@ -17,7 +20,6 @@ import {
   Layout,
   Text,
   Divider,
-  List,
   Button
 } from "@ui-kitten/components";
 import { createStackNavigator } from "react-navigation-stack";
@@ -27,7 +29,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import UserScreen from "../screens/UserScreen";
 import RecipeModalScreen from "../screens/RecipeModalScreen";
 import MainTabNavigator from "./MainTabNavigator";
-import { HomeIcon } from "../components/Icons";
+import { HomeIcon, LogOutIcon, LogInIcon } from "../components/Icons";
 import { LOG_OUT, TOGGLE_THEME } from "../actions/User";
 import GoogleApi from "../api/google";
 import NativeApi from "../api/native";
@@ -89,8 +91,9 @@ const styles = StyleSheet.create({
   gradient: {
     height: "100%"
   },
-  LogOutButton: {
-    paddingHorizontal: 8
+  LogButtonText: {
+    paddingHorizontal: 0,
+    paddingVertical: 16
   },
   layoutTittle: {
     padding: 16,
@@ -106,6 +109,12 @@ const styles = StyleSheet.create({
   listItemIcon: {
     flex: 1,
     justifyContent: "flex-start"
+  },
+  LinkPageButton: {},
+  logButton: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center"
   }
 });
 
@@ -127,6 +136,35 @@ const DrawerComponent = ({
     }
   }
 
+  const logoutAlert = () => {
+    Alert.alert(
+      "Alert",
+      "Are you sure that you wanna sign out?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        { text: "Yes", onPress: () => LogOut() }
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const mailLink = `mailto:alex@cocktailbuilder.com?subject=CocktailBuilder%20${Platform.OS}%20app%20feedback`;
+
+  const openFeedbackSendPopup = () => {
+    Linking.canOpenURL(mailLink).then(supported => {
+      if (supported) {
+        Linking.openURL(mailLink);
+      }
+    });
+  };
+
+  const openBlogWebPage = () => {
+    Linking.openURL("https://blog.cocktailbuilder.com/");
+  };
+
   const onSelect = index => {
     const { [index]: selectedTabRoute } = navigation.state.routes;
     navigation.navigate(selectedTabRoute.routeName);
@@ -134,11 +172,11 @@ const DrawerComponent = ({
     navigation.closeDrawer();
   };
 
-  const data = [{ title: "Home", icon: HomeIcon }];
+  const Pages = [{ title: "Home", icon: HomeIcon }];
 
-  const renderItem = ({ item, index }) => {
+  const PagesListRenderItem = (item, index) => {
     return (
-      <Layout>
+      <Layout key={index}>
         <TouchableOpacity onPress={() => onSelect(index)}>
           <Layout style={styles.listItemContainer}>
             <Layout
@@ -164,11 +202,6 @@ const DrawerComponent = ({
         <Divider />
       </Layout>
     );
-  };
-
-  renderItem.propTypes = {
-    index: PropTypes.any,
-    item: PropTypes.any
   };
 
   return (
@@ -211,7 +244,24 @@ const DrawerComponent = ({
         </TouchableOpacity>
       </Layout>
       <Layout style={styles.middleContainer} level="2">
-        <List data={data} renderItem={renderItem} />
+        <ScrollView>
+          {Pages.map((page, i) => PagesListRenderItem(page, i))}
+          <Divider />
+          <TouchableOpacity onPress={openFeedbackSendPopup}>
+            <Layout style={styles.layoutTittle} level="2">
+              <Text category="label" appearance="hint">
+                Feedback
+              </Text>
+            </Layout>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={openBlogWebPage}>
+            <Layout style={styles.layoutTittle} level="2">
+              <Text category="label" appearance="hint">
+                Blog
+              </Text>
+            </Layout>
+          </TouchableOpacity>
+        </ScrollView>
       </Layout>
       <Layout style={styles.footerContainer}>
         <Divider />
@@ -225,37 +275,21 @@ const DrawerComponent = ({
         </Layout>
         <Divider />
         <Layout style={styles.boxFooter}>
-          <TouchableOpacity style={{ width: "100%" }}>
-            {user.logged ? (
+          <TouchableOpacity onPress={user.logged ? logoutAlert : googleLogin}>
+            <Layout style={styles.logButton}>
               <Text
-                style={styles.LogOutButton}
-                status="danger"
-                onPress={() =>
-                  Alert.alert(
-                    "Alert",
-                    "Are you sure that you wanna sign out?",
-                    [
-                      {
-                        text: "Cancel",
-                        style: "cancel"
-                      },
-                      { text: "Yes", onPress: () => LogOut() }
-                    ],
-                    { cancelable: false }
-                  )
-                }
+                style={styles.LogButtonText}
+                status={user.logged ? "danger" : "info"}
               >
-                Log Out
+                {user.logged ? "Log Out" : "Log In"}
               </Text>
-            ) : (
-              <Text
-                style={styles.LogOutButton}
-                status="info"
-                onPress={() => googleLogin()}
-              >
-                Log In
-              </Text>
-            )}
+
+              <Button
+                status={user.logged ? "danger" : "info"}
+                appearance="ghost"
+                icon={user.logged ? LogOutIcon : LogInIcon}
+              />
+            </Layout>
           </TouchableOpacity>
         </Layout>
         <Layout style={{ flex: 1 }}>

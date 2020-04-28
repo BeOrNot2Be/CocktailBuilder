@@ -11,5 +11,7 @@
         "ings",
         "multilines",
         "unlogged"
-    ]
+    ],
+    "prettier.arrowParens": "avoid",
+    "prettier.trailingComma": "none"
 }

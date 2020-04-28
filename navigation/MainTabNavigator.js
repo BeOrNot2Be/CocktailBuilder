@@ -189,7 +189,10 @@ const TabNavigator = createBottomTabNavigator(
     Cocktails: createStackNavigator(
       {
         Cocktails: CocktailScreen,
-        SearchedCocktails: SearchedCocktailsScreen,
+        SearchedCocktails: {
+          screen: SearchedCocktailsScreen,
+          navigationOptions: () => ({ title: "Search Results" })
+        },
         Recipe: RecipeScreen
       },
       config

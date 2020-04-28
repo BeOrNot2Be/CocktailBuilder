@@ -10,6 +10,7 @@ import MainSourceFetch from "../api/web";
 import GoogleApi from "../api/google";
 import GoogleAnalytics from "../api/googleAnalytics";
 import { TOGGLE_FAV_COCKTAIL } from "../actions/Cocktails";
+import { AddCheckmarkIcon, AddedIcon } from "../components/Icons";
 
 const styles = StyleSheet.create({
   scrollContainer: {
@@ -26,6 +27,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     alignItems: "center"
   },
+  headerButtonContainer: { flex: 3 },
+  headerTextContainer: { flex: 7 },
   spinner: {
     height: "100%",
     justifyContent: "center",
@@ -51,8 +54,11 @@ const IngredientScreen = ({
     Name: "vodka",
     ID: 3,
     Popularity: 2642,
-    NormalizedIngredientID: 1
+    NormalizedIngredientID: 1,
+    added: false,
+    action: () => console.log("ing default add/rem func")
   });
+  const [addedIngedient, setAddedIngedient] = React.useState(ingredient.added);
 
   React.useEffect(() => {
     MainSourceFetch.getCocktailsByIngredient(
@@ -111,17 +117,51 @@ const IngredientScreen = ({
         ListHeaderComponent={
           ingredient.Popularity !== undefined ? (
             <>
+              <Layout
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-around",
+                  padding: 10
+                }}
+              >
+                <Layout style={{ flex: 7 }}>
+                  <Text category="h6">
+                    More cocktails with {ingredient.Name}
+                  </Text>
+                  <Text appearance="hint" category="c2">
+                    {ingredient.Popularity} results
+                  </Text>
+                </Layout>
+
+                <Layout style={styles.headerButtonContainer}>
+                  <Button
+                    onPress={() => {
+                      if (!addedIngedient) {
+                        ingredient.action();
+                        setAddedIngedient(!addedIngedient);
+                      }
+                    }}
+                    appearance={addedIngedient ? "outline" : "filled"}
+                    icon={addedIngedient ? AddCheckmarkIcon : AddedIcon}
+                    style={styles.button}
+                    status={addedIngedient ? "success" : "info"}
+                  >
+                    {addedIngedient ? "Added" : "Add"}
+                  </Button>
+                </Layout>
+              </Layout>
+            </>
+          ) : (
+            <>
               <Text category="h6" style={styles.textHeader}>
                 More cocktails with {ingredient.Name}
               </Text>
-              <Text appearance="hint" category="c2" style={styles.textHeader}>
-                {ingredient.Popularity} results
-              </Text>
+              <Layout style={styles.buttonContainer}>
+                <Button onPress={getMore} style={styles.button}>
+                  Add
+                </Button>
+              </Layout>
             </>
-          ) : (
-            <Text category="h6" style={styles.textHeader}>
-              More cocktails with {ingredient.Name}
-            </Text>
           )
         }
         ListFooterComponent={
@@ -131,8 +171,7 @@ const IngredientScreen = ({
                 {cocktailsList.length > listLength ? (
                   <Layout style={styles.buttonContainer}>
                     <Button onPress={getMore} style={styles.button}>
-                      {" "}
-                      More{" "}
+                      More
                     </Button>
                   </Layout>
                 ) : (

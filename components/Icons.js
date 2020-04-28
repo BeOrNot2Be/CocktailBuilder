@@ -65,3 +65,11 @@ export const CrossIcon = style => <Icon {...style} name="close-outline" />;
 export const GoogleIcon = style => <Icon {...style} name="google" />;
 
 export const HeartMenuIcon = style => <Icon {...style} name="heart" />;
+
+export const LogOutIcon = style => <Icon {...style} name="log-out" />;
+
+export const LogInIcon = style => <Icon {...style} name="log-in" />;
+
+export const AddCheckmarkIcon = style => <Icon {...style} name="checkmark" />;
+
+export const RemoveCrossIcon = style => <Icon {...style} name="close" />;
