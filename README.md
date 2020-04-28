@@ -11,8 +11,9 @@ or simply run it yourself by cloning a GitHub repo as regular expo project.
 
 ![Preview](https://user-images.githubusercontent.com/33556915/74925518-2edbc080-5389-11ea-9fc6-6351f1eb09e7.jpg)
 
-[![App Store link](https://user-images.githubusercontent.com/33556915/75311883-07fc0f00-580d-11ea-8a83-000768cc9452.png =200x)][link:cocktailbuilder-ios]
-[![Google Play link](https://user-images.githubusercontent.com/33556915/75311905-1cd8a280-580d-11ea-8937-9ce91e7d04dc.png =200x)][link:cocktailbuilder-android]
+[<img src="https://user-images.githubusercontent.com/33556915/75311883-07fc0f00-580d-11ea-8a83-000768cc9452.png" width="200" />
+][link:cocktailbuilder-ios]
+[<img src="https://user-images.githubusercontent.com/33556915/75311905-1cd8a280-580d-11ea-8937-9ce91e7d04dc.png" width="200" />][link:cocktailbuilder-android]
 
 ## Key features
 
@@ -42,7 +43,7 @@ Made with ❤️ by [BeOrNot2Be][link:beornot2be]. I always happy to receive you
 [badge:dependencies]: https://david-dm.org/BeOrNot2Be/CocktailBuilder.svg
 [badge:hit]: https://hits.dwyl.com/BeOrNot2Be/CocktailBuilder.svg
 [badge:repo-vulnerabilities]: https://snyk.io/test/github/BeOrNot2Be/CocktailBuilder/badge.svg
-[badge:github-actions]: https://github.com/BeOrNot2Be/CocktailBuilder/workflows/Build/badge.svg
+[badge:github-actions]: https://github.com/BeOrNot2Be/CocktailBuilder/workflows/Build/badge.svg?branch=ci
 [badge:expo]: https://img.shields.io/badge/Runs%20with%20Expo-4630EB.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000
 [link:repo-vulnerabilities]: https://snyk.io/test/github/BeOrNot2Be/CocktailBuilder
 [link: maintainability]: https://codeclimate.com/github/BeOrNot2Be/CocktailBuilder/maintainability
