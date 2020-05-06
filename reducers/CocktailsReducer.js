@@ -1,6 +1,7 @@
 /** @format */
 
 import { loop, Cmd } from "redux-loop";
+import * as StoreReview from "expo-store-review";
 import {
   SEARCHED_RECIPES,
   GET_COCKTAILS_BY_INGREDIENTS,
@@ -87,6 +88,16 @@ const cocktailsReducer = (state = INITIAL_STATE, action) => {
         const newFavCocktailsIDs = state.favCocktailsIDs.concat(
           action.data.item.CocktailID
         );
+        if (
+          newFavCocktailsIDs.length === 2 ||
+          newFavCocktailsIDs.length === 7
+        ) {
+          StoreReview.isAvailableAsync().then(isAvailable => {
+            if (isAvailable) {
+              StoreReview.requestReview();
+            }
+          });
+        }
 
         const newState = {
           ...state,

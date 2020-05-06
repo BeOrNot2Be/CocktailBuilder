@@ -14,19 +14,28 @@ import {
 } from "@ui-kitten/components";
 import { connect } from "react-redux";
 import _ from "lodash";
-import { AdMobBanner } from "expo-ads-admob";
+import { AdMobBanner, AdMobInterstitial } from "expo-ads-admob";
+import { NavigationEvents } from "react-navigation";
 import ListItem from "../components/CocktailListItem";
 import MainSourceFetch from "../api/web";
 import NativeApi from "../api/native";
 import GoogleApi from "../api/google";
 import GoogleAnalytics from "../api/googleAnalytics";
 import { HeartIcon, ShareIcon, HeartOutlineIcon } from "../components/Icons";
-import { TOGGLE_FAV_COCKTAIL } from "../actions/Cocktails";
+import {
+  TOGGLE_FAV_COCKTAIL,
+  INCREMENT_RECIPE_VIEW_COUNTER
+} from "../actions/Cocktails";
 
 const unitID =
   Platform.OS === "ios"
     ? "ca-app-pub-4338763897925627/6432597471"
     : "ca-app-pub-4338763897925627/8128822528";
+
+const interstitialUnitID =
+  Platform.OS === "ios"
+    ? "ca-app-pub-4338763897925627/9964554855"
+    : "a-app-pub-4338763897925627/4999809260";
 
 const styles = StyleSheet.create({
   scrollContainer: {
@@ -41,9 +50,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     textAlign: "center"
   },
-  footerContainer: {
+  headerContainer: {
     flexDirection: "row",
-    justifyContent: "flex-end"
+    justifyContent: "flex-end",
+    alignItems: "center"
   },
   card: {
     justifyContent: "center",
@@ -96,6 +106,10 @@ const styles = StyleSheet.create({
   },
   background: {
     height: "100%"
+  },
+  cardHeaderText: { flex: 4, padding: 10 },
+  headerControl: {
+    flex: 1
   }
 });
 
@@ -104,9 +118,11 @@ const RecipeScreen = ({
   favCocktailsIDs,
   toggle,
   user,
-  googleLogin
+  googleLogin,
+  viewRecipe
 }) => {
   const [recipeData, setRecipeData] = React.useState({});
+  const [normalizedNames, setNormalizedNames] = React.useState({});
   const [cocktailsList, setCocktailsList] = React.useState([]);
   const [listLength, setListLength] = React.useState(10);
   const recipe = navigation.getParam("recipe", {
@@ -134,8 +150,6 @@ const RecipeScreen = ({
     }
   });
 
-  const CardsHeader = () => <CardHeader title={recipe.CocktailName} />;
-
   const askForLogin = () => {
     Alert.alert(
       "Alert",
@@ -158,16 +172,19 @@ const RecipeScreen = ({
     }
   };
 
-  const CardsFooter = () => (
-    <View style={styles.footerContainer}>
+  const CardsHeader = () => (
+    <View style={styles.headerContainer}>
+      <Text category="h6" style={styles.cardHeaderText}>
+        {recipe.CocktailName}
+      </Text>
       <Button
-        style={styles.footerControl}
+        style={styles.headerControl}
         appearance="ghost"
         icon={ShareIcon}
         onPress={() => NativeApi.ShareLink(recipeData)}
       />
       <Button
-        style={styles.footerControl}
+        style={styles.headerControl}
         status="danger"
         appearance="ghost"
         icon={
@@ -204,8 +221,95 @@ const RecipeScreen = ({
     }
   };
 
+  const getNormalizedName = (actualName, normalizedName, ingredient) => {
+    if (actualName.toLowerCase() !== normalizedName.toLowerCase()) {
+      if (normalizedNames[actualName] === undefined) {
+        const commonSubstringMatrix = [];
+
+        for (let i = 0; i < actualName.length + 1; i += 1) {
+          commonSubstringMatrix[i] = [];
+          for (let j = 0; j < normalizedName.length + 1; j += 1) {
+            commonSubstringMatrix[i][j] = 0;
+          }
+        }
+
+        let longestCommonSubstring = 0;
+
+        for (let i = 0; i < actualName.length + 1; i += 1) {
+          for (let j = 0; j < normalizedName.length + 1; j += 1) {
+            if (i == 0 || j == 0) {
+              commonSubstringMatrix[i][j] = 0;
+            } else if (
+              actualName[i - 1].toLowerCase() ==
+              normalizedName[j - 1].toLowerCase()
+            ) {
+              commonSubstringMatrix[i][j] =
+                commonSubstringMatrix[i - 1][j - 1] + 1;
+
+              longestCommonSubstring = Math.max(
+                longestCommonSubstring,
+                commonSubstringMatrix[i][j]
+              );
+            }
+          }
+        }
+
+        const newNormalizedNames = normalizedNames;
+        if (actualName.length > 4 && longestCommonSubstring < 4) {
+          newNormalizedNames[actualName] = (
+            <>
+              {" (or "}
+              <Text
+                style={styles.link}
+                status="primary"
+                category="s1"
+                onPress={() =>
+                  openIngredient({
+                    ...ingredient,
+                    NormalizedIngredientID: ingredient.NormalizedID,
+                    Name: ingredient.NormalizedName
+                  })
+                }
+              >
+                {normalizedName}
+              </Text>
+              )
+            </>
+          );
+        } else {
+          newNormalizedNames[actualName] = false;
+        }
+        setNormalizedNames(newNormalizedNames);
+
+        if (newNormalizedNames[actualName] !== false) {
+          return newNormalizedNames[actualName];
+        }
+      } else if (normalizedNames[actualName] !== false) {
+        return normalizedNames[actualName];
+      }
+    }
+
+    return <></>;
+  };
+
   return (
     <Layout level="1" style={styles.background}>
+      <NavigationEvents
+        onDidFocus={() => {
+          if (
+            user.recipeViewCounter % 5 === 0 &&
+            user.recipeViewCounter !== 0
+          ) {
+            AdMobInterstitial.setAdUnitID(interstitialUnitID).then(() =>
+              AdMobInterstitial.requestAdAsync({
+                servePersonalizedAds: true
+              }).then(() => AdMobInterstitial.showAdAsync())
+            );
+          }
+          viewRecipe();
+        }}
+      />
+
       <FlatList
         data={cocktailsList.slice(0, listLength)}
         keyExtractor={(item, index) =>
@@ -219,11 +323,7 @@ const RecipeScreen = ({
           ) : (
             <>
               <Layout style={styles.card}>
-                <Card
-                  header={CardsHeader}
-                  footer={CardsFooter}
-                  style={styles.card}
-                >
+                <Card header={CardsHeader} style={styles.card}>
                   <Layout>
                     {recipeData.Ingredients.map(ingredient => (
                       <Text category="s1" key={ingredient.ID}>
@@ -238,6 +338,11 @@ const RecipeScreen = ({
                         >
                           {ingredient.Name}
                         </Text>
+                        {getNormalizedName(
+                          ingredient.Name,
+                          ingredient.NormalizedName,
+                          ingredient
+                        )}
                       </Text>
                     ))}
                   </Layout>
@@ -251,7 +356,6 @@ const RecipeScreen = ({
                   </Layout>
                 </Card>
               </Layout>
-              <Divider style={styles.divider} />
               <Layout style={styles.ads}>
                 <AdMobBanner
                   bannerSize="mediumRectangle"
@@ -309,7 +413,8 @@ RecipeScreen.propTypes = {
   googleLogin: PropTypes.any,
   navigation: PropTypes.any,
   toggle: PropTypes.any,
-  user: PropTypes.any
+  user: PropTypes.any,
+  viewRecipe: PropTypes.func
 };
 
 const mapStateToProps = state => {
@@ -322,7 +427,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
   googleLogin: () => GoogleApi.fullSignInWithGoogleAsync(dispatch),
   toggle: (item, token) =>
-    dispatch({ type: TOGGLE_FAV_COCKTAIL, data: { item, token } })
+    dispatch({ type: TOGGLE_FAV_COCKTAIL, data: { item, token } }),
+  viewRecipe: () => dispatch({ type: INCREMENT_RECIPE_VIEW_COUNTER })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(RecipeScreen);

@@ -20,7 +20,7 @@ const ConnectionIssue = () => {
 
 export default class GoogleAnalytics {
   static cocktailPageOpened() {
-    analytics.hit(new PageHit("CocktailPage")).catch(e => {
+    analytics.hit(new PageHit("Cocktail List")).catch(e => {
       console.error(e.message);
     });
   }
@@ -31,11 +31,14 @@ export default class GoogleAnalytics {
     });
   }
 
-  static ingsPageOpened() {
-    analytics.hit(new PageHit("IngredientsPage")).catch(e => {
-      console.error(e.message);
-    });
-  }
+  // deactivated page because in
+  // IngredientsPage automatically opens MyBar Tab
+  //
+  // static ingsPageOpened() {
+  //   analytics.hit(new PageHit("IngredientsPage")).catch(e => {
+  //     console.error(e.message);
+  //   });
+  // }
 
   static addedIngsOpened() {
     analytics.hit(new PageHit("MyBar")).catch(e => {
@@ -60,7 +63,7 @@ export default class GoogleAnalytics {
         break;
 
       case "Ingredients":
-        this.ingsPageOpened();
+        this.addedIngsOpened();
         break;
 
       default:

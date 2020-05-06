@@ -156,11 +156,6 @@ const IngredientScreen = ({
               <Text category="h6" style={styles.textHeader}>
                 More cocktails with {ingredient.Name}
               </Text>
-              <Layout style={styles.buttonContainer}>
-                <Button onPress={getMore} style={styles.button}>
-                  Add
-                </Button>
-              </Layout>
             </>
           )
         }

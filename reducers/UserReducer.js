@@ -11,7 +11,8 @@ import {
 } from "../actions/User";
 import {
   FETCH_FAV_COCKTAIL_ID,
-  GET_COCKTAILS_BY_INGREDIENTS
+  GET_COCKTAILS_BY_INGREDIENTS,
+  INCREMENT_RECIPE_VIEW_COUNTER
 } from "../actions/Cocktails";
 import { GET_INVENTORY_INGS } from "../actions/Ingredients";
 import NativeApi from "../api/native";
@@ -20,7 +21,8 @@ import GoogleAnalytics from "../api/googleAnalytics";
 
 const INITIAL_STATE = {
   logged: false,
-  theme: 1
+  theme: 1,
+  recipeViewCounter: 0
 };
 
 function usersFavsFetchSuccessfulAction(ids) {
@@ -97,6 +99,16 @@ const userReducer = (state = INITIAL_STATE, action) => {
         );
       }
       return state;
+
+    case INCREMENT_RECIPE_VIEW_COUNTER:
+      const recipeViewCounter = state.recipeViewCounter + 1;
+
+      user = {
+        ...state,
+        recipeViewCounter: recipeViewCounter > 5 ? 1 : recipeViewCounter
+      };
+      NativeApi.SaveUser(user);
+      return user;
 
     case LOG_OUT:
       return INITIAL_STATE;
