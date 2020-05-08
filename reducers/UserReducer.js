@@ -7,7 +7,8 @@ import {
   GOOGLE_FULL_SIGN_IN,
   LOG_OUT,
   TOGGLE_THEME,
-  CACHE_SIGN_IN
+  CACHE_SIGN_IN,
+  FETCHED_INTERSTITIAL_AD_RATIO
 } from "../actions/User";
 import {
   FETCH_FAV_COCKTAIL_ID,
@@ -19,11 +20,17 @@ import NativeApi from "../api/native";
 import MainSourceFetch from "../api/web";
 import GoogleAnalytics from "../api/googleAnalytics";
 
-const INITIAL_STATE = {
-  logged: false,
-  theme: 1,
-  recipeViewCounter: 0
-};
+const INITIAL_STATE = loop(
+  {
+    logged: false,
+    theme: 1,
+    recipeViewCounter: 0,
+    interstitialAdRatio: 5
+  },
+  Cmd.run(MainSourceFetch.getInterstitialAdRatio, {
+    args: [Cmd.dispatch]
+  })
+);
 
 function usersFavsFetchSuccessfulAction(ids) {
   return {
@@ -105,9 +112,24 @@ const userReducer = (state = INITIAL_STATE, action) => {
 
       user = {
         ...state,
-        recipeViewCounter: recipeViewCounter > 5 ? 1 : recipeViewCounter
+        recipeViewCounter:
+          recipeViewCounter > state.interstitialAdRatio ? 1 : recipeViewCounter
       };
       NativeApi.SaveUser(user);
+      return user;
+
+    case FETCHED_INTERSTITIAL_AD_RATIO:
+      const newInterstitialAdRatio = Number(action.data);
+
+      if (!Number.isNaN(newInterstitialAdRatio)) {
+        user = {
+          ...state,
+          interstitialAdRatio: newInterstitialAdRatio
+        };
+      } else {
+        user = state;
+      }
+
       return user;
 
     case LOG_OUT:

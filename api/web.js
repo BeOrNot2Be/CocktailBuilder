@@ -9,7 +9,11 @@ import {
   REMOVE_FAV_COCKTAIL,
   ADD_FAV_COCKTAIL
 } from "../actions/Cocktails";
-import { ADD_TOKEN, GOOGLE_SIGN_IN } from "../actions/User";
+import {
+  ADD_TOKEN,
+  GOOGLE_SIGN_IN,
+  FETCHED_INTERSTITIAL_AD_RATIO
+} from "../actions/User";
 import {
   SEARCHED_INGREDIENTS,
   GET_INVENTORY_INGS,
@@ -130,6 +134,41 @@ export default class MainSourceFetch {
           type: SEARCHED_INGREDIENTS,
           data: responseJson
         });
+      })
+      .catch(error => {
+        console.error(error);
+        FetchingIssue();
+        ConnectionIssue();
+      });
+  }
+
+  static getInterstitialAdRatio(dispatch) {
+    return fetch(
+      "https://www.cocktailbuilder.com/api/settings?key=a51ksSJx12WK1591AjxNv" // remove key
+    )
+      .then(response => response.json())
+      .then(responseJson => {
+        if (
+          responseJson[0].value === true ||
+          responseJson[0].value === "true"
+        ) {
+          if (responseJson[1].value > 0) {
+            dispatch({
+              type: FETCHED_INTERSTITIAL_AD_RATIO,
+              data: responseJson[1].value
+            });
+          } else {
+            dispatch({
+              type: FETCHED_INTERSTITIAL_AD_RATIO,
+              data: 0
+            });
+          }
+        } else {
+          dispatch({
+            type: FETCHED_INTERSTITIAL_AD_RATIO,
+            data: 0
+          });
+        }
       })
       .catch(error => {
         console.error(error);

@@ -297,7 +297,7 @@ const RecipeScreen = ({
       <NavigationEvents
         onDidFocus={() => {
           if (
-            user.recipeViewCounter % 5 === 0 &&
+            user.recipeViewCounter % user.interstitialAdRatio === 0 &&
             user.recipeViewCounter !== 0
           ) {
             AdMobInterstitial.setAdUnitID(interstitialUnitID).then(() =>
