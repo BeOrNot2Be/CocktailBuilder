@@ -1,4 +1,5 @@
 /** @format */
+/* eslint-disable no-else-return */
 
 import Fuse from "fuse.js";
 import _ from "lodash";
@@ -13,8 +14,6 @@ import {
 import MainSourceFetch from "../api/web";
 import GoogleAnalytics from "../api/googleAnalytics";
 
-const BreakException = {};
-
 const options = {
   threshold: 0.2,
   maxPatternLength: 32,
@@ -27,7 +26,8 @@ const INITIAL_STATE = loop(
     searchedIngredients: [],
     addedIngredients: [],
     addedCheck: new Map(),
-    searchEngine: new Fuse([], options)
+    searchEngine: new Fuse([], options),
+    backendAddedIngredientsUpdate: []
   },
   Cmd.run(MainSourceFetch.getIngredientsList, {
     args: [Cmd.dispatch]
@@ -35,22 +35,12 @@ const INITIAL_STATE = loop(
 );
 
 const mergeWithBackEnd = (clientInventory, backendInventoryIds, fullList) => {
-  let exist;
   const newFetchedItems = [...clientInventory];
-  backendInventoryIds.forEach(ingID => {
-    exist = false;
-    try {
-      clientInventory.forEach(clientIng => {
-        if (ingID == clientIng.ID) {
-          exist = true;
-          throw BreakException;
-        }
-      });
-    } catch (e) {
-      if (e !== BreakException) throw e;
-    }
-    if (!exist) {
-      newFetchedItems.push(_.find(fullList, ing => ing.ID === ingID));
+  const clientInventoryIds = new Set(clientInventory.map(ing => ing.ID));
+
+  backendInventoryIds.forEach(newID => {
+    if (!clientInventoryIds.has(newID)) {
+      newFetchedItems.push(_.find(fullList, ing => ing.ID === newID));
     }
   });
   return newFetchedItems;
@@ -66,11 +56,27 @@ const ingredientsReducer = (state = INITIAL_STATE, action) => {
   let newAdded;
   switch (action.type) {
     case SEARCHED_INGREDIENTS:
-      return {
-        ...state,
-        searchedIngredients: action.data,
-        searchEngine: new Fuse(action.data, options)
-      };
+      if (state.backendAddedIngredientsUpdate.length === 0) {
+        return {
+          ...state,
+          searchedIngredients: action.data,
+          searchEngine: new Fuse(action.data, options)
+        };
+      } else {
+        const mergedAddedIngs = mergeWithBackEnd(
+          state.addedIngredients,
+          state.backendAddedIngredientsUpdate,
+          action.data
+        );
+        return {
+          ...state,
+          addedIngredients: mergedAddedIngs,
+          addedCheck: updateAddedIngCheckMap(state.addedCheck, mergedAddedIngs),
+          searchedIngredients: action.data,
+          searchEngine: new Fuse(action.data, options),
+          backendAddedIngredientsUpdate: []
+        };
+      }
 
     case ADD_INGREDIENT_TO_SEARCH_BY:
       GoogleAnalytics.addedIngToMyBar(action.data.Name);
@@ -97,16 +103,20 @@ const ingredientsReducer = (state = INITIAL_STATE, action) => {
       };
 
     case GET_INVENTORY_INGS:
-      const mergedAddedIngs = mergeWithBackEnd(
-        state.addedIngredients,
-        action.data,
-        state.searchedIngredients
-      );
-      return {
-        ...state,
-        addedIngredients: mergedAddedIngs,
-        addedCheck: updateAddedIngCheckMap(state.addedCheck, mergedAddedIngs)
-      };
+      if (state.searchedIngredients.length > 0) {
+        const mergedAddedIngs = mergeWithBackEnd(
+          state.addedIngredients,
+          action.data,
+          state.searchedIngredients
+        );
+        return {
+          ...state,
+          addedIngredients: mergedAddedIngs,
+          addedCheck: updateAddedIngCheckMap(state.addedCheck, mergedAddedIngs)
+        };
+      } else {
+        return { ...state, backendAddedIngredientsUpdate: action.data };
+      }
 
     case REMOVE_INGREDIENT_FROM_SEARCH_BY:
       newAdded = new Map(state.addedCheck);
