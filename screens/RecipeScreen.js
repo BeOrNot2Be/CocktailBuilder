@@ -263,13 +263,12 @@ const RecipeScreen = ({
                 style={styles.link}
                 status="primary"
                 category="s1"
-                onPress={() =>
+                onPress={() => {
                   openIngredient({
                     ...ingredient,
-                    NormalizedIngredientID: ingredient.NormalizedID,
-                    Name: ingredient.NormalizedName
-                  })
-                }
+                    normalized: true
+                  });
+                }}
               >
                 {normalizedName}
               </Text>

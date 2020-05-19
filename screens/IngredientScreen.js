@@ -10,7 +10,13 @@ import MainSourceFetch from "../api/web";
 import GoogleApi from "../api/google";
 import GoogleAnalytics from "../api/googleAnalytics";
 import { TOGGLE_FAV_COCKTAIL } from "../actions/Cocktails";
+import {
+  ADD_INGREDIENT_TO_SEARCH_BY,
+  UNLOGGED_ADD_INGREDIENT_TO_SEARCH_BY
+} from "../actions/Ingredients";
 import { AddCheckmarkIcon, AddedIcon } from "../components/Icons";
+import { isEmpty, find } from "lodash";
+import { StackActions } from "react-navigation";
 
 const styles = StyleSheet.create({
   scrollContainer: {
@@ -40,32 +46,82 @@ const styles = StyleSheet.create({
   }
 });
 
+const updateIngredientWithMoraData = (
+  searchedIngredients,
+  ingredient,
+  setIngredientFunc
+) =>
+  new Promise((resolve, reject) => {
+    if (!isEmpty(ingredient)) {
+      const NormalizedName = ingredient.NormalizedName.toLowerCase();
+
+      let additionalIngData =
+        ingredient.normalized === undefined
+          ? searchedIngredients.find(ing => ing.ID === ingredient.ID)
+          : searchedIngredients.find(
+              ing =>
+                ing.NormalizedIngredientID === ingredient.NormalizedID &&
+                ing.Name === NormalizedName
+            );
+
+      if (
+        additionalIngData === undefined &&
+        ingredient.normalized === undefined
+      ) {
+        additionalIngData = searchedIngredients.find(
+          ing =>
+            ing.NormalizedIngredientID === ingredient.NormalizedID &&
+            ing.Name === NormalizedName
+        );
+      }
+
+      if (additionalIngData !== undefined) {
+        setIngredientFunc({ ...ingredient, ...additionalIngData });
+      } else {
+        setIngredientFunc({ ...ingredient, Popularity: null });
+      }
+    }
+    resolve();
+  });
+
 const IngredientScreen = ({
   navigation,
   favCocktailsIDs,
   user,
+  searchedIngredients,
+  added,
   toggle,
-  googleLogin
+  googleLogin,
+  addIngredient,
+  unloggedAddIngredient
 }) => {
   const [cocktailsList, setCocktailsList] = React.useState([]);
   const [listLength, setListLength] = React.useState(10);
-
-  const ingredient = navigation.getParam("ingredient", {
-    Name: "vodka",
-    ID: 3,
-    Popularity: 2642,
-    NormalizedIngredientID: 1,
-    added: false,
-    action: () => console.log("ing default add/rem func")
-  });
-  const [addedIngedient, setAddedIngedient] = React.useState(ingredient.added);
+  const [ingredient, setIngredient] = React.useState(
+    navigation.getParam("ingredient", {
+      Name: "vodka",
+      ID: 3,
+      Popularity: 2642,
+      NormalizedIngredientID: 1
+    })
+  );
 
   React.useEffect(() => {
-    MainSourceFetch.getCocktailsByIngredient(
-      ingredient,
-      setCocktailsList,
-      cocktailsList
-    );
+    if (cocktailsList.length === 0) {
+      MainSourceFetch.getCocktailsByIngredient(
+        ingredient,
+        setCocktailsList,
+        cocktailsList
+      );
+    }
+
+    if (ingredient.Popularity === undefined) {
+      updateIngredientWithMoraData(
+        searchedIngredients,
+        ingredient,
+        setIngredient
+      );
+    }
   });
 
   const askForLogin = () => {
@@ -107,6 +163,27 @@ const IngredientScreen = ({
     navigation.push("modal", { recipe: item });
   };
 
+  const addIngredientToInventory = ing => {
+    const item = {
+      Name: ing.Name,
+      ID: ing.ID,
+      Popularity: ing.Popularity,
+      NormalizedIngredientID: ing.NormalizedIngredientID
+    };
+
+    if (user.logged) {
+      addIngredient(item);
+    } else
+      unloggedAddIngredient(item, () => {
+        navigation.dispatch(StackActions.popToTop());
+        navigation.dispatch(
+          StackActions.push({ routeName: "forceLogInModal" })
+        );
+      });
+  };
+
+  const addedIngredientState = !!added.get(ingredient.ID);
+
   return (
     <Layout level="1" style={styles.background}>
       <FlatList
@@ -115,7 +192,8 @@ const IngredientScreen = ({
           item.ad ? index.toString() : item.CocktailID.toString()
         }
         ListHeaderComponent={
-          ingredient.Popularity !== undefined ? (
+          ingredient.Popularity !== undefined &&
+          ingredient.Popularity !== null ? (
             <>
               <Layout
                 style={{
@@ -126,7 +204,10 @@ const IngredientScreen = ({
               >
                 <Layout style={{ flex: 7 }}>
                   <Text category="h6">
-                    More cocktails with {ingredient.Name}
+                    More cocktails with{" "}
+                    {ingredient.normalized === undefined
+                      ? ingredient.Name
+                      : ingredient.NormalizedName}
                   </Text>
                   <Text appearance="hint" category="c2">
                     {ingredient.Popularity} results
@@ -136,17 +217,16 @@ const IngredientScreen = ({
                 <Layout style={styles.headerButtonContainer}>
                   <Button
                     onPress={() => {
-                      if (!addedIngedient) {
-                        ingredient.action();
-                        setAddedIngedient(!addedIngedient);
+                      if (!addedIngredientState) {
+                        addIngredientToInventory(ingredient);
                       }
                     }}
-                    appearance={addedIngedient ? "outline" : "filled"}
-                    icon={addedIngedient ? AddCheckmarkIcon : AddedIcon}
+                    appearance={addedIngredientState ? "outline" : "filled"}
+                    icon={addedIngredientState ? AddCheckmarkIcon : AddedIcon}
                     style={styles.button}
-                    status={addedIngedient ? "success" : "info"}
+                    status={addedIngredientState ? "success" : "info"}
                   >
-                    {addedIngedient ? "Added" : "Add"}
+                    {addedIngredientState ? "Added" : "Add"}
                   </Button>
                 </Layout>
               </Layout>
@@ -154,7 +234,10 @@ const IngredientScreen = ({
           ) : (
             <>
               <Text category="h6" style={styles.textHeader}>
-                More cocktails with {ingredient.Name}
+                More cocktails with{" "}
+                {ingredient.normalized === undefined
+                  ? ingredient.Name
+                  : ingredient.NormalizedName}
               </Text>
             </>
           )
@@ -201,12 +284,18 @@ IngredientScreen.propTypes = {
   googleLogin: PropTypes.any,
   navigation: PropTypes.any,
   toggle: PropTypes.any,
-  user: PropTypes.any
+  user: PropTypes.any,
+  searchedIngredients: PropTypes.any,
+  added: PropTypes.any,
+  addIngredient: PropTypes.func,
+  unloggedAddIngredient: PropTypes.func
 };
 
 const mapStateToProps = state => {
   return {
     favCocktailsIDs: state.cocktails.favCocktailsIDs,
+    searchedIngredients: state.ingredients.searchedIngredients,
+    added: state.ingredients.addedCheck,
     user: state.user
   };
 };
@@ -214,7 +303,15 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
   googleLogin: () => GoogleApi.fullSignInWithGoogleAsync(dispatch),
   toggle: (item, token) =>
-    dispatch({ type: TOGGLE_FAV_COCKTAIL, data: { item, token } })
+    dispatch({ type: TOGGLE_FAV_COCKTAIL, data: { item, token } }),
+  addIngredient: item =>
+    dispatch({ type: ADD_INGREDIENT_TO_SEARCH_BY, data: item }),
+  unloggedAddIngredient: (item, openForceLogIn) =>
+    dispatch({
+      type: UNLOGGED_ADD_INGREDIENT_TO_SEARCH_BY,
+      data: item,
+      subdatafunc: openForceLogIn
+    })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(IngredientScreen);

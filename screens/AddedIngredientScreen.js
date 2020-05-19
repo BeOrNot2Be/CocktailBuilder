@@ -76,13 +76,7 @@ const AddedIngredients = ({
           <ListItem
             item={item}
             onMainButtonPress={removeIngredientToList}
-            onPress={() =>
-              openIngredient({
-                ...item,
-                added: true,
-                action: () => removeIngredientToList(null, item)
-              })
-            }
+            onPress={() => openIngredient(item)}
           />
         )}
       />

@@ -127,7 +127,7 @@ export default class MainSourceFetch {
   }
 
   static getIngredientsList(dispatch) {
-    fetch(`https://www.cocktailbuilder.com/json/ingredientList`)
+    fetch("https://www.cocktailbuilder.com/json/ingredientList")
       .then(response => response.json())
       .then(responseJson => {
         dispatch({
