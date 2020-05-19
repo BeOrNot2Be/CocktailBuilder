@@ -2,6 +2,7 @@
 
 import { loop, Cmd } from "redux-loop";
 import * as StoreReview from "expo-store-review";
+import { Alert } from "react-native";
 import {
   SEARCHED_RECIPES,
   GET_COCKTAILS_BY_INGREDIENTS,
@@ -19,6 +20,21 @@ const INITIAL_STATE = {
   cocktailsByIngredients: [],
   favCocktails: [],
   favCocktailsIDs: []
+};
+
+const ReviewAlert = () => {
+  Alert.alert(
+    "Review",
+    "Do you love the cocktail builder app?",
+    [
+      {
+        text: "Yes",
+        onPress: () => StoreReview.requestReview()
+      },
+      { text: "No", style: "cancel" }
+    ],
+    { cancelable: false }
+  );
 };
 
 function usersFavByIDFetchSuccessfulAction(item) {
@@ -94,7 +110,11 @@ const cocktailsReducer = (state = INITIAL_STATE, action) => {
         ) {
           StoreReview.isAvailableAsync().then(isAvailable => {
             if (isAvailable) {
-              StoreReview.requestReview();
+              StoreReview.hasAction().then(actionInfo => {
+                if (actionInfo) {
+                  ReviewAlert();
+                }
+              });
             }
           });
         }
