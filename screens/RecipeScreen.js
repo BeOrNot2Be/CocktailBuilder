@@ -2,7 +2,14 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { StyleSheet, FlatList, View, Alert, Platform } from "react-native";
+import {
+  StyleSheet,
+  FlatList,
+  View,
+  Alert,
+  Platform,
+  StatusBar
+} from "react-native";
 import {
   Layout,
   Divider,
@@ -299,10 +306,19 @@ const RecipeScreen = ({
             user.recipeViewCounter % user.interstitialAdRatio === 0 &&
             user.recipeViewCounter !== 0
           ) {
+            AdMobInterstitial.addEventListener("interstitialDidClose", () => {
+              if (Platform.OS === "ios") {
+                StatusBar.setHidden(false);
+              }
+            });
+
             AdMobInterstitial.setAdUnitID(interstitialUnitID).then(() =>
               AdMobInterstitial.requestAdAsync({
                 servePersonalizedAds: true
-              }).then(() => AdMobInterstitial.showAdAsync())
+              }).then(() => {
+                AdMobInterstitial.showAdAsync();
+                StatusBar.setHidden(true);
+              })
             );
           }
           viewRecipe();
