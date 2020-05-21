@@ -302,25 +302,25 @@ const RecipeScreen = ({
     <Layout level="1" style={styles.background}>
       <NavigationEvents
         onDidFocus={() => {
-          if (
-            user.recipeViewCounter % user.interstitialAdRatio === 0 &&
-            user.recipeViewCounter !== 0
-          ) {
-            AdMobInterstitial.addEventListener("interstitialDidClose", () => {
-              if (Platform.OS === "ios") {
-                StatusBar.setHidden(false);
-              }
-            });
+          // if (
+          //   user.recipeViewCounter % user.interstitialAdRatio === 0 &&
+          //   user.recipeViewCounter !== 0
+          // ) {
+          //   AdMobInterstitial.addEventListener("interstitialDidClose", () => {
+          //     if (Platform.OS === "ios") {
+          //       StatusBar.setHidden(false);
+          //     }
+          //   });
 
-            AdMobInterstitial.setAdUnitID(interstitialUnitID).then(() =>
-              AdMobInterstitial.requestAdAsync({
-                servePersonalizedAds: true
-              }).then(() => {
-                AdMobInterstitial.showAdAsync();
-                StatusBar.setHidden(true);
-              })
-            );
-          }
+          //   AdMobInterstitial.setAdUnitID(interstitialUnitID).then(() =>
+          //     AdMobInterstitial.requestAdAsync({
+          //       servePersonalizedAds: true
+          //     }).then(() => {
+          //       AdMobInterstitial.showAdAsync();
+          //       StatusBar.setHidden(true);
+          //     })
+          //   );
+          // }
           viewRecipe();
         }}
       />
