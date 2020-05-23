@@ -13,7 +13,7 @@ import {
 } from "@ui-kitten/components";
 import IconBadge from "react-native-icon-badge";
 import { connect } from "react-redux";
-import { NavigationActions } from "react-navigation";
+import { NavigationActions, StackActions } from "react-navigation";
 import _ from "lodash";
 import FavoriteScreen from "../screens/FavoriteScreen";
 import CocktailScreen from "../screens/CocktailScreen";
@@ -57,10 +57,10 @@ const TabBarComponent = ({
     const selectedTabRoute = navigation.state.routes[index];
     if (index > 0) {
       const navigateAction = NavigationActions.navigate({
-        routeName: selectedTabRoute.routeName,
-        action: navigation.popToTop({ immediate: true })
+        routeName: selectedTabRoute.routeName
       });
       navigation.dispatch(navigateAction);
+      navigation.dispatch(StackActions.popToTop({ immediate: true }));
     } else {
       navigation.navigate("Added");
     }
