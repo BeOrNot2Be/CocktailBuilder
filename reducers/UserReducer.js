@@ -15,7 +15,10 @@ import {
   GET_COCKTAILS_BY_INGREDIENTS,
   INCREMENT_RECIPE_VIEW_COUNTER
 } from "../actions/Cocktails";
-import { GET_INVENTORY_INGS } from "../actions/Ingredients";
+import {
+  GET_INVENTORY_INGS,
+  REMOVE_INGREDIENT_FROM_SEARCH_BY
+} from "../actions/Ingredients";
 import NativeApi from "../api/native";
 import MainSourceFetch from "../api/web";
 import GoogleAnalytics from "../api/googleAnalytics";
@@ -97,7 +100,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
       return user;
 
     case GET_COCKTAILS_BY_INGREDIENTS:
-      if (state.logged) {
+      if (state.logged && action.args.ingsStr !== "") {
         return loop(
           state,
           Cmd.run(MainSourceFetch.saveInventoryIngs, {
@@ -106,6 +109,22 @@ const userReducer = (state = INITIAL_STATE, action) => {
         );
       }
       return state;
+
+    case REMOVE_INGREDIENT_FROM_SEARCH_BY:
+      if (action.args.list.length <= 1) {
+        const newAddedIng = action.args.list.filter(
+          item => item.ID !== action.data.ID
+        );
+        if (newAddedIng.length === 0) {
+          return loop(
+            state,
+            Cmd.run(MainSourceFetch.saveBlankInventory, {
+              args: [state.token, Cmd.dispatch]
+            })
+          );
+        }
+      }
+      break;
 
     case INCREMENT_RECIPE_VIEW_COUNTER:
       const recipeViewCounter = state.recipeViewCounter + 1;

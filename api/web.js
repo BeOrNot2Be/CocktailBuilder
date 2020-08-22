@@ -293,15 +293,39 @@ export default class MainSourceFetch {
   }
 
   static saveInventoryIngs(ings, token, dispatch) {
+    if (ings !== "") {
+      fetch(`https://www.cocktailbuilder.com/api/users/${token}/inventory`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: ings
+      })
+        .then(response => response.json())
+        .then(() => {
+          dispatch({
+            type: SAVE_INVENTORY_INGS
+          });
+        })
+        .catch(error => {
+          console.error(error);
+          FetchingIssue();
+          ConnectionIssue();
+        });
+    }
+  }
+
+  static saveBlankInventory(token, dispatch) {
     fetch(`https://www.cocktailbuilder.com/api/users/${token}/inventory`, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
       },
-      body: ings
+      body: ""
     })
       .then(response => response.json())
       .then(() => {
+        console.log("saved");
         dispatch({
           type: SAVE_INVENTORY_INGS
         });

@@ -39,7 +39,7 @@ const AddedIngredients = ({
   getCocktailsByIngredients(addedIngredients);
 
   const removeIngredientToList = (ref, item) => {
-    removeIngredient(item);
+    removeIngredient(item, addedIngredients);
   };
 
   return (
@@ -106,8 +106,12 @@ const mapDispatchToProps = dispatch => ({
       dispatch,
       token
     ),
-  removeIngredient: item =>
-    dispatch({ type: REMOVE_INGREDIENT_FROM_SEARCH_BY, data: item })
+  removeIngredient: (item, addedIngredients) =>
+    dispatch({
+      type: REMOVE_INGREDIENT_FROM_SEARCH_BY,
+      data: item,
+      args: { list: addedIngredients }
+    })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddedIngredients);
