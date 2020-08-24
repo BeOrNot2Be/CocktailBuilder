@@ -10,7 +10,7 @@ import { AppearanceProvider } from "react-native-appearance";
 import { StatusBar, Platform } from "react-native";
 import { IonicIconsPack } from "./ionic-icons";
 import { MaterialCommunityIconsPack } from "./material-icons";
-import AppNavigator from "./navigation/Drawer";
+import AppNavigator from "./navigation/Loader";
 import { default as lightTheme } from "./themes/custom-theme.json";
 import { default as darkTheme } from "./themes/night-theme.json";
 import { default as customMapping } from "./themes/custom-mapping.json";
