@@ -325,7 +325,6 @@ export default class MainSourceFetch {
     })
       .then(response => response.json())
       .then(() => {
-        console.log("saved");
         dispatch({
           type: SAVE_INVENTORY_INGS
         });

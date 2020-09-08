@@ -49,6 +49,7 @@ function usersInventoryIngsFetchSuccessfulAction(ids) {
   };
 }
 
+// eslint-disable-next-line consistent-return
 const userReducer = (state = INITIAL_STATE, action) => {
   let user;
   switch (action.type) {
@@ -124,7 +125,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
           );
         }
       }
-      break;
+      return state;
 
     case INCREMENT_RECIPE_VIEW_COUNTER:
       const recipeViewCounter = state.recipeViewCounter + 1;
