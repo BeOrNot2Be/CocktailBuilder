@@ -5,7 +5,7 @@
     "slug": "cocktailbuilderApp",
     "privacy": "public",
     "platforms": ["ios", "android", "web"],
-    "version": "1.0.1",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -19,7 +19,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "bundleIdentifier": "com.cocktailbuilder",
-      "buildNumber": "1.0.2",
+      "buildNumber": "1.0.5",
       "supportsTablet": true,
       "userInterfaceStyle": "light",
       "config": {
@@ -29,7 +29,7 @@
     },
     "android": {
       "package": "davanna.ca.cocktailbuilder",
-      "versionCode": 14,
+      "versionCode": 17,
       "userInterfaceStyle": "light",
       "config": {
         "googleMobileAdsAppId": "ca-app-pub-4338763897925627~5301927751"
