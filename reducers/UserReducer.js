@@ -5,6 +5,7 @@ import {
   ADD_TOKEN,
   GOOGLE_SIGN_IN,
   GOOGLE_FULL_SIGN_IN,
+  APPLE_FULL_SIGN_IN,
   LOG_OUT,
   TOGGLE_THEME,
   CACHE_SIGN_IN,
@@ -76,6 +77,11 @@ const userReducer = (state = INITIAL_STATE, action) => {
       return { ...state, googleUser: action.data };
 
     case GOOGLE_FULL_SIGN_IN:
+      user = { ...state, ...action.data };
+      NativeApi.SaveUser(user);
+      return user;
+
+    case APPLE_FULL_SIGN_IN:
       user = { ...state, ...action.data };
       NativeApi.SaveUser(user);
       return user;

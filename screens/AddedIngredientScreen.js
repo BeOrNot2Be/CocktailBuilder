@@ -10,7 +10,7 @@ import ListItem from "../components/AddedIngListItem";
 import MainSourceFetch from "../api/web";
 import { REMOVE_INGREDIENT_FROM_SEARCH_BY } from "../actions/Ingredients";
 import { ForwardIcon } from "../components/Icons";
-import RealGoogleButton from "../components/GoogleButton";
+import SignInButtons from "../components/SignInButtons";
 
 const styles = StyleSheet.create({
   background: {
@@ -54,7 +54,7 @@ const AddedIngredients = ({
               <></>
             ) : (
               <Layout level="2" style={styles.buttonContainer}>
-                <RealGoogleButton />
+                <SignInButtons />
               </Layout>
             )}
             <Layout level="2" style={styles.buttonContainer}>

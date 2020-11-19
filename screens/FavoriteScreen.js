@@ -10,7 +10,7 @@ import ListItem from "../components/CocktailListItem";
 import MainSourceFetch from "../api/web";
 import GoogleApi from "../api/google";
 import GoogleAnalytics from "../api/googleAnalytics";
-import RealGoogleButton from "../components/GoogleButton";
+import SignInButtons from "../components/SignInButtons";
 
 const styles = StyleSheet.create({
   backdrop: {
@@ -104,7 +104,7 @@ const FavoriteScreen = ({
                     To unlock useful functionality like favorites list you need
                     to have an account
                   </Text>
-                  <RealGoogleButton />
+                  <SignInButtons />
                 </Layout>
               </Layout>
             )}

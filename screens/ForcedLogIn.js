@@ -9,7 +9,7 @@ import {
   SafeAreaView
 } from "react-native";
 import { Card, Text } from "@ui-kitten/components";
-import RealGoogleButton from "../components/GoogleButton";
+import SignInButtons from "../components/SignInButtons";
 
 const styles = StyleSheet.create({
   card: {
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
 const ForceLogInModal = ({ navigation }) => {
   const Footer = () => (
     <View style={styles.footerContainer}>
-      <RealGoogleButton callback={navigation.goBack} />
+      <SignInButtons callback={navigation.goBack} />
     </View>
   );
 
