@@ -25,7 +25,7 @@
     "expo-analytics": "^1.0.14",
     "expo-asset": "~8.1.4",
     "expo-constants": "~9.0.0",
-    "expo-font": "~8.1.0",
+    "expo-font": "~9.0.0",
     "expo-google-app-auth": "^8.0.1",
     "expo-linear-gradient": "~8.1.0",
     "expo-web-browser": "~8.1.0",
