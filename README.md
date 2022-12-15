@@ -1,3 +1,7 @@
+> Abandoned this project; stopped all maintenance as of April 25, 2020
+
+
+
 <!-- @format -->
 
 # CocktailBuilder [![Build Status][badge:github-actions]][link:github-actions] [![runs with expo][badge:expo]][link:cocktailbuilder-expo] [![Known Vulnerabilities][badge:repo-vulnerabilities]][link:repo-vulnerabilities] [![HitCount][badge:hit]][link:hit] [![Dependencies][badge:dependencies]][link:dependencies] [![Maintainability][badge: maintainability]][link: maintainability]
